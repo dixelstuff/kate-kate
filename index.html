@@ -320,14 +320,69 @@ function likelihoodClass(v){
   return 'deep';
 }
 function relevantPeople(c){
-  const text=[c.q||'',c.answer||'',c.context||''].join(' ').toLowerCase();
-  const out=[];
+  const answer=String(c.answer||'').toLowerCase();
+  const question=String(c.q||'').toLowerCase();
+  const context=String(c.context||'').toLowerCase();
+
+  const scored=[];
+
   PEOPLE.forEach(p=>{
-    if(p.aliases.some(a=>text.includes(a.toLowerCase()))){
-      if(!out.some(x=>x.character===p.character)) out.push(p);
+    let score=0;
+    let answerHit=false;
+    let bestAliasLen=0;
+
+    p.aliases.forEach(alias=>{
+      const a=alias.toLowerCase();
+      if(!a) return;
+
+      // Longer aliases are more specific and therefore more trustworthy.
+      const specificity = Math.min(3, Math.max(1, Math.floor(a.length/8)));
+
+      if(answer.includes(a)){
+        score += 10 + specificity;
+        answerHit = true;
+        bestAliasLen = Math.max(bestAliasLen, a.length);
+      }
+      if(question.includes(a)){
+        score += 4 + specificity;
+        bestAliasLen = Math.max(bestAliasLen, a.length);
+      }
+      if(context.includes(a)){
+        score += 1 + specificity;
+        bestAliasLen = Math.max(bestAliasLen, a.length);
+      }
+    });
+
+    if(score>0){
+      scored.push({p,score,answerHit,bestAliasLen});
     }
   });
-  return out.slice(0,4);
+
+  scored.sort((a,b)=>
+    Number(b.answerHit)-Number(a.answerHit)
+    || b.score-a.score
+    || b.bestAliasLen-a.bestAliasLen
+  );
+
+  if(!scored.length) return [];
+
+  // If the top person is clearly the answer and substantially more relevant,
+  // show only them. This avoids background characters cluttering the reveal.
+  const top=scored[0];
+  const second=scored[1];
+
+  if(top.answerHit && (!second || !second.answerHit) && (!second || top.score >= second.score + 4)){
+    return [top.p];
+  }
+
+  // If multiple people are explicitly present in the answer, keep those co-answers.
+  const answerPeople=scored.filter(x=>x.answerHit);
+  if(answerPeople.length){
+    return answerPeople.slice(0,3).map(x=>x.p);
+  }
+
+  // Otherwise show only the most relevant one or two.
+  return scored.slice(0,2).map(x=>x.p);
 }
 function renderPeople(c){
   const box=$('#peopleReveal');
