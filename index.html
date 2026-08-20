@@ -48,11 +48,40 @@ h1{margin:0 0 9px;color:#f2f6fb;font-size:2.2rem;line-height:.98;letter-spacing:
   padding:10px 12px calc(10px + env(safe-area-inset-bottom));
   display:grid;grid-template-rows:auto 5px minmax(0,1fr) auto;gap:9px
 }
-.topbar{min-height:34px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.playerName{color:#d9e5f2;font-size:.88rem;font-weight:800}
-.topright{display:flex;align-items:center;gap:10px}
-.todo{color:#ffd44f;font-size:.88rem;font-weight:850;white-space:nowrap}
-.toggleWrap{color:#d9e5f2;display:flex;align-items:center;gap:7px;font-size:.82rem;white-space:nowrap}
+.topbar{
+  min-height:34px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:10px
+}
+.playerName{
+  color:#d9e5f2;
+  font-size:.88rem;
+  font-weight:800;
+  justify-self:start
+}
+.todo{
+  color:#ffd44f;
+  font-size:.88rem;
+  font-weight:850;
+  white-space:nowrap;
+  justify-self:center
+}
+.topright{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  justify-self:end
+}
+.toggleWrap{
+  color:#d9e5f2;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:.82rem;
+  white-space:nowrap
+}
 .switch{position:relative;width:40px;height:22px;display:inline-block}
 .switch input{opacity:0;width:0;height:0}
 .slider{position:absolute;inset:0;background:#5d6875;border-radius:999px;transition:.15s}
@@ -114,9 +143,16 @@ h1{margin:0 0 9px;color:#f2f6fb;font-size:2.2rem;line-height:.98;letter-spacing:
 .shaky{background:var(--amber);color:#172234}
 .good{background:var(--green)}
 
-.undoRow{min-height:20px;display:flex;justify-content:flex-start;align-items:center}
+.undoRow{
+  min-height:30px;
+  display:flex;
+  justify-content:flex-start;
+  align-items:flex-start;
+  padding-top:2px;
+  padding-bottom:8px
+}
 .undoBtn{
-  border:0;background:transparent;color:#aebdcb;font-size:.76rem;padding:1px 0;
+  border:0;background:transparent;color:#aebdcb;font-size:.76rem;padding:4px 0;
   text-decoration:underline;text-underline-offset:2px
 }
 .undoBtn:disabled{opacity:.35;text-decoration:none;cursor:default}
@@ -136,6 +172,8 @@ h1{margin:0 0 9px;color:#f2f6fb;font-size:2.2rem;line-height:.98;letter-spacing:
 @media(max-width:560px){
   #studyScreen{padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
   .topright{gap:7px}
+  .topbar{grid-template-columns:1fr auto 1fr}
+  .toggleWrap{font-size:.78rem}
   .q{font-size:1.42rem}
   .answer{font-size:1.25rem}
   .context{font-size:.96rem}
@@ -162,10 +200,10 @@ h1{margin:0 0 9px;color:#f2f6fb;font-size:2.2rem;line-height:.98;letter-spacing:
 <div id="studyScreen" class="screen hidden">
   <div class="topbar">
     <div class="playerName" id="playerName"></div>
+    <div class="todo" id="todo">150 to go</div>
     <div class="topright">
-      <div class="todo" id="todo">150 to go</div>
       <label class="toggleWrap">
-        <span>Solo cards only</span>
+        <span>Solo only</span>
         <span class="switch">
           <input type="checkbox" id="soloToggle">
           <span class="slider"></span>
