@@ -424,15 +424,19 @@ function relevantPeople(c){
   const question=String(c.q||'').toLowerCase();
   const context=String(c.context||'').toLowerCase();
 
-  function escRx(s){ return s.replace(/[.*+?^${}()|[\]\]/g,'\$&'); }
-  function hasAlias(text,alias){
-    const a=String(alias||'').toLowerCase().trim();
-    if(!a) return false;
+  function normalizeWords(s){
+    return ' ' + String(s||'')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g,' ')
+      .replace(/\s+/g,' ')
+      .trim() + ' ';
+  }
 
-    // Short aliases are dangerous as substrings: Pat in "patriarch", Al in "also", etc.
-    // Require whole-word/name boundaries for every alias.
-    const rx=new RegExp('(^|[^a-z0-9])'+escRx(a)+'(?=$|[^a-z0-9])','i');
-    return rx.test(text);
+  function hasAlias(text,alias){
+    const nt=normalizeWords(text);
+    const na=normalizeWords(alias).trim();
+    if(!na) return false;
+    return nt.includes(' '+na+' ');
   }
 
   const scored=[];
@@ -488,6 +492,7 @@ function relevantPeople(c){
 
   return scored.slice(0,2).map(x=>x.p);
 }
+
 function renderPeople(c){
   const box=$('#peopleReveal');
   const matches=relevantPeople(c);
