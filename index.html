@@ -259,6 +259,21 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
   color:#28566d;border-radius:10px;padding:7px 10px;font-weight:800
 }
 
+
+.card.binAnimating{
+  animation:binFly .34s cubic-bezier(.4,0,.2,1) forwards;
+  transform-origin:92% 4%;
+  pointer-events:none;
+}
+@keyframes binFly{
+  0%{transform:translate(0,0) scale(1);opacity:1}
+  55%{transform:translate(16px,-28px) scale(.86);opacity:.82}
+  100%{transform:translate(110px,-150px) scale(.18);opacity:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .card.binAnimating{animation-duration:.01ms}
+}
+
 </style>
 </head>
 <body>
@@ -409,6 +424,17 @@ function relevantPeople(c){
   const question=String(c.q||'').toLowerCase();
   const context=String(c.context||'').toLowerCase();
 
+  function escRx(s){ return s.replace(/[.*+?^${}()|[\]\]/g,'\$&'); }
+  function hasAlias(text,alias){
+    const a=String(alias||'').toLowerCase().trim();
+    if(!a) return false;
+
+    // Short aliases are dangerous as substrings: Pat in "patriarch", Al in "also", etc.
+    // Require whole-word/name boundaries for every alias.
+    const rx=new RegExp('(^|[^a-z0-9])'+escRx(a)+'(?=$|[^a-z0-9])','i');
+    return rx.test(text);
+  }
+
   const scored=[];
 
   PEOPLE.forEach(p=>{
@@ -417,30 +443,27 @@ function relevantPeople(c){
     let bestAliasLen=0;
 
     p.aliases.forEach(alias=>{
-      const a=alias.toLowerCase();
+      const a=String(alias||'').toLowerCase().trim();
       if(!a) return;
 
-      // Longer aliases are more specific and therefore more trustworthy.
-      const specificity = Math.min(3, Math.max(1, Math.floor(a.length/8)));
+      const specificity=Math.min(3,Math.max(1,Math.floor(a.length/8)));
 
-      if(answer.includes(a)){
-        score += 10 + specificity;
-        answerHit = true;
-        bestAliasLen = Math.max(bestAliasLen, a.length);
+      if(hasAlias(answer,a)){
+        score+=10+specificity;
+        answerHit=true;
+        bestAliasLen=Math.max(bestAliasLen,a.length);
       }
-      if(question.includes(a)){
-        score += 4 + specificity;
-        bestAliasLen = Math.max(bestAliasLen, a.length);
+      if(hasAlias(question,a)){
+        score+=4+specificity;
+        bestAliasLen=Math.max(bestAliasLen,a.length);
       }
-      if(context.includes(a)){
-        score += 1 + specificity;
-        bestAliasLen = Math.max(bestAliasLen, a.length);
+      if(hasAlias(context,a)){
+        score+=1+specificity;
+        bestAliasLen=Math.max(bestAliasLen,a.length);
       }
     });
 
-    if(score>0){
-      scored.push({p,score,answerHit,bestAliasLen});
-    }
+    if(score>0) scored.push({p,score,answerHit,bestAliasLen});
   });
 
   scored.sort((a,b)=>
@@ -451,22 +474,18 @@ function relevantPeople(c){
 
   if(!scored.length) return [];
 
-  // If the top person is clearly the answer and substantially more relevant,
-  // show only them. This avoids background characters cluttering the reveal.
   const top=scored[0];
   const second=scored[1];
 
-  if(top.answerHit && (!second || !second.answerHit) && (!second || top.score >= second.score + 4)){
+  if(top.answerHit && (!second || !second.answerHit) && (!second || top.score>=second.score+4)){
     return [top.p];
   }
 
-  // If multiple people are explicitly present in the answer, keep those co-answers.
   const answerPeople=scored.filter(x=>x.answerHit);
   if(answerPeople.length){
     return answerPeople.slice(0,3).map(x=>x.p);
   }
 
-  // Otherwise show only the most relevant one or two.
   return scored.slice(0,2).map(x=>x.p);
 }
 function renderPeople(c){
@@ -489,24 +508,34 @@ function renderPeople(c){
 function binCurrent(){
   const c=current();
   if(!c) return;
-  const s=load();
-  const previousBinned=s.binned.slice();
 
-  undoStack.push({
-    action:'bin',
-    cardId:c.id,
-    previousBinned,
-    queueIds:queue.map(x=>x.id),
-    idx
-  });
+  const cardEl=$('#card');
+  if(cardEl.classList.contains('binAnimating')) return;
 
-  if(!s.binned.includes(c.id)) s.binned.push(c.id);
-  save(s);
+  cardEl.classList.add('binAnimating');
 
-  queue.splice(idx,1);
-  if(idx>=queue.length) idx=0;
-  revealed=false;
-  render();
+  setTimeout(()=>{
+    const s=load();
+    const previousBinned=s.binned.slice();
+
+    undoStack.push({
+      action:'bin',
+      cardId:c.id,
+      previousBinned,
+      queueIds:queue.map(x=>x.id),
+      idx
+    });
+
+    if(!s.binned.includes(c.id)) s.binned.push(c.id);
+    save(s);
+
+    queue.splice(idx,1);
+    if(idx>=queue.length) idx=0;
+    revealed=false;
+
+    cardEl.classList.remove('binAnimating');
+    render();
+  },340);
 }
 
 function renderBin(){
