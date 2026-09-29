@@ -4,19 +4,19 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
 <meta name="theme-color" content="#101114" />
-<title>Emoji Escape — 4 Room Demo v4</title>
+<title>Emoji Escape — 4 Room Demo v5</title>
 <style>
 :root{
   --bg:#101114;--panel:#191b20;--panel2:#23262d;--text:#f6f7f9;--muted:#9ca2ad;
   --cell:42px;--gap:2px;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden;overscroll-behavior:none}
-body{touch-action:manipulation}
+body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 #app{height:100svh;min-height:100%;display:flex;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top) + 7px) 8px calc(env(safe-area-inset-bottom) + 7px);gap:7px}
-.topbar{width:min(100%,580px);display:grid;grid-template-columns:44px 1fr 44px;align-items:center;min-height:40px}
+.topbar{width:min(100%,580px);display:grid;grid-template-columns:40px 32px 1fr 32px 40px;gap:3px;align-items:center;min-height:40px}
 .iconbtn{width:38px;height:38px;border:0;border-radius:12px;background:var(--panel);color:#fff;font-size:21px;display:grid;place-items:center;padding:0}
-.iconbtn:active{transform:scale(.95)}
+.iconbtn:active{transform:scale(.95)}.levelnav{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.035);font-size:22px}
 .heading{text-align:center;line-height:1.05;min-width:0}.levelname{font-size:15px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.levelnum{font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.06em}
 #status{width:min(100%,580px);min-height:45px;padding:8px 14px;border-radius:14px;background:rgba(255,255,255,.055);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;line-height:1.15;color:#f0f1f4;text-align:center;transition:opacity .15s}
 #boardWrap{flex:1;width:100%;display:flex;align-items:center;justify-content:center;min-height:0}
@@ -26,11 +26,11 @@ body{touch-action:manipulation}
 .cell.lake{background:rgba(62,138,190,.08);font-size:calc(var(--cell)*.64)}.cell.lake .emoji{animation:waterBob 1.8s ease-in-out infinite}@keyframes waterBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
 .cell.machine{background:rgba(255,255,255,.034);box-shadow:inset 0 0 0 1px rgba(255,255,255,.022)}
 .operatorGlyph{position:relative;z-index:2;font-size:calc(var(--cell)*.72);font-weight:900;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.8)}
-.cell.slot{box-shadow:inset 0 0 0 1px rgba(202,225,241,.17);background:rgba(202,225,241,.018)}
+.cell.slotActive{box-shadow:inset 0 0 0 1px rgba(214,230,240,.07);background:rgba(214,230,240,.008)}
 .emoji{position:relative;z-index:2;display:block;transform-origin:center;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}.player{z-index:5;animation:playerIn .10s ease-out}@keyframes playerIn{from{transform:scale(.86)}to{transform:scale(1)}}
 .placeable{}.sourceGlow{animation:sourceGlow 1.45s ease-in-out infinite}@keyframes sourceGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 .depleted{opacity:.22}.machineReact{animation:machineReact .27s ease-in-out}@keyframes machineReact{0%,100%{transform:scale(1)}50%{transform:scale(1.16)}}
-.bottomBar{width:min(100%,580px);display:grid;grid-template-columns:108px minmax(0,1fr);gap:8px;align-items:end}.dpad{width:108px;height:108px;display:grid;grid-template-columns:repeat(3,34px);grid-template-rows:repeat(3,34px);gap:3px;align-self:end}.dpad button{border:0;border-radius:10px;background:var(--panel2);color:#fff;font-size:20px;font-weight:800;padding:0;display:grid;place-items:center;touch-action:none;user-select:none;-webkit-user-select:none}.dpad button:active{transform:scale(.92);background:#30343d}.dpad .up{grid-column:2;grid-row:1}.dpad .left{grid-column:1;grid-row:2}.dpad .right{grid-column:3;grid-row:2}.dpad .down{grid-column:2;grid-row:3}.dpadCore{grid-column:2;grid-row:2;border-radius:11px;background:rgba(255,255,255,.035)}.inventoryWrap{width:100%;min-width:0;background:var(--panel);border-radius:16px;padding:8px 9px 9px;box-shadow:0 -1px 0 rgba(255,255,255,.04)}.invLabel{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 3px 6px}#inventory{min-height:48px;display:flex;gap:7px;overflow-x:auto;align-items:center;scrollbar-width:none}#inventory::-webkit-scrollbar{display:none}.invItem{border:0;border-radius:12px;background:var(--panel2);height:46px;min-width:46px;padding:0 8px;color:white;font-size:27px;display:flex;align-items:center;justify-content:center;gap:3px;position:relative}.invItem .count{font-size:11px;font-weight:800;color:#dfe1e6;align-self:flex-end;margin-bottom:7px}.invItem.selected{outline:2px solid rgba(255,255,255,.78);transform:translateY(-2px)}.emptyInv{color:#717680;font-size:13px;padding-left:5px}#hint{font-size:10px;color:#7d828c;text-align:center;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bottomBar{width:min(100%,580px);display:grid;grid-template-columns:108px minmax(0,1fr);gap:8px;align-items:end}.dpad{width:108px;height:108px;display:grid;grid-template-columns:repeat(3,34px);grid-template-rows:repeat(3,34px);gap:3px;align-self:end}.dpad button{border:0;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;border-radius:10px;background:var(--panel2);color:#fff;font-size:20px;font-weight:800;padding:0;display:grid;place-items:center;touch-action:none;user-select:none;-webkit-user-select:none}.dpad button:active{transform:scale(.92);background:#30343d}.dpad .up{grid-column:2;grid-row:1}.dpad .left{grid-column:1;grid-row:2}.dpad .right{grid-column:3;grid-row:2}.dpad .down{grid-column:2;grid-row:3}.dpadCore{grid-column:2;grid-row:2;border-radius:11px;background:rgba(255,255,255,.035)}.inventoryWrap{width:100%;min-width:0;background:var(--panel);border-radius:16px;padding:8px 9px 9px;box-shadow:0 -1px 0 rgba(255,255,255,.04)}.invLabel{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 3px 6px}#inventory{min-height:48px;display:flex;gap:7px;overflow-x:auto;align-items:center;scrollbar-width:none}#inventory::-webkit-scrollbar{display:none}.invItem{border:0;border-radius:12px;background:var(--panel2);height:46px;min-width:46px;padding:0 8px;color:white;font-size:27px;display:flex;align-items:center;justify-content:center;gap:3px;position:relative}.invItem .count{font-size:11px;font-weight:800;color:#dfe1e6;align-self:flex-end;margin-bottom:7px}.invItem.selected{outline:2px solid rgba(255,255,255,.78);transform:translateY(-2px)}.emptyInv{color:#717680;font-size:13px;padding-left:5px}#hint{font-size:10px;color:#7d828c;text-align:center;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fx{position:absolute;z-index:12;display:grid;place-items:center;pointer-events:none;font-size:calc(var(--cell)*.78);line-height:1;left:0;top:0;width:100%;height:100%}.tntPulse{animation:tntPulse .18s ease-in-out 3}@keyframes tntPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.28)}}.boomCenter{animation:boomCenter .28s ease-out forwards}@keyframes boomCenter{0%{transform:scale(.72);opacity:1}45%{transform:scale(1.38);opacity:1}100%{transform:scale(.55);opacity:.08}}.boomOuter{animation:boomOuter .44s ease-out forwards}@keyframes boomOuter{0%{transform:scale(.12);opacity:.12}42%{transform:scale(1.2);opacity:1}100%{transform:scale(.88);opacity:0}}.candleFly{animation:candleFly .28s ease-in forwards}@keyframes candleFly{to{transform:translate(var(--dx),var(--dy)) rotate(38deg) scale(.52);opacity:0}}.chickenHop{animation:chickenHop .20s ease-in-out}@keyframes chickenHop{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}.peck{animation:peck .15s ease-in-out 3}@keyframes peck{0%,100%{transform:rotate(0)}50%{transform:rotate(18deg) translateY(2px)}}.timeFlash{animation:timeFlash .38s ease-out}@keyframes timeFlash{0%{transform:scale(.62) rotate(-12deg);opacity:.18}60%{transform:scale(1.16);opacity:1}100%{transform:scale(1);opacity:1}}.splash{animation:splash .42s ease-out forwards}@keyframes splash{0%{transform:scale(.4);opacity:.2}50%{transform:scale(1.28);opacity:1}100%{transform:scale(.85);opacity:0}}
 .travel{animation:travel var(--dur) linear forwards}@keyframes travel{0%{transform:translate(0,0) scale(1)}100%{transform:translate(var(--tx),var(--ty)) scale(.96)}}
 .doorDissolve .emoji{animation:doorDissolve .62s ease-out forwards}.doorDissolve{animation:doorCellFlash .62s ease-out forwards}@keyframes doorDissolve{0%{transform:scale(1);opacity:1;filter:blur(0) drop-shadow(0 1px 1px rgba(0,0,0,.25))}28%{transform:scale(1.22) rotate(-3deg);opacity:1;filter:blur(0) brightness(1.35)}100%{transform:scale(.52) rotate(9deg);opacity:0;filter:blur(8px) brightness(1.8)}}@keyframes doorCellFlash{0%,100%{background:rgba(255,255,255,.055)}35%{background:rgba(255,255,255,.22)}}.fadeInto{animation:fadeInto .18s ease-in forwards}@keyframes fadeInto{to{transform:translate(var(--tx),var(--ty)) scale(.52);opacity:0}}
@@ -40,7 +40,7 @@ body{touch-action:manipulation}
 </head>
 <body>
 <div id="app">
-  <div class="topbar"><button class="iconbtn" id="helpBtn" aria-label="Help">?</button><div class="heading"><div class="levelname" id="levelName"></div><div class="levelnum" id="levelNum"></div></div><button class="iconbtn" id="resetBtn" aria-label="Reset room">↻</button></div>
+  <div class="topbar"><button class="iconbtn" id="helpBtn" aria-label="Help">?</button><button class="iconbtn levelnav" id="prevLevel" aria-label="Previous room">‹</button><div class="heading"><div class="levelname" id="levelName"></div><div class="levelnum" id="levelNum"></div></div><button class="iconbtn levelnav" id="nextLevel" aria-label="Next room">›</button><button class="iconbtn" id="resetBtn" aria-label="Reset room">↻</button></div>
   <div id="status"></div>
   <div id="boardWrap"><div id="board"></div></div>
   <div class="bottomBar">
@@ -51,7 +51,7 @@ body{touch-action:manipulation}
       <button class="right" data-move="1,0" aria-label="Move right">→</button>
       <button class="down" data-move="0,1" aria-label="Move down">↓</button>
     </div>
-    <div class="inventoryWrap"><div class="invLabel"><span>Inventory</span></div><div id="inventory"></div><div id="hint">Hold arrows to move • walk over objects to collect • select inventory then tap a placement cell</div></div>
+    <div class="inventoryWrap"><div class="invLabel"><span>Inventory</span></div><div id="inventory"></div><div id="hint">Move • collect • use inventory • escape</div></div>
   </div>
 </div>
 <div id="overlayRoot"></div>
@@ -59,7 +59,7 @@ body{touch-action:manipulation}
 (() => {
 'use strict';
 const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, dirs=[[1,0],[-1,0],[0,1],[0,-1]], clone=o=>JSON.parse(JSON.stringify(o));
-const ITEMS={cloudSun:'🌥️',cloud:'☁️',water:'💧',sun:'☀️',rain:'🌧️',rainbow:'🌈',bear:'🐻',thread:'🧵',teddy:'🧸',tnt:'🧨',candle:'🕯️',puff:'💨',egg:'🥚',chick:'🐣',chicken:'🐔',keyNew:'🔑',keyOld:'🗝️',glasses:'👓'};
+const ITEMS={cloudSun:'🌥️',cloud:'☁️',water:'💧',sun:'☀️',rain:'🌧️',rainbow:'🌈',bear:'🐻',thread:'🧵',teddy:'🧸',tnt:'🧨',candle:'🕯️',spark:'✨',puff:'💨',egg:'🥚',chick:'🐣',chicken:'🐔',keyNew:'🔑',keyOld:'🗝️',glasses:'👓'};
 const emojiOf=id=>ITEMS[id]||id;
 
 const LEVELS=[
@@ -84,7 +84,7 @@ const LEVELS=[
     '2,5':{machine:'minus',role:'left'},'4,5':{machine:'minus',role:'right'},
     '6,6':{machine:'plus',role:'left'},'8,6':{machine:'plus',role:'right'}
   },
-  messages:{intro:'Make what the door wants.'}
+  messages:{intro:''}
 },
 {
   name:'Iceworks',wallEmoji:'🪨',button:[7,3],
@@ -106,10 +106,10 @@ const LEVELS=[
   specials:{'3,8':'snow','2,3':'iceWater','8,8':'iceWater','7,3':'button'},
   lakes:['9,3','10,3','9,4','10,4','11,4','9,5','10,5','11,5','9,6','10,6','11,6','9,7','10,7','11,7'],
   extraWalls:['7,1','9,1','7,2','9,2','7,4','7,5','7,6'],
-  messages:{intro:'Some ice never comes back.'}
+  messages:{intro:''}
 },
 {
-  name:'Boiler Yard',wallEmoji:'🪵',button:[8,2],
+  name:'Fire Yard',wallEmoji:'🌵',button:[8,2],
   map:[
     '   ###D###   ',
     '  ##.....##  ',
@@ -123,11 +123,11 @@ const LEVELS=[
     '  ########## '
   ],
   player:[3,8],
-  objects:{'3,7':'ball','9,7':'candle'},
-  specials:{'2,6':'waterSource','2,5':'flame','2,4':'furnaceInput','8,2':'button'},
-  slots:{'2,4':{machine:'furnace',role:'input'}},
+  objects:{'3,7':'ball','9,7':'candle','9,5':'spark'},
+  specials:{'2,6':'woodHearth','8,2':'button'},
+  slots:{'2,5':{machine:'hearth',role:'spark'}},
   extraWalls:['9,4','8,1'],
-  messages:{intro:'Water + heat makes something useful.'}
+  messages:{intro:''}
 },
 {
   name:'Old Future',wallEmoji:'🌲',
@@ -149,7 +149,7 @@ const LEVELS=[
   slots:{'4,5':{machine:'time',role:'left'},'6,5':{machine:'time',role:'right'}},
   breakables:['7,8'],
   caveReward:[9,8,'glasses'],
-  messages:{intro:'Time has a direction.'}
+  messages:{intro:''}
 }
 ];
 
@@ -171,7 +171,7 @@ function parseLevel(def){
   (def.extraWalls||[]).forEach(k=>{walls.add(k);floors.delete(k)});
   lakes.forEach(k=>{floors.delete(k);walls.delete(k)});
   breakables.forEach(k=>{walls.delete(k);floors.add(k)});
-  return{def,width,height,walls,floors,voids,doors,lakes,breakables,player:{x:def.player[0],y:def.player[1]},objects:new Map(Object.entries(def.objects||{})),specials:new Map(Object.entries(def.specials||{})),slots:new Map(Object.entries(def.slots||{})),openDoor:false,sourceReady:new Map(),caveOpened:false};
+  return{def,width,height,walls,floors,voids,doors,lakes,breakables,player:{x:def.player[0],y:def.player[1]},objects:new Map(Object.entries(def.objects||{})),specials:new Map(Object.entries(def.specials||{})),slots:new Map(Object.entries(def.slots||{})),openDoor:false,sourceReady:new Map(),caveOpened:false,hearthLit:false};
 }
 function loadLevel(index,preserveInventory=true){
   state.levelIndex=index;state.level=parseLevel(LEVELS[index]);state.face='🙂';state.selectedItem=null;state.busy=false;state.auto=false;state.roomSerial++;
@@ -193,9 +193,9 @@ function renderBoard(){
     if(l.walls.has(k)||l.breakables.has(k)){cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');cell.innerHTML=`<span class="emoji">${wallEmojiAt(k)}</span>`;board.appendChild(cell);continue}
     cell.classList.add('floor');
     const special=l.specials.get(k),slot=slotAt(k);
-    if(slot&&slot.role!=='output')cell.classList.add('slot')
+    if(slot&&slot.role!=='output'&&isSlotActive(k,slot))cell.classList.add('slotActive')
     if(special==='button')cell.classList.add('button');
-    if(['plus','minus','hourglass','flame'].includes(special))cell.classList.add('machine');
+    if(['plus','minus','hourglass','woodHearth'].includes(special))cell.classList.add('machine');
     if(l.doors.has(k)&&!l.openDoor){cell.classList.add('door');cell.innerHTML='<span class="emoji">🚪</span>'}
     else{
       let underlying='';
@@ -204,7 +204,7 @@ function renderBoard(){
       else if(special==='snow')underlying='❄️';
       else if(special==='iceWater')underlying='💧';
       else if(special==='waterSource')underlying=(l.sourceReady.get(k)===false?'':'💧');
-      else if(special==='flame')underlying='🔥';
+      else if(special==='woodHearth')underlying=l.hearthLit?'🔥':'🪵';
       else if(special==='hourglass')underlying='⏳';
       else if(special==='worm')underlying='🪱';
       else if(special==='button')underlying='🔘';
@@ -220,23 +220,34 @@ function renderInventory(){const inv=$('#inventory');inv.innerHTML='';const entr
 function say(msg,ms=1300){const el=$('#status');clearTimeout(state.statusTimer);el.textContent=msg;el.style.opacity='1';if(ms)state.statusTimer=setTimeout(()=>{el.style.opacity='.72'},ms)}
 function isAdjacent(x1,y1,x2,y2){return Math.abs(x1-x2)+Math.abs(y1-y2)===1}
 function isFloor(x,y){const l=state.level,k=key(x,y);return l.floors.has(k)&&!l.walls.has(k)&&!l.breakables.has(k)&&!l.lakes.has(k)}
-function isMachineCell(x,y){const k=key(x,y),s=state.level.specials.get(k);if((s==='plus'||s==='minus')&&state.level.objects.has(k))return false;return['plus','minus','hourglass','flame'].includes(s)}
+function isMachineCell(x,y){const k=key(x,y),s=state.level.specials.get(k);if((s==='plus'||s==='minus')&&state.level.objects.has(k))return false;return['plus','minus','hourglass','woodHearth'].includes(s)}
 function occupied(x,y){const l=state.level,k=key(x,y);return l.objects.has(k)||(l.player.x===x&&l.player.y===y)}
 function canPlaceSelectedAt(x,y){if(!state.selectedItem||!isFloor(x,y)||occupied(x,y)||state.level.doors.has(key(x,y))||isMachineCell(x,y))return false;const sl=slotAt(key(x,y));if(sl&&sl.role==='output')return false;const sp=state.level.specials.get(key(x,y));if(['snow','iceWater','waterSource','worm','button'].includes(sp))return false;return true}
 function isCollectibleObject(id){return !['iceBlock','ball','chicken'].includes(id)}
 function isPathPassable(x,y,goal=null){
   if(!isFloor(x,y)||isMachineCell(x,y))return false;const l=state.level,k=key(x,y);if(l.doors.has(k)&&!l.openDoor)return false;const obj=l.objects.get(k);if(obj&&!isCollectibleObject(obj))return false;const sp=l.specials.get(k);if(sp==='iceWater'&&state.face!=='🥶')return false;if(sp==='worm')return false;return true;
 }
-function playerNearOperator(machine){
-  const op=findSpecial(machine);if(!op)return false;const p=state.level.player;
-  return isAdjacent(p.x,p.y,op.x,op.y);
+function machineSpecial(machine){return({plus:'plus',minus:'minus',time:'hourglass',hearth:'woodHearth'})[machine]||machine}
+function machineCells(machine){
+  const cells=[];const op=findSpecial(machineSpecial(machine));if(op)cells.push(op);
+  for(const[k,v]of state.level.slots){if(v.machine===machine){const[x,y]=k.split(',').map(Number);cells.push({x,y})}}
+  return cells;
+}
+function playerNearMachineZone(machine){
+  const p=state.level.player;
+  return machineCells(machine).some(c=>Math.abs(p.x-c.x)+Math.abs(p.y-c.y)<=1);
+}
+function isSlotActive(k,slot){
+  if(state.level.objects.has(k))return false;
+  if(slot.machine==='hearth'&&state.level.hearthLit)return false;
+  return playerNearMachineZone(slot.machine);
 }
 function onCellTap(x,y){
   if(Date.now()<state.suppressClickUntil||state.busy)return;
   const p=state.level.player,k=key(x,y),sl=slotAt(k);
   if(!state.selectedItem||!canPlaceSelectedAt(x,y))return;
-  // For + / −, standing beside the operator lets you place on either input side.
-  if(sl&&['plus','minus'].includes(sl.machine)&&playerNearOperator(sl.machine)){placeSelected(x,y);return}
+  // Machine inputs can be filled from anywhere around the local machine cluster.
+  if(sl&&['plus','minus','time','hearth'].includes(sl.machine)&&playerNearMachineZone(sl.machine)){placeSelected(x,y);return}
   if(isAdjacent(p.x,p.y,x,y))placeSelected(x,y);
 }
 
@@ -261,13 +272,10 @@ function moveOne(dx,dy){
   }
   l.player={x:nx,y:ny};
   if(special==='snow'){state.face='🥶';say('🥶',450)}
-  if(special==='waterSource'){collectWaterSource(nk)}
   if(obj==='puff'){l.objects.delete(nk);state.face='😮‍💨';say('😮‍💨',520);renderAll();return true}
   if(obj&&isCollectibleObject(obj)){l.objects.delete(nk);addInv(obj);say(`${emojiOf(obj)}  ADDED`,650)}
   renderAll();return true;
 }
-function collectWaterSource(k){const l=state.level;if(l.sourceReady.get(k)===false)return;l.sourceReady.set(k,false);addInv('water');say('💧  ADDED',600);renderAll();const serial=state.roomSerial;setTimeout(()=>{if(serial!==state.roomSerial)return;l.sourceReady.set(k,true);renderBoard()},1150)}
-
 function pushIce(x,y,dx,dy){
   const l=state.level;let cx=x,cy=y,lakeTarget=null;
   while(true){
@@ -305,19 +313,45 @@ function animateDoorOpen(msg='DOOR OPEN'){
 function placeSelected(x,y){
   const id=state.selectedItem;if(!id||!takeInv(id))return;state.selectedItem=null;const l=state.level,k=key(x,y);l.objects.set(k,id);renderAll();
   if(state.levelIndex===0){checkAlchemyAround(x,y);return}
-  if(state.levelIndex===2){if(id==='water'&&slotAt(k)?.machine==='furnace'){runFurnace(k);return}}
+  if(state.levelIndex===2){if(id==='spark'&&slotAt(k)?.machine==='hearth'){igniteHearth(k);return}}
   if(state.levelIndex===3){if(slotAt(k)?.machine==='time'){runTimeMachine(x,y,id);return}if(id==='candle'||id==='tnt')checkTntIgnition()}
 }
 function checkAlchemyAround(x,y){const l=state.level,slot=slotAt(key(x,y));if(!slot||!['plus','minus'].includes(slot.machine))return;const m=slot.machine,op=findSpecial(m);if(!op)return;const opK=key(op.x,op.y),leftK=slotKeyFor(m,'left'),rightK=slotKeyFor(m,'right');if(!leftK||!rightK||l.objects.has(opK))return;const a=l.objects.get(leftK),b=l.objects.get(rightK);if(!a||!b)return;let result=null;if(m==='minus'&&a==='cloudSun'&&b==='cloud')result='sun';if(m==='plus'){const pair=[a,b].sort().join('+');result=({'cloud+water':'rain','rain+sun':'rainbow','bear+thread':'teddy'})[pair]||null}const cell=getCell(op.x,op.y);cell?.classList.add('machineReact');if(!result){say('NOTHING HAPPENS',700);return}state.busy=true;setTimeout(()=>{l.objects.delete(leftK);l.objects.delete(rightK);l.objects.set(opK,result);state.busy=false;renderAll();spawnEffect(op.x,op.y,emojiOf(result),'timeFlash',340);say(`${emojiOf(a)} ${m==='plus'?'+':'−'} ${emojiOf(b)} → ${emojiOf(result)}`,900)},260)}
 function slotKeyFor(machine,role){for(const[k,v]of state.level.slots){if(v.machine===machine&&v.role===role)return k}return null}
 function findSpecial(type){for(const[k,v]of state.level.specials){if(v===type){const[x,y]=k.split(',').map(Number);return{x,y}}}return null}
 
-function runFurnace(inputK){
-  const l=state.level;if(l.objects.get(inputK)!=='water')return;
-  state.busy=true;const[x,y]=inputK.split(',').map(Number);
-  const cell=getCell(x,y);cell?.classList.add('machineReact');
-  setTimeout(()=>{l.objects.set(inputK,'puff');state.busy=false;renderAll();spawnEffect(x,y,'💨','timeFlash',360)},380)
+function igniteHearth(inputK){
+  const l=state.level;if(l.hearthLit||l.objects.get(inputK)!=='spark')return;
+  const hearth=findSpecial('woodHearth');if(!hearth)return;
+  const[x,y]=inputK.split(',').map(Number),cell=getCell(x,y),em=cell?.querySelector('.emoji');
+  state.busy=true;
+  if(em){em.classList.add('fadeInto');em.style.setProperty('--tx',`${(hearth.x-x)*100}%`);em.style.setProperty('--ty',`${(hearth.y-y)*100}%`)}
+  setTimeout(()=>{l.objects.delete(inputK);l.hearthLit=true;state.busy=false;renderAll();spawnEffect(hearth.x,hearth.y,'🔥','timeFlash',360);startSmokeEmitter()},220)
 }
+function startSmokeEmitter(){
+  const serial=state.roomSerial,l=state.level;
+  const cycle=()=>{if(serial!==state.roomSerial||state.levelIndex!==2||!l.hearthLit)return;emitSmokePuff(serial);setTimeout(cycle,2200)};
+  setTimeout(cycle,520);
+}
+function emitSmokePuff(serial){
+  if(serial!==state.roomSerial||state.levelIndex!==2)return;
+  const l=state.level,h=findSpecial('woodHearth');if(!h)return;
+  let cur={x:h.x,y:h.y-1};
+  const firstK=key(cur.x,cur.y);
+  if(l.player.x===cur.x&&l.player.y===cur.y){state.face='😮‍💨';renderAll();say('😮‍💨',420);return}
+  if(!isFloor(cur.x,cur.y)||l.objects.has(firstK))return;
+  l.objects.set(firstK,'puff');renderBoard();
+  const step=()=>{
+    if(serial!==state.roomSerial||state.levelIndex!==2)return;
+    const ck=key(cur.x,cur.y);if(l.objects.get(ck)!=='puff')return;
+    const next={x:cur.x,y:cur.y-1},nk=key(next.x,next.y);
+    if(l.player.x===next.x&&l.player.y===next.y){l.objects.delete(ck);state.face='😮‍💨';renderAll();say('😮‍💨',420);return}
+    if(!isFloor(next.x,next.y)||l.objects.has(nk)||l.doors.has(nk)||isMachineCell(next.x,next.y)){l.objects.delete(ck);renderBoard();return}
+    l.objects.delete(ck);l.objects.set(nk,'puff');cur=next;renderBoard();setTimeout(step,300);
+  };
+  setTimeout(step,300);
+}
+
 function pushBallWithBreath(x,y,dx,dy){
   const l=state.level;let cx=x,cy=y,steps=0;
   while(steps<3){const nx=cx+dx,ny=cy+dy,nk=key(nx,ny);if(!isFloor(nx,ny)||l.objects.has(nk)||l.doors.has(nk)||isMachineCell(nx,ny))break;cx=nx;cy=ny;steps++}
@@ -339,8 +373,13 @@ function spawnEffect(x,y,emoji,cls,duration){const cell=getCell(x,y);if(!cell)re
 function getCell(x,y){return document.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`)}
 function nextLevel(){if(state.levelIndex<LEVELS.length-1)loadLevel(state.levelIndex+1,true);else finishGame()}
 function finishGame(){state.busy=true;const inv=Object.entries(state.inventory).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">FOUR ROOMS ESCAPED</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{state.inventory={};$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
-function showHelp(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🙂</div><div class="modalTitle">HOW TO PLAY</div><div class="helpText">Use the <b>arrow pad</b> to move 🙂. Tap or hold a direction to keep moving.<br><br>Walk over loose emoji to add them to inventory.<br><br><b>Place an item:</b> tap it in inventory, then tap a valid cell. Beside + or −, either input side can be filled without walking around.<br><br>Faintly outlined cells are places where a machine accepts an object. ↻ resets the room.</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=()=>$('#overlayRoot').innerHTML=''}
+function showHelp(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🙂</div><div class="modalTitle">ESCAPE</div><div class="helpText">Move with the arrows.<br><br>Walk over emoji to collect them. Tap inventory items to use them in the room.<br><br>Escape each room.</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=()=>$('#overlayRoot').innerHTML=''}
 
+function jumpLevel(delta){
+  const ni=(state.levelIndex+delta+LEVELS.length)%LEVELS.length;
+  if(ni===3){if(!hasInv('tnt'))state.inventory.tnt=1;if(!hasInv('candle'))state.inventory.candle=1}
+  loadLevel(ni,true);say(`ROOM ${ni+1}`,450)
+}
 document.querySelectorAll('.dpad button[data-move]').forEach(btn=>{
   let delayTimer=null,repeatTimer=null,activePointer=null;
   const stop=()=>{if(delayTimer)clearTimeout(delayTimer);if(repeatTimer)clearInterval(repeatTimer);delayTimer=repeatTimer=null;activePointer=null};
@@ -352,7 +391,8 @@ document.querySelectorAll('.dpad button[data-move]').forEach(btn=>{
   ['pointerup','pointercancel','lostpointercapture','pointerleave'].forEach(ev=>btn.addEventListener(ev,e=>{if(activePointer===null||e.pointerId===activePointer)stop()}));
   btn.addEventListener('click',e=>e.preventDefault());
 });
-$('#resetBtn').addEventListener('click',resetRoom);$('#helpBtn').addEventListener('click',showHelp);window.addEventListener('resize',()=>{sizeBoard();renderBoard()});window.addEventListener('keydown',e=>{const m={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(m[e.key]){e.preventDefault();moveOne(...m[e.key])}});
+$('#resetBtn').addEventListener('click',resetRoom);$('#helpBtn').addEventListener('click',showHelp);$('#prevLevel').addEventListener('click',()=>jumpLevel(-1));$('#nextLevel').addEventListener('click',()=>jumpLevel(1));window.addEventListener('resize',()=>{sizeBoard();renderBoard()});window.addEventListener('keydown',e=>{const m={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(m[e.key]){e.preventDefault();moveOne(...m[e.key])}});
+document.addEventListener('contextmenu',e=>{if(e.target.closest('#app'))e.preventDefault()});document.addEventListener('selectstart',e=>{if(e.target.closest('#app'))e.preventDefault()});document.addEventListener('dragstart',e=>{if(e.target.closest('#app'))e.preventDefault()});
 loadLevel(0,false);
 })();
 </script>
