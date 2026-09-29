@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
 <meta name="theme-color" content="#101114" />
-<title>Emoji Escape — 4 Room Demo v3</title>
+<title>Emoji Escape — 4 Room Demo v4</title>
 <style>
 :root{
   --bg:#101114;--panel:#191b20;--panel2:#23262d;--text:#f6f7f9;--muted:#9ca2ad;
@@ -24,14 +24,13 @@ body{touch-action:manipulation}
 .cell{width:var(--cell);height:var(--cell);position:relative;display:grid;place-items:center;border-radius:9px;font-size:calc(var(--cell)*.66);line-height:1;background:rgba(255,255,255,.034);overflow:visible}
 .cell.floor{box-shadow:inset 0 0 0 1px rgba(255,255,255,.022)}.cell.void{background:transparent;box-shadow:none;pointer-events:none}.cell.wall{background:rgba(255,255,255,.016);font-size:calc(var(--cell)*.61)}.cell.breakable{background:rgba(255,255,255,.025)}.cell.door{background:rgba(255,255,255,.055)}
 .cell.lake{background:rgba(62,138,190,.08);font-size:calc(var(--cell)*.64)}.cell.lake .emoji{animation:waterBob 1.8s ease-in-out infinite}@keyframes waterBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
-.cell.machine{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.cell.machine{background:rgba(255,255,255,.034);box-shadow:inset 0 0 0 1px rgba(255,255,255,.022)}
 .operatorGlyph{position:relative;z-index:2;font-size:calc(var(--cell)*.72);font-weight:900;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.8)}
-.cell.slot{box-shadow:inset 0 0 0 1px rgba(176,211,235,.22);background:rgba(176,211,235,.025)}
-.cell.button::after{content:"";position:absolute;left:20%;right:20%;bottom:8%;height:4px;border-radius:99px;background:rgba(255,255,255,.16);z-index:0}
+.cell.slot{box-shadow:inset 0 0 0 1px rgba(202,225,241,.17);background:rgba(202,225,241,.018)}
 .emoji{position:relative;z-index:2;display:block;transform-origin:center;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}.player{z-index:5;animation:playerIn .10s ease-out}@keyframes playerIn{from{transform:scale(.86)}to{transform:scale(1)}}
 .placeable{}.sourceGlow{animation:sourceGlow 1.45s ease-in-out infinite}@keyframes sourceGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 .depleted{opacity:.22}.machineReact{animation:machineReact .27s ease-in-out}@keyframes machineReact{0%,100%{transform:scale(1)}50%{transform:scale(1.16)}}
-.bottomBar{width:min(100%,580px);display:grid;grid-template-columns:108px minmax(0,1fr);gap:8px;align-items:end}.dpad{width:108px;height:108px;display:grid;grid-template-columns:repeat(3,34px);grid-template-rows:repeat(3,34px);gap:3px;align-self:end}.dpad button{border:0;border-radius:10px;background:var(--panel2);color:#fff;font-size:20px;font-weight:800;padding:0;display:grid;place-items:center;touch-action:manipulation}.dpad button:active{transform:scale(.92);background:#30343d}.dpad .up{grid-column:2;grid-row:1}.dpad .left{grid-column:1;grid-row:2}.dpad .right{grid-column:3;grid-row:2}.dpad .down{grid-column:2;grid-row:3}.dpadCore{grid-column:2;grid-row:2;border-radius:11px;background:rgba(255,255,255,.035)}.inventoryWrap{width:100%;min-width:0;background:var(--panel);border-radius:16px;padding:8px 9px 9px;box-shadow:0 -1px 0 rgba(255,255,255,.04)}.invLabel{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 3px 6px}#inventory{min-height:48px;display:flex;gap:7px;overflow-x:auto;align-items:center;scrollbar-width:none}#inventory::-webkit-scrollbar{display:none}.invItem{border:0;border-radius:12px;background:var(--panel2);height:46px;min-width:46px;padding:0 8px;color:white;font-size:27px;display:flex;align-items:center;justify-content:center;gap:3px;position:relative}.invItem .count{font-size:11px;font-weight:800;color:#dfe1e6;align-self:flex-end;margin-bottom:7px}.invItem.selected{outline:2px solid rgba(255,255,255,.78);transform:translateY(-2px)}.emptyInv{color:#717680;font-size:13px;padding-left:5px}#hint{font-size:10px;color:#7d828c;text-align:center;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bottomBar{width:min(100%,580px);display:grid;grid-template-columns:108px minmax(0,1fr);gap:8px;align-items:end}.dpad{width:108px;height:108px;display:grid;grid-template-columns:repeat(3,34px);grid-template-rows:repeat(3,34px);gap:3px;align-self:end}.dpad button{border:0;border-radius:10px;background:var(--panel2);color:#fff;font-size:20px;font-weight:800;padding:0;display:grid;place-items:center;touch-action:none;user-select:none;-webkit-user-select:none}.dpad button:active{transform:scale(.92);background:#30343d}.dpad .up{grid-column:2;grid-row:1}.dpad .left{grid-column:1;grid-row:2}.dpad .right{grid-column:3;grid-row:2}.dpad .down{grid-column:2;grid-row:3}.dpadCore{grid-column:2;grid-row:2;border-radius:11px;background:rgba(255,255,255,.035)}.inventoryWrap{width:100%;min-width:0;background:var(--panel);border-radius:16px;padding:8px 9px 9px;box-shadow:0 -1px 0 rgba(255,255,255,.04)}.invLabel{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 3px 6px}#inventory{min-height:48px;display:flex;gap:7px;overflow-x:auto;align-items:center;scrollbar-width:none}#inventory::-webkit-scrollbar{display:none}.invItem{border:0;border-radius:12px;background:var(--panel2);height:46px;min-width:46px;padding:0 8px;color:white;font-size:27px;display:flex;align-items:center;justify-content:center;gap:3px;position:relative}.invItem .count{font-size:11px;font-weight:800;color:#dfe1e6;align-self:flex-end;margin-bottom:7px}.invItem.selected{outline:2px solid rgba(255,255,255,.78);transform:translateY(-2px)}.emptyInv{color:#717680;font-size:13px;padding-left:5px}#hint{font-size:10px;color:#7d828c;text-align:center;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fx{position:absolute;z-index:12;display:grid;place-items:center;pointer-events:none;font-size:calc(var(--cell)*.78);line-height:1;left:0;top:0;width:100%;height:100%}.tntPulse{animation:tntPulse .18s ease-in-out 3}@keyframes tntPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.28)}}.boomCenter{animation:boomCenter .28s ease-out forwards}@keyframes boomCenter{0%{transform:scale(.72);opacity:1}45%{transform:scale(1.38);opacity:1}100%{transform:scale(.55);opacity:.08}}.boomOuter{animation:boomOuter .44s ease-out forwards}@keyframes boomOuter{0%{transform:scale(.12);opacity:.12}42%{transform:scale(1.2);opacity:1}100%{transform:scale(.88);opacity:0}}.candleFly{animation:candleFly .28s ease-in forwards}@keyframes candleFly{to{transform:translate(var(--dx),var(--dy)) rotate(38deg) scale(.52);opacity:0}}.chickenHop{animation:chickenHop .20s ease-in-out}@keyframes chickenHop{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}.peck{animation:peck .15s ease-in-out 3}@keyframes peck{0%,100%{transform:rotate(0)}50%{transform:rotate(18deg) translateY(2px)}}.timeFlash{animation:timeFlash .38s ease-out}@keyframes timeFlash{0%{transform:scale(.62) rotate(-12deg);opacity:.18}60%{transform:scale(1.16);opacity:1}100%{transform:scale(1);opacity:1}}.splash{animation:splash .42s ease-out forwards}@keyframes splash{0%{transform:scale(.4);opacity:.2}50%{transform:scale(1.28);opacity:1}100%{transform:scale(.85);opacity:0}}
 .travel{animation:travel var(--dur) linear forwards}@keyframes travel{0%{transform:translate(0,0) scale(1)}100%{transform:translate(var(--tx),var(--ty)) scale(.96)}}
 .doorDissolve .emoji{animation:doorDissolve .62s ease-out forwards}.doorDissolve{animation:doorCellFlash .62s ease-out forwards}@keyframes doorDissolve{0%{transform:scale(1);opacity:1;filter:blur(0) drop-shadow(0 1px 1px rgba(0,0,0,.25))}28%{transform:scale(1.22) rotate(-3deg);opacity:1;filter:blur(0) brightness(1.35)}100%{transform:scale(.52) rotate(9deg);opacity:0;filter:blur(8px) brightness(1.8)}}@keyframes doorCellFlash{0%,100%{background:rgba(255,255,255,.055)}35%{background:rgba(255,255,255,.22)}}.fadeInto{animation:fadeInto .18s ease-in forwards}@keyframes fadeInto{to{transform:translate(var(--tx),var(--ty)) scale(.52);opacity:0}}
@@ -52,7 +51,7 @@ body{touch-action:manipulation}
       <button class="right" data-move="1,0" aria-label="Move right">→</button>
       <button class="down" data-move="0,1" aria-label="Move down">↓</button>
     </div>
-    <div class="inventoryWrap"><div class="invLabel"><span>Inventory</span></div><div id="inventory"></div><div id="hint">Walk with arrows • walk over objects to collect • select inventory then tap an adjacent cell to place</div></div>
+    <div class="inventoryWrap"><div class="invLabel"><span>Inventory</span></div><div id="inventory"></div><div id="hint">Hold arrows to move • walk over objects to collect • select inventory then tap a placement cell</div></div>
   </div>
 </div>
 <div id="overlayRoot"></div>
@@ -154,7 +153,7 @@ const LEVELS=[
 }
 ];
 
-const state={levelIndex:0,level:null,inventory:{},selectedItem:null,face:'🙂',busy:false,auto:false,statusTimer:null,entryInventory:{},roomSerial:0,suppressClickUntil:0};
+const state={levelIndex:0,level:null,inventory:{},selectedItem:null,face:'🙂',busy:false,auto:false,statusTimer:null,entryInventory:{},roomSerial:0,suppressClickUntil:0,waveEpoch:performance.now(),moveHold:null};
 function addInv(id,n=1){state.inventory[id]=(state.inventory[id]||0)+n;if(state.inventory[id]<=0)delete state.inventory[id];renderInventory()}
 function takeInv(id,n=1){if((state.inventory[id]||0)<n)return false;state.inventory[id]-=n;if(state.inventory[id]<=0){delete state.inventory[id];if(state.selectedItem===id)state.selectedItem=null}renderInventory();return true}
 function hasInv(id){return(state.inventory[id]||0)>0}
@@ -190,7 +189,7 @@ function renderBoard(){
   for(let y=0;y<l.height;y++)for(let x=0;x<l.width;x++){
     const k=key(x,y),cell=document.createElement('div');cell.className='cell';cell.dataset.x=x;cell.dataset.y=y;
     if(l.voids.has(k)){cell.classList.add('void');board.appendChild(cell);continue}
-    if(l.lakes.has(k)){cell.classList.add('lake');cell.innerHTML='<span class="emoji">🌊</span>';board.appendChild(cell);continue}
+    if(l.lakes.has(k)){cell.classList.add('lake');const phase=((performance.now()-state.waveEpoch)+(x*137+y*83))%1800;cell.innerHTML=`<span class="emoji" style="animation-delay:-${phase}ms">🌊</span>`;board.appendChild(cell);continue}
     if(l.walls.has(k)||l.breakables.has(k)){cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');cell.innerHTML=`<span class="emoji">${wallEmojiAt(k)}</span>`;board.appendChild(cell);continue}
     cell.classList.add('floor');
     const special=l.specials.get(k),slot=slotAt(k);
@@ -228,10 +227,17 @@ function isCollectibleObject(id){return !['iceBlock','ball','chicken'].includes(
 function isPathPassable(x,y,goal=null){
   if(!isFloor(x,y)||isMachineCell(x,y))return false;const l=state.level,k=key(x,y);if(l.doors.has(k)&&!l.openDoor)return false;const obj=l.objects.get(k);if(obj&&!isCollectibleObject(obj))return false;const sp=l.specials.get(k);if(sp==='iceWater'&&state.face!=='🥶')return false;if(sp==='worm')return false;return true;
 }
+function playerNearOperator(machine){
+  const op=findSpecial(machine);if(!op)return false;const p=state.level.player;
+  return isAdjacent(p.x,p.y,op.x,op.y);
+}
 function onCellTap(x,y){
   if(Date.now()<state.suppressClickUntil||state.busy)return;
-  const p=state.level.player;
-  if(state.selectedItem&&isAdjacent(p.x,p.y,x,y)&&canPlaceSelectedAt(x,y))placeSelected(x,y);
+  const p=state.level.player,k=key(x,y),sl=slotAt(k);
+  if(!state.selectedItem||!canPlaceSelectedAt(x,y))return;
+  // For + / −, standing beside the operator lets you place on either input side.
+  if(sl&&['plus','minus'].includes(sl.machine)&&playerNearOperator(sl.machine)){placeSelected(x,y);return}
+  if(isAdjacent(p.x,p.y,x,y))placeSelected(x,y);
 }
 
 function moveOne(dx,dy){
@@ -244,7 +250,7 @@ function moveOne(dx,dy){
   }
   const obj=l.objects.get(nk);
   if(obj==='iceBlock'){pushIce(nx,ny,dx,dy);return true}
-  if(obj==='ball'){say('⚽  NEEDS A 💨',900);return false}
+  if(obj==='ball'){if(state.face==='😮‍💨'){pushBallWithBreath(nx,ny,dx,dy);return true}say('⚽  NEEDS 💨',900);return false}
   if(obj==='chicken')return false;
   const special=l.specials.get(nk);
   if(isMachineCell(nx,ny))return false;if(special==='worm')return false;
@@ -256,6 +262,7 @@ function moveOne(dx,dy){
   l.player={x:nx,y:ny};
   if(special==='snow'){state.face='🥶';say('🥶',450)}
   if(special==='waterSource'){collectWaterSource(nk)}
+  if(obj==='puff'){l.objects.delete(nk);state.face='😮‍💨';say('😮‍💨',520);renderAll();return true}
   if(obj&&isCollectibleObject(obj)){l.objects.delete(nk);addInv(obj);say(`${emojiOf(obj)}  ADDED`,650)}
   renderAll();return true;
 }
@@ -298,18 +305,26 @@ function animateDoorOpen(msg='DOOR OPEN'){
 function placeSelected(x,y){
   const id=state.selectedItem;if(!id||!takeInv(id))return;state.selectedItem=null;const l=state.level,k=key(x,y);l.objects.set(k,id);renderAll();
   if(state.levelIndex===0){checkAlchemyAround(x,y);return}
-  if(state.levelIndex===2){if(id==='water'&&slotAt(k)?.machine==='furnace'){runFurnace(k);return}if(id==='puff'){if(tryPuffBall(x,y))return}}
+  if(state.levelIndex===2){if(id==='water'&&slotAt(k)?.machine==='furnace'){runFurnace(k);return}}
   if(state.levelIndex===3){if(slotAt(k)?.machine==='time'){runTimeMachine(x,y,id);return}if(id==='candle'||id==='tnt')checkTntIgnition()}
 }
 function checkAlchemyAround(x,y){const l=state.level,slot=slotAt(key(x,y));if(!slot||!['plus','minus'].includes(slot.machine))return;const m=slot.machine,op=findSpecial(m);if(!op)return;const opK=key(op.x,op.y),leftK=slotKeyFor(m,'left'),rightK=slotKeyFor(m,'right');if(!leftK||!rightK||l.objects.has(opK))return;const a=l.objects.get(leftK),b=l.objects.get(rightK);if(!a||!b)return;let result=null;if(m==='minus'&&a==='cloudSun'&&b==='cloud')result='sun';if(m==='plus'){const pair=[a,b].sort().join('+');result=({'cloud+water':'rain','rain+sun':'rainbow','bear+thread':'teddy'})[pair]||null}const cell=getCell(op.x,op.y);cell?.classList.add('machineReact');if(!result){say('NOTHING HAPPENS',700);return}state.busy=true;setTimeout(()=>{l.objects.delete(leftK);l.objects.delete(rightK);l.objects.set(opK,result);state.busy=false;renderAll();spawnEffect(op.x,op.y,emojiOf(result),'timeFlash',340);say(`${emojiOf(a)} ${m==='plus'?'+':'−'} ${emojiOf(b)} → ${emojiOf(result)}`,900)},260)}
 function slotKeyFor(machine,role){for(const[k,v]of state.level.slots){if(v.machine===machine&&v.role===role)return k}return null}
 function findSpecial(type){for(const[k,v]of state.level.specials){if(v===type){const[x,y]=k.split(',').map(Number);return{x,y}}}return null}
 
-function runFurnace(inputK){const l=state.level;if(l.objects.get(inputK)!=='water')return;state.busy=true;const[x,y]=inputK.split(',').map(Number);say('💧 + 🔥',500);setTimeout(()=>{l.objects.set(inputK,'puff');state.busy=false;renderAll();spawnEffect(x,y,'💨','timeFlash',380);say('💨',500)},420)}
-function tryPuffBall(px,py){const l=state.level;let ball=null;for(const[dx,dy]of dirs){const bx=px+dx,by=py+dy;if(l.objects.get(key(bx,by))==='ball'){ball={x:bx,y:by,dx,dy};break}}if(!ball)return false;let cx=ball.x,cy=ball.y,steps=0;while(steps<3){const nx=cx+ball.dx,ny=cy+ball.dy,nk=key(nx,ny);if(!isFloor(nx,ny)||l.objects.has(nk)||l.doors.has(nk)||isMachineCell(nx,ny)||['waterSource','button'].includes(l.specials.get(nk))&&false)break;cx=nx;cy=ny;steps++}
-  if(!steps){say('BLOCKED',600);return false}
-  state.busy=true;const puffK=key(px,py),ballK=key(ball.x,ball.y);const puffEl=getCell(px,py)?.querySelector('.emoji');if(puffEl){puffEl.classList.add('fadeInto');puffEl.style.setProperty('--tx',`${ball.dx*100}%`);puffEl.style.setProperty('--ty',`${ball.dy*100}%`)}
-  setTimeout(()=>{l.objects.delete(puffK);l.objects.delete(ballK);renderBoard();animateTravel(ball.x,ball.y,cx,cy,'⚽',230);setTimeout(()=>{l.objects.set(key(cx,cy),'ball');state.busy=false;renderAll();updateButtonDoor();say(steps===3?'💨  3 CELLS':`💨  ${steps} CELL${steps===1?'':'S'}`,620)},235)},180);return true;
+function runFurnace(inputK){
+  const l=state.level;if(l.objects.get(inputK)!=='water')return;
+  state.busy=true;const[x,y]=inputK.split(',').map(Number);
+  const cell=getCell(x,y);cell?.classList.add('machineReact');
+  setTimeout(()=>{l.objects.set(inputK,'puff');state.busy=false;renderAll();spawnEffect(x,y,'💨','timeFlash',360)},380)
+}
+function pushBallWithBreath(x,y,dx,dy){
+  const l=state.level;let cx=x,cy=y,steps=0;
+  while(steps<3){const nx=cx+dx,ny=cy+dy,nk=key(nx,ny);if(!isFloor(nx,ny)||l.objects.has(nk)||l.doors.has(nk)||isMachineCell(nx,ny))break;cx=nx;cy=ny;steps++}
+  if(!steps){say('BLOCKED',550);return false}
+  state.face='🙂';state.busy=true;l.objects.delete(key(x,y));renderAll();
+  animateTravel(x,y,cx,cy,'⚽',230);
+  setTimeout(()=>{l.objects.set(key(cx,cy),'ball');state.busy=false;renderAll();updateButtonDoor();say(steps===3?'💨  3 CELLS':`💨  ${steps} CELL${steps===1?'':'S'}`,560)},245);return true;
 }
 function animateTravel(x1,y1,x2,y2,emoji,duration){const cell=getCell(x1,y1);if(!cell)return;const e=document.createElement('span');e.className='fx travel';e.textContent=emoji;e.style.setProperty('--tx',`${(x2-x1)*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell'))+2)}px`);e.style.setProperty('--ty',`${(y2-y1)*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell'))+2)}px`);e.style.setProperty('--dur',`${duration}ms`);cell.appendChild(e);setTimeout(()=>e.remove(),duration+30)}
 
@@ -324,9 +339,19 @@ function spawnEffect(x,y,emoji,cls,duration){const cell=getCell(x,y);if(!cell)re
 function getCell(x,y){return document.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`)}
 function nextLevel(){if(state.levelIndex<LEVELS.length-1)loadLevel(state.levelIndex+1,true);else finishGame()}
 function finishGame(){state.busy=true;const inv=Object.entries(state.inventory).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">FOUR ROOMS ESCAPED</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{state.inventory={};$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
-function showHelp(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🙂</div><div class="modalTitle">HOW TO PLAY</div><div class="helpText">Use the <b>arrow pad</b> to move 🙂 one cell at a time.<br><br>Walk over loose emoji to add them to inventory.<br><br><b>Place an item:</b> tap it in inventory, then tap an adjacent empty cell.<br><br>Faintly outlined cells are places where a machine accepts an object. ↻ resets the room.</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=()=>$('#overlayRoot').innerHTML=''}
+function showHelp(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🙂</div><div class="modalTitle">HOW TO PLAY</div><div class="helpText">Use the <b>arrow pad</b> to move 🙂. Tap or hold a direction to keep moving.<br><br>Walk over loose emoji to add them to inventory.<br><br><b>Place an item:</b> tap it in inventory, then tap a valid cell. Beside + or −, either input side can be filled without walking around.<br><br>Faintly outlined cells are places where a machine accepts an object. ↻ resets the room.</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=()=>$('#overlayRoot').innerHTML=''}
 
-document.querySelectorAll('.dpad button[data-move]').forEach(btn=>btn.addEventListener('click',()=>{if(state.busy)return;const[dx,dy]=btn.dataset.move.split(',').map(Number);moveOne(dx,dy)}));
+document.querySelectorAll('.dpad button[data-move]').forEach(btn=>{
+  let delayTimer=null,repeatTimer=null,activePointer=null;
+  const stop=()=>{if(delayTimer)clearTimeout(delayTimer);if(repeatTimer)clearInterval(repeatTimer);delayTimer=repeatTimer=null;activePointer=null};
+  btn.addEventListener('pointerdown',e=>{
+    e.preventDefault();stop();activePointer=e.pointerId;try{btn.setPointerCapture(e.pointerId)}catch(_){ }
+    const[dx,dy]=btn.dataset.move.split(',').map(Number);if(!state.busy)moveOne(dx,dy);
+    delayTimer=setTimeout(()=>{repeatTimer=setInterval(()=>{if(!state.busy)moveOne(dx,dy)},115)},260);
+  });
+  ['pointerup','pointercancel','lostpointercapture','pointerleave'].forEach(ev=>btn.addEventListener(ev,e=>{if(activePointer===null||e.pointerId===activePointer)stop()}));
+  btn.addEventListener('click',e=>e.preventDefault());
+});
 $('#resetBtn').addEventListener('click',resetRoom);$('#helpBtn').addEventListener('click',showHelp);window.addEventListener('resize',()=>{sizeBoard();renderBoard()});window.addEventListener('keydown',e=>{const m={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(m[e.key]){e.preventDefault();moveOne(...m[e.key])}});
 loadLevel(0,false);
 })();
