@@ -414,6 +414,19 @@ function findAgentPath(start,goal){const l=state.level,q=[start],came=new Map([[
 
 function checkTntIgnition(){const l=state.level;let tnt=null;for(const[k,id]of l.objects)if(id==='tnt'){const[ox,oy]=k.split(',').map(Number);tnt={x:ox,y:oy}}if(!tnt||!hasInv('spark')||!isAdjacent(l.player.x,l.player.y,tnt.x,tnt.y))return;state.busy=true;spawnEffect(tnt.x,tnt.y,'✨','timeFlash',300);getCell(tnt.x,tnt.y)?.querySelector('.emoji')?.classList.add('tntPulse');setTimeout(()=>explodeTnt(tnt.x,tnt.y),620)}
 
+function spawnEffect(x,y,emoji,cls,duration){const cell=getCell(x,y);if(!cell)return;const s=document.createElement('span');s.className=`fx ${cls||''}`;s.textContent=emoji;cell.appendChild(s);setTimeout(()=>s.remove(),duration||400)}
+function getCell(x,y){return document.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`)}
+function nextLevel(){if(state.levelIndex<LEVELS.length-1)loadLevel(state.levelIndex+1,true);else finishGame()}
+function finishGame(){state.busy=true;const inv=Object.entries(state.inventory).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">SIX ROOMS ESCAPED</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{state.inventory={};$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
+function showHelp(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🙂</div><div class="modalTitle">ESCAPE</div><div class="helpText">Move with the arrows.<br><br>Walk over emoji to collect them. Tap inventory items to use them in the room.<br><br>Escape each room.</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=()=>$('#overlayRoot').innerHTML=''}
+function jumpLevel(delta){
+  const ni=(state.levelIndex+delta+LEVELS.length)%LEVELS.length;
+  if(ni>=3&&!hasInv('spark'))state.inventory.spark=1;
+  if(ni===4&&!hasInv('glasses'))state.inventory.glasses=1;
+  if(ni===5&&!hasInv('pin'))state.inventory.pin=1;
+  loadLevel(ni,true);say(`ROOM ${ni+1}`,450)
+}
+
 document.querySelectorAll('.dpad button[data-move]').forEach(btn=>{
   let delayTimer=null,repeatTimer=null,activePointer=null;
   const stop=()=>{if(delayTimer)clearTimeout(delayTimer);if(repeatTimer)clearInterval(repeatTimer);delayTimer=repeatTimer=null;activePointer=null};
