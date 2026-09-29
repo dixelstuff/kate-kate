@@ -4,13 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
 <meta name="theme-color" content="#101114" />
-<title>Emoji Escape — 6 Room Demo v9</title>
+<title>Emoji Escape — 6 Room Demo v10</title>
 <style>
 :root{
   --bg:#101114;--panel:#191b20;--panel2:#23262d;--text:#f6f7f9;--muted:#9ca2ad;
   --cell:42px;--gap:2px;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;touch-action:manipulation}
 html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden;overscroll-behavior:none}
 body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 #app{height:100svh;min-height:100%;display:flex;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top) + 7px) 8px calc(env(safe-area-inset-bottom) + 7px);gap:7px}
@@ -48,7 +48,7 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .modalClose{position:absolute;right:14px;top:12px;border:0;background:transparent;color:#ddd;font-size:28px;line-height:1;padding:4px}.modalCard{position:relative}.pinSlots{display:flex;justify-content:center;gap:10px;margin:12px 0 10px}.pinSlot{width:48px;height:52px;border-radius:10px;background:#111318;display:grid;place-items:center;font-size:24px;font-weight:850}.pinInput{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;border:0;border-radius:14px;background:#111318;color:#fff;font-size:24px;font-weight:850;letter-spacing:.28em;text-align:center;text-transform:uppercase;outline:none;margin:6px 0 12px;padding-left:.28em}
 .pinHint{min-height:22px;color:#aeb3bc;font-size:12px;margin-bottom:8px}
 
-.modal{position:fixed;inset:0;background:rgba(4,5,6,.82);backdrop-filter:blur(8px);z-index:50;display:grid;place-items:center;padding:24px}.modalCard{width:min(100%,420px);background:#202329;border-radius:24px;padding:25px 20px;text-align:center}.modalBig{font-size:48px;margin-bottom:8px}.modalTitle{font-size:23px;font-weight:850;margin-bottom:7px}.modalText{font-size:14px;color:#bfc3ca;line-height:1.45;margin-bottom:18px}.primary{border:0;border-radius:14px;background:#f2f3f5;color:#111318;height:48px;padding:0 22px;font-size:16px;font-weight:800;width:100%}.helpText{text-align:left;font-size:14px;line-height:1.55;color:#d0d3d9}.helpText b{color:white}
+.modal{position:fixed;inset:0;background:rgba(4,5,6,.82);backdrop-filter:blur(8px);z-index:50;display:grid;place-items:center;padding:24px}.modalCard{width:min(100%,420px);background:#202329;border-radius:24px;padding:25px 20px;text-align:center}.modalBig{font-size:48px;margin-bottom:8px}.modalTitle{font-size:23px;font-weight:850;margin-bottom:7px}.modalText{font-size:14px;color:#bfc3ca;line-height:1.45;margin-bottom:18px}.primary{border:0;border-radius:14px;background:#f2f3f5;color:#111318;height:48px;padding:0 22px;font-size:16px;font-weight:800;width:100%;margin-top:12px}.helpText{text-align:left;font-size:14px;line-height:1.55;color:#d0d3d9}.helpText b{color:white}
 @media (max-height:700px){#app{gap:5px;padding-top:calc(env(safe-area-inset-top) + 4px)}#status{min-height:38px;font-size:13px;padding:6px 11px}.bottomBar{grid-template-columns:96px minmax(0,1fr)}.dpad{width:96px;height:96px;grid-template-columns:repeat(3,30px);grid-template-rows:repeat(3,30px)}.inventoryWrap{padding-top:6px;padding-bottom:6px}.invItem{height:42px;min-width:42px;font-size:25px}#hint{display:none}}
 </style>
 </head>
@@ -65,7 +65,7 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
       <button class="right" data-move="1,0" aria-label="Move right">→</button>
       <button class="down" data-move="0,1" aria-label="Move down">↓</button>
     </div>
-    <div class="inventoryWrap"><div class="invLabel"><span>Inventory</span></div><div id="inventory"></div><div id="hint">Move • collect • use inventory • escape</div></div>
+    <div class="inventoryWrap"><div class="invLabel"><span>Inventory</span></div><div id="inventory"></div></div>
   </div>
 </div>
 <div id="overlayRoot"></div>
@@ -115,21 +115,21 @@ const LEVELS=[
   name:'The Library',wallEmoji:'📗',
   map:['   #######   ','  ##.....### ',' ##......#..#','##.......#..#','#........#..#','#........#..D','#........#..#','##.......#..#',' ##......####','  #########  '],
   player:[2,7],objects:{},specials:{'3,6':'pinDesk','5,3':'clueBook'},pinOutput:[3,6],
-  coloredBooks:{'9,2':'blue','9,3':'red','9,4':'orange','1,3':'red','1,4':'blue','1,5':'orange','2,8':'red','3,8':'orange'},secretBooks:['9,5'],messages:{intro:'🚪 HIDDEN IN THE BOOKS'}
+  coloredBooks:{'5,0':'red','8,0':'blue','10,1':'orange','1,2':'blue','1,3':'orange','0,4':'red','0,6':'blue','1,7':'orange','2,8':'red','5,9':'blue','8,9':'orange','9,4':'blue','9,5':'red','9,6':'orange'},secretBooks:['9,4','9,5','9,6'],messages:{intro:'🚪 HIDDEN IN THE BOOKS'}
 },
 {
   name:'Party Inside',wallEmoji:'🎀',
   map:['  #########  ',' ##.......## ','#.......#####','#...#####...#','#...#...#...#','#...#...#...D','#...#...#...#','#...##.##...#','#.......#####',' ##.......## ','  #########  '],
-  player:[5,1],objects:{'3,2':'flashlight','6,5':'balloon'},specials:{'6,7':'partyGate','2,4':'disco'},
+  player:[5,1],objects:{'3,2':'flashlight','6,5':'balloon'},specials:{'6,7':'partyGate','1,8':'disco'},
   blastWalls:['6,3','4,5','8,5','6,7'],
-  presentLayout:['7,5','9,4','10,4','9,5','11,5','9,6','10,6','5,4','5,6','2,6','3,6','2,8','4,8','5,9','7,9'],
+  presentLayout:['7,5','9,4','10,4','9,5','11,5','9,6','10,6','5,4','5,6','2,6','3,6','2,8','4,8','5,9','7,9'],torchRecoveryPresents:['1,7','3,7'],
   messages:{intro:'PARTY GOERS ONLY  •  🚪 LOCKED'}
 }
 ];
 
-const state={levelIndex:0,level:null,inventory:{},selectedItem:null,face:'🙂',busy:false,auto:false,statusTimer:null,entryInventory:{},roomSerial:0,suppressClickUntil:0,waveEpoch:performance.now(),moveHold:null};
-function addInv(id,n=1){state.inventory[id]=(state.inventory[id]||0)+n;if(state.inventory[id]<=0)delete state.inventory[id];renderInventory()}
-function takeInv(id,n=1){if((state.inventory[id]||0)<n)return false;state.inventory[id]-=n;if(state.inventory[id]<=0){delete state.inventory[id];if(state.selectedItem===id)state.selectedItem=null}renderInventory();return true}
+const state={levelIndex:0,level:null,inventory:{},invOrder:[],selectedItem:null,face:'🙂',busy:false,auto:false,statusTimer:null,entryInventory:{},roomSerial:0,suppressClickUntil:0,waveEpoch:performance.now(),moveHold:null};
+function addInv(id,n=1){state.inventory[id]=(state.inventory[id]||0)+n;if(state.inventory[id]<=0){delete state.inventory[id];state.invOrder=state.invOrder.filter(v=>v!==id)}else{state.invOrder=state.invOrder.filter(v=>v!==id);state.invOrder.unshift(id)}renderInventory()}
+function takeInv(id,n=1){if((state.inventory[id]||0)<n)return false;state.inventory[id]-=n;if(state.inventory[id]<=0){delete state.inventory[id];state.invOrder=state.invOrder.filter(v=>v!==id);if(state.selectedItem===id)state.selectedItem=null}renderInventory();return true}
 function hasInv(id){return(state.inventory[id]||0)>0}
 
 function parseLevel(def){
@@ -149,11 +149,11 @@ function parseLevel(def){
 }
 function loadLevel(index,preserveInventory=true){
   state.levelIndex=index;state.level=parseLevel(LEVELS[index]);state.face='🙂';state.selectedItem=null;state.busy=false;state.auto=false;state.roomSerial++;
-  if(!preserveInventory)state.inventory={};state.entryInventory=clone(state.inventory);
+  if(!preserveInventory){state.inventory={};state.invOrder=[]}state.entryInventory=clone(state.inventory);state.entryInvOrder=[...state.invOrder];
   $('#levelName').textContent=LEVELS[index].name;$('#levelNum').textContent=`ROOM ${index+1} / ${LEVELS.length}`;
   sizeBoard();renderAll();say(LEVELS[index].messages?.intro||'',1800);
 }
-function resetRoom(){if(state.levelIndex===5&&state.level.partyPopped&&state.level.postPopSnapshot){const l=state.level,s=l.postPopSnapshot;l.objects=new Map(s.objects);l.walls=new Set(s.walls);l.floors=new Set(s.floors);l.specials=new Map(s.specials);l.player={...s.player};l.openDoor=true;l.partyReady=true;l.partyPopped=true;l.torchOn=false;state.inventory=clone(s.inventory);state.face='🥳';state.selectedItem=null;state.busy=false;renderAll();say('PRESENTS RESET',700);return}state.inventory=clone(state.entryInventory);loadLevel(state.levelIndex,true);say('ROOM RESET',850)}
+function resetRoom(){if(state.levelIndex===5&&state.level.partyPopped&&state.level.postPopSnapshot){const l=state.level,s=l.postPopSnapshot;l.objects=new Map(s.objects);l.walls=new Set(s.walls);l.floors=new Set(s.floors);l.specials=new Map(s.specials);l.player={...s.player};l.openDoor=true;l.partyReady=true;l.partyPopped=true;l.torchOn=false;state.inventory=clone(s.inventory);state.invOrder=[...(s.invOrder||Object.keys(s.inventory))];state.face='🥳';state.selectedItem=null;state.busy=false;renderAll();say('PRESENTS RESET',700);return}state.inventory=clone(state.entryInventory);state.invOrder=[...(state.entryInvOrder||Object.keys(state.inventory))];loadLevel(state.levelIndex,true);say('ROOM RESET',850)}
 function sizeBoard(){const l=state.level;if(!l)return;const maxW=Math.min(window.innerWidth-16,580),reserved=245,maxH=Math.max(250,window.innerHeight-reserved);const cell=Math.floor(Math.min(48,(maxW-(l.width-1)*2)/l.width,(maxH-(l.height-1)*2)/l.height));document.documentElement.style.setProperty('--cell',`${Math.max(24,cell)}px`);$('#board').style.gridTemplateColumns=`repeat(${l.width},var(--cell))`;$('#board').style.gridTemplateRows=`repeat(${l.height},var(--cell))`}
 function renderAll(){renderBoard();renderInventory()}
 function wallEmojiAt(k){return state.level.breakables.has(k)?'🪨':state.level.def.wallEmoji}
@@ -188,6 +188,7 @@ function renderBoard(){
       else if(special==='clueBook')underlying='📖';
       else if(special==='partyGate')underlying=l.partyPopped?'🎁':'🎟️';
       else if(special==='disco'){underlying='🪩';if(l.partyReady)cell.classList.add('discoOn')}
+      else if(special==='chair')underlying='🪑';
       if(underlying)cell.innerHTML=`<span class="emoji ${['snow','chili','waterSource'].includes(special)?'sourceGlow':''}">${underlying}</span>`;
       const obj=l.objects.get(k);
       if(obj){const em=obj==='ball'?'⚽':obj==='iceBlock'?'🧊':emojiOf(obj);cell.innerHTML=`<span class="emoji">${em}</span>`}
@@ -201,10 +202,10 @@ function renderTorchBeam(){
   const l=state.level;if(!l.torchOn)return;let fx=null;for(const[k,id]of l.objects)if(id==='flashlight'){const[x,y]=k.split(',').map(Number);fx={x,y};break}if(!fx)return;
   const cells=[];let x=fx.x-1,y=fx.y+1;while(x>=0&&y<l.height){const k=key(x,y);if(l.walls.has(k)||l.breakables.has(k)||(l.doors.has(k)&&!l.openDoor))break;cells.push({x,y});if(l.specials.get(k)==='disco')break;x--;y++}if(!cells.length)return;
   const board=$('#board'),cell=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell')),step=cell+2,last=cells[cells.length-1];
-  const ox=fx.x*step+cell*.24,oy=fx.y*step+cell*.76,ex=last.x*step+cell*.5,ey=last.y*step+cell*.5,dx=ex-ox,dy=ey-oy;
+  const ox=fx.x*step+cell*.24-1,oy=fx.y*step+cell*.76,ex=last.x*step+cell*.5,ey=last.y*step+cell*.5,dx=ex-ox,dy=ey-oy;
   const line=document.createElement('div');line.id='beamLine';line.style.left=`${ox}px`;line.style.top=`${oy}px`;line.style.width=`${Math.hypot(dx,dy)}px`;line.style.transform=`rotate(${Math.atan2(dy,dx)*180/Math.PI}deg)`;board.appendChild(line)
 }
-function renderInventory(){const inv=$('#inventory');inv.innerHTML='';const entries=Object.entries(state.inventory).filter(([,n])=>n>0);if(!entries.length){inv.innerHTML='<div class="emptyInv">empty</div>';return}entries.forEach(([id,n])=>{const b=document.createElement('button');b.className='invItem'+(state.selectedItem===id?' selected':'');b.innerHTML=`<span>${emojiOf(id)}</span>${n>1?`<span class="count">×${n}</span>`:''}`;b.addEventListener('click',()=>{if(state.busy)return;state.selectedItem=state.selectedItem===id?null:id;renderAll()});inv.appendChild(b)})}
+function renderInventory(){const inv=$('#inventory');inv.innerHTML='';const ids=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))];const entries=ids.filter(id=>(state.inventory[id]||0)>0).map(id=>[id,state.inventory[id]]);if(!entries.length){inv.innerHTML='<div class="emptyInv">empty</div>';return}entries.forEach(([id,n])=>{const b=document.createElement('button');b.className='invItem'+(state.selectedItem===id?' selected':'');b.innerHTML=`<span>${emojiOf(id)}</span>${n>1?`<span class="count">×${n}</span>`:''}`;b.addEventListener('click',()=>{if(state.busy)return;state.selectedItem=state.selectedItem===id?null:id;renderAll()});inv.appendChild(b)})}
 function say(msg,ms=1300){const el=$('#status');clearTimeout(state.statusTimer);el.textContent=msg;el.style.opacity='1';if(ms)state.statusTimer=setTimeout(()=>{el.style.opacity='0'},ms)}
 function isAdjacent(x1,y1,x2,y2){return Math.abs(x1-x2)+Math.abs(y1-y2)===1}
 function isFloor(x,y){const l=state.level,k=key(x,y);return l.floors.has(k)&&!l.walls.has(k)&&!l.breakables.has(k)&&!l.lakes.has(k)}
@@ -217,10 +218,10 @@ function canPlaceSelectedAt(x,y){
     if(state.levelIndex===3&&k===getTntInputKey()&&isTntInputActive())return true;
     return false;
   }
-  if(sl&&sl.role==='output')return false;if(['snow','chili','iceWater','waterSource','worm','button','pinDesk','clueBook','partyGate','disco'].includes(sp))return false;return true
+  if(sl&&sl.role==='output')return false;if(['snow','chili','iceWater','waterSource','worm','button','pinDesk','clueBook','partyGate','disco','chair'].includes(sp))return false;return true
 }
 function isCollectibleObject(id){return !['iceBlock','ball','chicken','balloon','present'].includes(id)}
-function isSolidSpecial(sp){return ['pinDesk','clueBook','disco'].includes(sp)}
+function isSolidSpecial(sp){return ['pinDesk','clueBook','disco','chair'].includes(sp)}
 function isPathPassable(x,y,goal=null){
   if(!isFloor(x,y)||isMachineCell(x,y))return false;const l=state.level,k=key(x,y);if(l.doors.has(k)&&!l.openDoor)return false;const obj=l.objects.get(k);if(obj&&!isCollectibleObject(obj))return false;const sp=l.specials.get(k);if(sp==='iceWater'&&state.face!=='🥶')return false;if(sp==='worm'||isSolidSpecial(sp))return false;if(sp==='partyGate'&&state.face!=='🥳')return false;return true;
 }
@@ -283,7 +284,7 @@ function moveOne(dx,dy){
   const special=l.specials.get(nk);
   if(special==='pinDesk'){if(l.pinSolved){addInv('pin');l.specials.delete(nk);say('📌  ADDED',650);renderAll();return false}openPinModal();return false}
   if(special==='clueBook'){if(hasInv('glasses')){state.face='🤓';renderAll()}readLibraryClue();return false}
-  if(special==='disco')return false;
+  if(special==='disco'||special==='chair')return false;
   if(special==='partyGate'&&l.partyPopped)return false;
   if(special==='partyGate'&&state.face!=='🥳'){say('PARTY GOERS ONLY',1500);return false}
   if(isMachineCell(nx,ny))return false;if(special==='worm')return false;
@@ -302,6 +303,7 @@ function moveOne(dx,dy){
     else if(state.face==='🙂'){state.face='🥵';say('🥵',450)}
   }
   if(obj==='puff'){l.objects.delete(nk);state.face='😮‍💨';say('😮‍💨',520);renderAll();return true}
+  if(obj==='flashlight'&&state.levelIndex===5){l.objects.delete(nk);addInv('flashlight');if(l.partyReady&&!l.partyPopped){l.partyReady=false;l.torchOn=false;state.face='🙂';say('🔦  DISCO OFF',700)}else say('🔦  ADDED',650);updateContextStates();renderAll();return true}
   if(obj&&isCollectibleObject(obj)){l.objects.delete(nk);addInv(obj);say(`${emojiOf(obj)}  ADDED`,650)}
   updateContextStates();renderAll();return true;
 }
@@ -369,13 +371,16 @@ function returnAlchemyInputs(leftK,rightK,a,b,cell){
 function openPinModal(){
   const l=state.level;if(l.pinSolved){say('📌',500);return}const hint=l.pinAttempts>=3?'READ IT LITERALLY.':'';
   $('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalTitle">ENTER PIN</div><div class="pinSlots"><div class="pinSlot">_</div><div class="pinSlot">_</div><div class="pinSlot">_</div></div><input id="pinEntry" class="pinInput" maxlength="3" autocomplete="off" autocapitalize="characters" spellcheck="false"><div class="pinHint">${hint}</div><button class="primary" id="pinGo">ENTER</button></div></div>`;
-  const input=$('#pinEntry'),slots=[...document.querySelectorAll('.pinSlot')];const redraw=()=>{const v=(input.value||'').toUpperCase();slots.forEach((e,i)=>e.textContent=v[i]||'_')};setTimeout(()=>input.focus(),80);document.querySelector('.modalCard').onclick=()=>input.focus();$('#modalX').onclick=e=>{e.stopPropagation();$('#overlayRoot').innerHTML=''};
+  const input=$('#pinEntry'),slots=[...document.querySelectorAll('.pinSlot')];const redraw=()=>{const v=(input.value||'').toUpperCase();slots.forEach((e,i)=>e.textContent=v[i]||'_')};setTimeout(()=>input.focus(),80);document.querySelector('.modalCard').onclick=()=>input.focus();$('#modalX').onclick=e=>{e.stopPropagation();closeOverlay()};bindBackdropClose();
   const submit=()=>{const v=(input.value||'').trim().toUpperCase();if(v==='PIN'){l.pinSolved=true;$('#overlayRoot').innerHTML='';renderAll();const out=l.def.pinOutput;spawnEffect(out[0],out[1],'📌','timeFlash',380);say('📌',700)}else{l.pinAttempts++;input.value='';redraw();slots.forEach(e=>e.animate([{transform:'translateX(0)'},{transform:'translateX(-5px)'},{transform:'translateX(5px)'},{transform:'translateX(0)'}],{duration:220}));$('.pinHint').textContent=l.pinAttempts>=3?'READ IT LITERALLY.':'';input.focus()}};
   input.addEventListener('input',redraw);$('#pinGo').onclick=e=>{e.stopPropagation();submit()};input.addEventListener('keydown',e=>{if(e.key==='Enter')submit()})
 }
-function readLibraryClue(){if(!hasInv('glasses')){say('?#%  ▒▒  @!&',900);return}showBookClue()}
-function showBookClue(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">📚</div><div class="modalText" style="font-size:18px;color:#fff">Nigel felt blue.<br>He read a book and ate two oranges.<br><br>It worked.</div></div></div>`;$('#modalX').onclick=()=>$('#overlayRoot').innerHTML=''}
-function tapLibraryBook(k){const l=state.level,xy=k.split(',').map(Number),cell=getCell(xy[0],xy[1]);cell?.classList.add('bookShake');setTimeout(()=>cell?.classList.remove('bookShake'),260);const color=l.def.coloredBooks[k],target=['blue','red','orange','orange'],i=l.bookSeq.length;if(color===target[i])l.bookSeq.push(color);else l.bookSeq=color===target[0]?[color]:[];if(l.bookSeq.length===target.length){l.bookSeq=[];state.busy=true;setTimeout(()=>{for(const bk of l.def.secretBooks){l.walls.delete(bk);l.floors.add(bk)}state.busy=false;renderAll();spawnEffect(10,2,'✨','timeFlash',420);setTimeout(()=>animateDoorOpen(''),250)},330)}}
+function closeOverlay(){const root=$('#overlayRoot');if(root)root.innerHTML=''}
+function bindBackdropClose(){const modal=document.querySelector('#overlayRoot .modal');if(modal)modal.addEventListener('click',e=>{if(e.target===modal)closeOverlay()})}
+function readLibraryClue(){if(!hasInv('glasses')){showUnreadableBook();return}showBookClue()}
+function showUnreadableBook(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">📖</div><div class="modalTitle">?#% ▒▒ @!&</div><div class="modalText" style="font-size:17px">👓 &nbsp;←&nbsp; ROOM 4</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
+function showBookClue(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">📚</div><div class="modalText" style="font-size:18px;color:#fff">Nigel felt blue.<br>He read a book and ate two oranges.<br><br>It worked.</div><div class="pinHint">TAP SOME BOOKS</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
+function tapLibraryBook(k){const l=state.level,xy=k.split(',').map(Number),cell=getCell(xy[0],xy[1]);cell?.classList.add('bookShake');setTimeout(()=>cell?.classList.remove('bookShake'),260);const color=l.def.coloredBooks[k],target=['blue','red','orange','orange'],i=l.bookSeq.length;if(color===target[i])l.bookSeq.push(color);else l.bookSeq=color===target[0]?[color]:[];if(l.bookSeq.length===target.length){l.bookSeq=[];state.busy=true;for(const bk of l.def.secretBooks){const[a,b]=bk.split(',').map(Number);const c=getCell(a,b);c?.classList.add('shelfSlide')}setTimeout(()=>{for(const bk of l.def.secretBooks){l.walls.delete(bk);l.floors.add(bk)}l.shelfOpened=true;state.busy=false;renderAll();const mid=l.def.secretBooks[1].split(',').map(Number);spawnEffect(mid[0],mid[1],'✨','timeFlash',420);setTimeout(()=>animateDoorOpen(''),250)},380)}}
 function updateContextStates(){const l=state.level;if(state.levelIndex===4){const c=findSpecial('clueBook'),near=c&&isAdjacent(l.player.x,l.player.y,c.x,c.y),next=near&&hasInv('glasses')?'🤓':'🙂';if(state.face!==next){state.face=next;if(next==='🤓')spawnEffect(l.player.x,l.player.y,'🤓','timeFlash',260)}}if(state.levelIndex===5){let fx=null;for(const[k,id]of l.objects)if(id==='flashlight'){const[x,y]=k.split(',').map(Number);fx={x,y};break}l.torchOn=!!(fx&&l.player.x===fx.x+1&&l.player.y===fx.y-1);if(l.torchOn)checkDiscoBeam()}}
 
 function openSecretShelf(x,y){
@@ -399,9 +404,10 @@ function popPartyBalloon(x,y){
     const disco=findSpecial('disco');if(disco){l.specials.delete(key(disco.x,disco.y));spawnEffect(disco.x,disco.y,'✨','timeFlash',360)}l.torchOn=false;
     for(const k of l.def.blastWalls||[]){l.walls.delete(k);l.floors.add(k);l.specials.delete(k)}
     for(const k of l.def.presentLayout||[]){if(l.floors.has(k)&&!l.objects.has(k)&&k!==key(l.player.x,l.player.y))l.objects.set(k,'present')}
-    l.openDoor=true;l.postPopSnapshot={objects:[...l.objects],walls:[...l.walls],floors:[...l.floors],specials:[...l.specials],player:{...l.player},inventory:clone(state.inventory)};state.busy=false;renderAll();
+    for(const k of l.def.torchRecoveryPresents||[]){if(l.floors.has(k)&&!l.objects.has(k)&&k!==key(l.player.x,l.player.y))l.objects.set(k,'present')}
+    l.openDoor=true;l.postPopSnapshot={objects:[...l.objects],walls:[...l.walls],floors:[...l.floors],specials:[...l.specials],player:{...l.player},inventory:clone(state.inventory),invOrder:[...state.invOrder]};state.busy=false;renderAll();
     for(const k of l.def.blastWalls||[]){const[bx,by]=k.split(',').map(Number);spawnEffect(bx,by,'💥','boomOuter',500)}
-    for(const k of l.def.presentLayout||[]){const[px,py]=k.split(',').map(Number);spawnEffect(px,py,'🎁','presentSpawn',360)}spawnEffect(x,y,'🎊','timeFlash',450);say('🚪 OPEN',900)
+    for(const k of [...(l.def.presentLayout||[]),...(l.def.torchRecoveryPresents||[])]){const[px,py]=k.split(',').map(Number);spawnEffect(px,py,'🎁','presentSpawn',360)}spawnEffect(x,y,'🎊','timeFlash',450);say('🚪 OPEN',900)
   },260)
 }
 
@@ -452,7 +458,7 @@ function startChicken(x,y){
   const waypoints=(l.def.chickenDetour||[]).map(k=>{const[a,b]=k.split(',').map(Number);return{x:a,y:b}}).concat([w]);let path=[];
   for(const wp of waypoints){const seg=findAgentPath(cur,wp);if(!seg.length&&!(cur.x===wp.x&&cur.y===wp.y)){state.busy=false;say('🐔  CANNOT REACH 🪱',900);return}path.push(...seg);cur=wp}
   let i=0;cur={x,y};const step=()=>{if(i>=path.length){const wk=key(w.x,w.y);spawnEffect(w.x,w.y,'🐔','peck',560);setTimeout(()=>{l.objects.delete(wk);l.specials.delete(wk);l.objects.set(wk,'keyNew');state.busy=false;renderAll();say('🔑',800)},500);return}const next=path[i++];l.objects.delete(key(cur.x,cur.y));l.objects.set(key(next.x,next.y),'chicken');cur=next;renderAll();getCell(next.x,next.y)?.querySelector('.emoji')?.classList.add('chickenHop');setTimeout(step,330)};
-  setTimeout(()=>{spawnEffect(x,y,'👀','timeFlash',360);setTimeout(step,420)},1050)
+  setTimeout(step,1500)
 }
 function findAgentPath(start,goal){const l=state.level,q=[start],came=new Map([[key(start.x,start.y),null]]);while(q.length){const cur=q.shift();if(cur.x===goal.x&&cur.y===goal.y)break;for(const[dx,dy]of dirs){const nx=cur.x+dx,ny=cur.y+dy,nk=key(nx,ny);if(came.has(nk)||!isFloor(nx,ny)||isMachineCell(nx,ny))continue;if(l.objects.has(nk)&&!(nx===goal.x&&ny===goal.y))continue;came.set(nk,cur);q.push({x:nx,y:ny})}}const gk=key(goal.x,goal.y);if(!came.has(gk))return[];const path=[];let c=goal;while(!(c.x===start.x&&c.y===start.y)){path.unshift(c);c=came.get(key(c.x,c.y))}return path}
 
@@ -469,13 +475,13 @@ function explodeTnt(x,y){
 function spawnEffect(x,y,emoji,cls,duration){const cell=getCell(x,y);if(!cell)return;const s=document.createElement('span');s.className=`fx ${cls||''}`;s.textContent=emoji;cell.appendChild(s);setTimeout(()=>s.remove(),duration||400)}
 function getCell(x,y){return document.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`)}
 function nextLevel(){if(state.levelIndex<LEVELS.length-1)loadLevel(state.levelIndex+1,true);else finishGame()}
-function finishGame(){state.busy=true;const inv=Object.entries(state.inventory).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">SIX ROOMS ESCAPED</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{state.inventory={};$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
-function showHelp(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🙂</div><div class="modalTitle">ESCAPE</div><div class="helpText">Move with the arrows.<br><br>Walk over emoji to collect them. Tap inventory items to use them in the room.<br><br>Escape each room.</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=()=>$('#overlayRoot').innerHTML=''}
+function finishGame(){state.busy=true;const inv=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))].filter(id=>state.inventory[id]>0).map(id=>[id,state.inventory[id]]).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">SIX ROOMS ESCAPED</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{state.inventory={};state.invOrder=[];$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
+function showHelp(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">🙂</div><div class="modalTitle">ESCAPE</div><div class="helpText">Move with the arrows.<br>Walk over items to collect them.<br>Tap inventory items to use them.</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=closeOverlay;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
 function jumpLevel(delta){
   const ni=(state.levelIndex+delta+LEVELS.length)%LEVELS.length;
-  if(ni>=3&&!hasInv('spark'))state.inventory.spark=1;
-  if(ni===4&&!hasInv('glasses'))state.inventory.glasses=1;
-  if(ni===5&&!hasInv('pin'))state.inventory.pin=1;
+  if(ni>=3&&!hasInv('spark'))addInv('spark');
+  if(ni===4&&!hasInv('glasses'))addInv('glasses');
+  if(ni===5&&!hasInv('pin'))addInv('pin');
   loadLevel(ni,true);say(`ROOM ${ni+1}`,450)
 }
 
@@ -491,6 +497,8 @@ document.querySelectorAll('.dpad button[data-move]').forEach(btn=>{
   btn.addEventListener('click',e=>e.preventDefault());
 });
 $('#resetBtn').addEventListener('click',resetRoom);$('#helpBtn').addEventListener('click',showHelp);$('#prevLevel').addEventListener('click',()=>jumpLevel(-1));$('#nextLevel').addEventListener('click',()=>jumpLevel(1));window.addEventListener('resize',()=>{sizeBoard();renderBoard()});window.addEventListener('keydown',e=>{const m={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(m[e.key]){e.preventDefault();moveOne(...m[e.key])}});
+let lastTouchEnd=0;document.addEventListener('touchend',e=>{const now=Date.now();if(now-lastTouchEnd<320)e.preventDefault();lastTouchEnd=now},{passive:false});
+document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 document.addEventListener('contextmenu',e=>{if(e.target.closest('#app'))e.preventDefault()});document.addEventListener('selectstart',e=>{if(e.target.closest('#app'))e.preventDefault()});document.addEventListener('dragstart',e=>{if(e.target.closest('#app'))e.preventDefault()});
 loadLevel(0,false);
 })();
