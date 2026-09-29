@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
 <meta name="theme-color" content="#101114" />
-<title>Emoji Escape — 4 Room Demo v5</title>
+<title>Emoji Escape — 4 Room Demo v6</title>
 <style>
 :root{
   --bg:#101114;--panel:#191b20;--panel2:#23262d;--text:#f6f7f9;--muted:#9ca2ad;
@@ -78,7 +78,7 @@ const LEVELS=[
     '   ######   '
   ],
   player:[2,7],
-  objects:{'2,2':'cloudSun','7,2':'cloud','8,3':'rain','5,7':'bear','8,7':'thread'},
+  objects:{'2,2':'cloudSun','7,2':'cloud','8,3':'rain'},
   specials:{'3,5':'minus','7,6':'plus'},
   slots:{
     '2,5':{machine:'minus',role:'left'},'4,5':{machine:'minus',role:'right'},
@@ -103,7 +103,7 @@ const LEVELS=[
   ],
   player:[4,8],
   objects:{'2,7':'tnt'},
-  specials:{'3,8':'snow','2,3':'iceWater','8,8':'iceWater','7,3':'button'},
+  specials:{'3,8':'snow','5,8':'chili','2,3':'iceWater','8,8':'iceWater','7,3':'button'},
   lakes:['9,3','10,3','9,4','10,4','11,4','9,5','10,5','11,5','9,6','10,6','11,6','9,7','10,7','11,7'],
   extraWalls:['7,1','9,1','7,2','9,2','7,4','7,5','7,6'],
   messages:{intro:''}
@@ -144,7 +144,7 @@ const LEVELS=[
     ' ###########'
   ],
   player:[2,8],
-  objects:{'2,3':'egg'},
+  objects:{'2,3':'egg','9,8':'glasses'},
   specials:{'5,5':'hourglass','8,3':'worm'},
   slots:{'4,5':{machine:'time',role:'left'},'6,5':{machine:'time',role:'right'}},
   breakables:['7,8'],
@@ -202,13 +202,14 @@ function renderBoard(){
       if(special==='plus')cell.innerHTML='<span class="operatorGlyph">+</span>';
       else if(special==='minus')cell.innerHTML='<span class="operatorGlyph">−</span>';
       else if(special==='snow')underlying='❄️';
+      else if(special==='chili')underlying='🌶️';
       else if(special==='iceWater')underlying='💧';
       else if(special==='waterSource')underlying=(l.sourceReady.get(k)===false?'':'💧');
       else if(special==='woodHearth')underlying=l.hearthLit?'🔥':'🪵';
       else if(special==='hourglass')underlying='⏳';
       else if(special==='worm')underlying='🪱';
       else if(special==='button')underlying='🔘';
-      if(underlying)cell.innerHTML=`<span class="emoji ${['snow','waterSource'].includes(special)?'sourceGlow':''}">${underlying}</span>`;
+      if(underlying)cell.innerHTML=`<span class="emoji ${['snow','chili','waterSource'].includes(special)?'sourceGlow':''}">${underlying}</span>`;
       const obj=l.objects.get(k);
       if(obj){const em=obj==='ball'?'⚽':obj==='iceBlock'?'🧊':emojiOf(obj);cell.innerHTML=`<span class="emoji">${em}</span>`}
       if(l.player.x===x&&l.player.y===y)cell.innerHTML=`<span class="emoji player">${state.face}</span>`;
@@ -222,7 +223,7 @@ function isAdjacent(x1,y1,x2,y2){return Math.abs(x1-x2)+Math.abs(y1-y2)===1}
 function isFloor(x,y){const l=state.level,k=key(x,y);return l.floors.has(k)&&!l.walls.has(k)&&!l.breakables.has(k)&&!l.lakes.has(k)}
 function isMachineCell(x,y){const k=key(x,y),s=state.level.specials.get(k);if((s==='plus'||s==='minus')&&state.level.objects.has(k))return false;return['plus','minus','hourglass','woodHearth'].includes(s)}
 function occupied(x,y){const l=state.level,k=key(x,y);return l.objects.has(k)||(l.player.x===x&&l.player.y===y)}
-function canPlaceSelectedAt(x,y){if(!state.selectedItem||!isFloor(x,y)||occupied(x,y)||state.level.doors.has(key(x,y))||isMachineCell(x,y))return false;const sl=slotAt(key(x,y));if(sl&&sl.role==='output')return false;const sp=state.level.specials.get(key(x,y));if(['snow','iceWater','waterSource','worm','button'].includes(sp))return false;return true}
+function canPlaceSelectedAt(x,y){if(!state.selectedItem||!isFloor(x,y)||occupied(x,y)||state.level.doors.has(key(x,y))||isMachineCell(x,y))return false;const sl=slotAt(key(x,y));if(sl&&sl.role==='output')return false;const sp=state.level.specials.get(key(x,y));if(['snow','chili','iceWater','waterSource','worm','button'].includes(sp))return false;return true}
 function isCollectibleObject(id){return !['iceBlock','ball','chicken'].includes(id)}
 function isPathPassable(x,y,goal=null){
   if(!isFloor(x,y)||isMachineCell(x,y))return false;const l=state.level,k=key(x,y);if(l.doors.has(k)&&!l.openDoor)return false;const obj=l.objects.get(k);if(obj&&!isCollectibleObject(obj))return false;const sp=l.specials.get(k);if(sp==='iceWater'&&state.face!=='🥶')return false;if(sp==='worm')return false;return true;
@@ -260,7 +261,15 @@ function moveOne(dx,dy){
     say('🔘  IS HOLDING THE DOOR',1200);return false;
   }
   const obj=l.objects.get(nk);
-  if(obj==='iceBlock'){pushIce(nx,ny,dx,dy);return true}
+  if(obj==='iceBlock'){
+    if(state.face==='🥵'){
+      state.busy=true;l.objects.delete(nk);
+      spawnEffect(nx,ny,'💧','timeFlash',300);
+      setTimeout(()=>{l.player={x:nx,y:ny};state.face='🙂';state.busy=false;renderAll();updateButtonDoor()},190);
+      return true;
+    }
+    pushIce(nx,ny,dx,dy);return true
+  }
   if(obj==='ball'){if(state.face==='😮‍💨'){pushBallWithBreath(nx,ny,dx,dy);return true}say('⚽  NEEDS 💨',900);return false}
   if(obj==='chicken')return false;
   const special=l.specials.get(nk);
@@ -271,7 +280,14 @@ function moveOne(dx,dy){
     l.player={x:nx,y:ny};state.face='🙂';l.objects.set(key(bx,by),'iceBlock');say('🥶 + 💧 → 🧊',700);renderAll();return true;
   }
   l.player={x:nx,y:ny};
-  if(special==='snow'){state.face='🥶';say('🥶',450)}
+  if(special==='snow'){
+    if(state.face==='🥵'){state.face='🙂';say('🙂',320)}
+    else if(state.face==='🙂'){state.face='🥶';say('🥶',450)}
+  }
+  if(special==='chili'){
+    if(state.face==='🥶'){state.face='🙂';say('🙂',320)}
+    else if(state.face==='🙂'){state.face='🥵';say('🥵',450)}
+  }
   if(obj==='puff'){l.objects.delete(nk);state.face='😮‍💨';say('😮‍💨',520);renderAll();return true}
   if(obj&&isCollectibleObject(obj)){l.objects.delete(nk);addInv(obj);say(`${emojiOf(obj)}  ADDED`,650)}
   renderAll();return true;
