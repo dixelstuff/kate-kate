@@ -145,7 +145,7 @@ function parseLevel(def){
   (def.extraWalls||[]).forEach(k=>{walls.add(k);floors.delete(k)});
   lakes.forEach(k=>{floors.delete(k);walls.delete(k)});
   breakables.forEach(k=>{walls.delete(k);floors.add(k)});
-  return{def,width,height,walls,floors,voids,doors,lakes,breakables,player:{x:def.player[0],y:def.player[1]},objects:new Map(Object.entries(def.objects||{})),specials:new Map(Object.entries(def.specials||{})),slots:new Map(Object.entries(def.slots||{})),openDoor:false,sourceReady:new Map(),caveOpened:false,hearthLit:false,shelfOpened:false,libraryClueKnown:false,pinSolved:false,pinAttempts:0,flashDir:def.flashDir?def.flashDir.slice():[1,0],partyReady:false,partyPopped:false,bookSeq:[],torchOn:false,postPopSnapshot:null,tntInput:null};
+  return{def,width,height,walls,floors,voids,doors,lakes,breakables,player:{x:def.player[0],y:def.player[1]},objects:new Map(Object.entries(def.objects||{})),specials:new Map(Object.entries(def.specials||{})),slots:new Map(Object.entries(def.slots||{})),openDoor:false,sourceReady:new Map(),caveOpened:false,hearthLit:false,shelfOpened:false,libraryClueKnown:false,libraryReadCount:0,pinSolved:false,pinAttempts:0,flashDir:def.flashDir?def.flashDir.slice():[1,0],partyReady:false,partyPopped:false,bookSeq:[],torchOn:false,postPopSnapshot:null,tntInput:null};
 }
 function loadLevel(index,preserveInventory=true){
   state.levelIndex=index;state.level=parseLevel(LEVELS[index]);state.face='🙂';state.selectedItem=null;state.busy=false;state.auto=false;state.roomSerial++;
@@ -153,7 +153,7 @@ function loadLevel(index,preserveInventory=true){
   $('#levelName').textContent=LEVELS[index].name;$('#levelNum').textContent=`ROOM ${index+1} / ${LEVELS.length}`;
   sizeBoard();renderAll();say(LEVELS[index].messages?.intro||'',1800);
 }
-function resetRoom(){if(state.levelIndex===5&&state.level.partyPopped&&state.level.postPopSnapshot){const l=state.level,s=l.postPopSnapshot;l.objects=new Map(s.objects);l.walls=new Set(s.walls);l.floors=new Set(s.floors);l.specials=new Map(s.specials);l.player={...s.player};l.openDoor=true;l.partyReady=true;l.partyPopped=true;l.torchOn=false;state.inventory=clone(s.inventory);state.invOrder=[...(s.invOrder||Object.keys(s.inventory))];state.face='🥳';state.selectedItem=null;state.busy=false;renderAll();say('PRESENTS RESET',700);return}state.inventory=clone(state.entryInventory);state.invOrder=[...(state.entryInvOrder||Object.keys(state.inventory))];loadLevel(state.levelIndex,true);say('ROOM RESET',850)}
+function resetRoom(){if(state.levelIndex===5&&state.level.partyPopped&&state.level.postPopSnapshot){const l=state.level,s=l.postPopSnapshot;l.objects=new Map(s.objects);l.walls=new Set(s.walls);l.floors=new Set(s.floors);l.specials=new Map(s.specials);l.player={...s.player};l.openDoor=true;l.partyReady=true;l.partyPopped=true;l.torchOn=false;state.inventory=clone(s.inventory);state.invOrder=[...(s.invOrder||Object.keys(s.inventory))];state.face='🙂';state.selectedItem=null;state.busy=false;renderAll();say('PRESENTS RESET',700);return}state.inventory=clone(state.entryInventory);state.invOrder=[...(state.entryInvOrder||Object.keys(state.inventory))];loadLevel(state.levelIndex,true);say('ROOM RESET',850)}
 function sizeBoard(){const l=state.level;if(!l)return;const maxW=Math.min(window.innerWidth-16,580),reserved=245,maxH=Math.max(250,window.innerHeight-reserved);const cell=Math.floor(Math.min(48,(maxW-(l.width-1)*2)/l.width,(maxH-(l.height-1)*2)/l.height));document.documentElement.style.setProperty('--cell',`${Math.max(24,cell)}px`);$('#board').style.gridTemplateColumns=`repeat(${l.width},var(--cell))`;$('#board').style.gridTemplateRows=`repeat(${l.height},var(--cell))`}
 function renderAll(){renderBoard();renderInventory()}
 function wallEmojiAt(k){return state.level.breakables.has(k)?'🪨':state.level.def.wallEmoji}
@@ -169,7 +169,7 @@ function renderBoard(){
     cell.classList.add('floor');
     const special=l.specials.get(k),slot=slotAt(k);
     if(slot&&slot.role!=='output'&&isSlotActive(k,slot))cell.classList.add('slotActive')
-    if(special==='button')cell.classList.add('button');
+    if(special==='button'){cell.classList.add('button');const pulsePhase=(performance.now()-state.waveEpoch)%1800;cell.style.animationDelay=`-${pulsePhase}ms`;}
     if(['plus','minus','hourglass','woodHearth'].includes(special))cell.classList.add('machine');
     if(l.doors.has(k)&&!l.openDoor){cell.classList.add('door');cell.innerHTML='<span class="emoji">🚪</span>'}
     else{
@@ -202,7 +202,7 @@ function renderTorchBeam(){
   const l=state.level;if(!l.torchOn)return;let fx=null;for(const[k,id]of l.objects)if(id==='flashlight'){const[x,y]=k.split(',').map(Number);fx={x,y};break}if(!fx)return;
   const cells=[];let x=fx.x-1,y=fx.y+1;while(x>=0&&y<l.height){const k=key(x,y);if(l.walls.has(k)||l.breakables.has(k)||(l.doors.has(k)&&!l.openDoor))break;cells.push({x,y});if(l.specials.get(k)==='disco')break;x--;y++}if(!cells.length)return;
   const board=$('#board'),cell=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell')),step=cell+2,last=cells[cells.length-1];
-  const ox=fx.x*step+cell*.24-1,oy=fx.y*step+cell*.76,ex=last.x*step+cell*.5,ey=last.y*step+cell*.5,dx=ex-ox,dy=ey-oy;
+  const ox=fx.x*step+cell*.24-3,oy=fx.y*step+cell*.76,ex=last.x*step+cell*.5,ey=last.y*step+cell*.5,dx=ex-ox,dy=ey-oy;
   const line=document.createElement('div');line.id='beamLine';line.style.left=`${ox}px`;line.style.top=`${oy}px`;line.style.width=`${Math.hypot(dx,dy)}px`;line.style.transform=`rotate(${Math.atan2(dy,dx)*180/Math.PI}deg)`;board.appendChild(line)
 }
 function renderInventory(){const inv=$('#inventory');inv.innerHTML='';const ids=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))];const entries=ids.filter(id=>(state.inventory[id]||0)>0).map(id=>[id,state.inventory[id]]);if(!entries.length){inv.innerHTML='<div class="emptyInv">empty</div>';return}entries.forEach(([id,n])=>{const b=document.createElement('button');b.className='invItem'+(state.selectedItem===id?' selected':'');b.innerHTML=`<span>${emojiOf(id)}</span>${n>1?`<span class="count">×${n}</span>`:''}`;b.addEventListener('click',()=>{if(state.busy)return;state.selectedItem=state.selectedItem===id?null:id;renderAll()});inv.appendChild(b)})}
@@ -280,9 +280,9 @@ function moveOne(dx,dy){
   if(obj==='ball'){if(state.face==='😮‍💨'){pushBallWithBreath(nx,ny,dx,dy);return true}say('⚽  NEEDS 💨',900);return false}
   if(obj==='chicken')return false;
   if(obj==='present'){pushPresent(nx,ny,dx,dy);return true}
-  if(obj==='balloon'){if(!hasInv('pin'))say('PIN NEEDED — LEVEL 5',1700);else say('USE 📌',750);return false}
+  if(obj==='balloon'){if(!hasInv('pin'))say('PIN NEEDED — LEVEL 5',1700);return false}
   const special=l.specials.get(nk);
-  if(special==='pinDesk'){if(l.pinSolved){addInv('pin');l.specials.delete(nk);say('📌  ADDED',650);renderAll();return false}openPinModal();return false}
+  if(special==='pinDesk'){if(l.pinSolved){l.player={x:nx,y:ny};addInv('pin');l.specials.delete(nk);say('📌  ADDED',650);updateContextStates();renderAll();return true}openPinModal();return false}
   if(special==='clueBook'){if(hasInv('glasses')){state.face='🤓';renderAll()}readLibraryClue();return false}
   if(special==='disco'||special==='chair')return false;
   if(special==='partyGate'&&l.partyPopped)return false;
@@ -376,10 +376,10 @@ function openPinModal(){
   input.addEventListener('input',redraw);$('#pinGo').onclick=e=>{e.stopPropagation();submit()};input.addEventListener('keydown',e=>{if(e.key==='Enter')submit()})
 }
 function closeOverlay(){const root=$('#overlayRoot');if(root)root.innerHTML=''}
-function bindBackdropClose(){const modal=document.querySelector('#overlayRoot .modal');if(modal)modal.addEventListener('click',e=>{if(e.target===modal)closeOverlay()})}
+function bindBackdropClose(){const modal=document.querySelector('#overlayRoot .modal');if(!modal)return;const openedAt=Date.now();modal.addEventListener('click',e=>{if(e.target===modal&&Date.now()-openedAt>=420)closeOverlay()})}
 function readLibraryClue(){if(!hasInv('glasses')){showUnreadableBook();return}showBookClue()}
 function showUnreadableBook(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">📖</div><div class="modalTitle">?#% ▒▒ @!&</div><div class="modalText" style="font-size:17px">👓 &nbsp;←&nbsp; ROOM 4</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
-function showBookClue(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">📚</div><div class="modalText" style="font-size:18px;color:#fff">Nigel felt blue.<br>He read a book and ate two oranges.<br><br>It worked.</div><div class="pinHint">TAP SOME BOOKS</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
+function showBookClue(){const l=state.level;l.libraryReadCount=(l.libraryReadCount||0)+1;const hint=l.libraryReadCount>=3?'TAP SOME BOOKS':'';$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">📚</div><div class="modalText" style="font-size:18px;color:#fff">Nigel felt blue.<br>He read a book and ate two oranges.<br><br>It worked.</div><div class="pinHint">${hint}</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
 function tapLibraryBook(k){const l=state.level,xy=k.split(',').map(Number),cell=getCell(xy[0],xy[1]);cell?.classList.add('bookShake');setTimeout(()=>cell?.classList.remove('bookShake'),260);const color=l.def.coloredBooks[k],target=['blue','red','orange','orange'],i=l.bookSeq.length;if(color===target[i])l.bookSeq.push(color);else l.bookSeq=color===target[0]?[color]:[];if(l.bookSeq.length===target.length){l.bookSeq=[];state.busy=true;for(const bk of l.def.secretBooks){const[a,b]=bk.split(',').map(Number);const c=getCell(a,b);c?.classList.add('shelfSlide')}setTimeout(()=>{for(const bk of l.def.secretBooks){l.walls.delete(bk);l.floors.add(bk)}l.shelfOpened=true;state.busy=false;renderAll();const mid=l.def.secretBooks[1].split(',').map(Number);spawnEffect(mid[0],mid[1],'✨','timeFlash',420);setTimeout(()=>animateDoorOpen(''),250)},380)}}
 function updateContextStates(){const l=state.level;if(state.levelIndex===4){const c=findSpecial('clueBook'),near=c&&isAdjacent(l.player.x,l.player.y,c.x,c.y),next=near&&hasInv('glasses')?'🤓':'🙂';if(state.face!==next){state.face=next;if(next==='🤓')spawnEffect(l.player.x,l.player.y,'🤓','timeFlash',260)}}if(state.levelIndex===5){let fx=null;for(const[k,id]of l.objects)if(id==='flashlight'){const[x,y]=k.split(',').map(Number);fx={x,y};break}l.torchOn=!!(fx&&l.player.x===fx.x+1&&l.player.y===fx.y-1);if(l.torchOn)checkDiscoBeam()}}
 
@@ -401,7 +401,7 @@ function popPartyBalloon(x,y){
   const l=state.level;if(state.levelIndex!==5||l.partyPopped||state.busy)return;if(!hasInv('pin')){say('PIN NEEDED — LEVEL 5',1700);return}takeInv('pin');state.selectedItem=null;state.busy=true;getCell(x,y)?.querySelector('.emoji')?.classList.add('balloonPop');
   setTimeout(()=>{
     l.objects.delete(key(x,y));l.partyPopped=true;
-    const disco=findSpecial('disco');if(disco){l.specials.delete(key(disco.x,disco.y));spawnEffect(disco.x,disco.y,'✨','timeFlash',360)}l.torchOn=false;
+    const disco=findSpecial('disco');if(disco){l.specials.delete(key(disco.x,disco.y));spawnEffect(disco.x,disco.y,'✨','timeFlash',360)}l.torchOn=false;state.face='🙂';
     for(const k of l.def.blastWalls||[]){l.walls.delete(k);l.floors.add(k);l.specials.delete(k)}
     for(const k of l.def.presentLayout||[]){if(l.floors.has(k)&&!l.objects.has(k)&&k!==key(l.player.x,l.player.y))l.objects.set(k,'present')}
     for(const k of l.def.torchRecoveryPresents||[]){if(l.floors.has(k)&&!l.objects.has(k)&&k!==key(l.player.x,l.player.y))l.objects.set(k,'present')}
