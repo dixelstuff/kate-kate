@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
 <meta name="theme-color" content="#101114" />
-<title>Emoji Escape — 6 Room Demo v10</title>
+<title>Emoji Escape — 6 Room Demo v12</title>
 <style>
 :root{
   --bg:#101114;--panel:#191b20;--panel2:#23262d;--text:#f6f7f9;--muted:#9ca2ad;
@@ -72,6 +72,9 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 <script>
 (() => {
 'use strict';
+const SAVE_VERSION='v12',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
+// Every prototype build uses a new SAVE_VERSION. Older builds are intentionally ignored/removed.
+try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(SAVE_PREFIX)&&k!==SAVE_KEY)localStorage.removeItem(k)}}catch(_){ }
 const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, dirs=[[1,0],[-1,0],[0,1],[0,-1]], clone=o=>JSON.parse(JSON.stringify(o));
 const ITEMS={cloudSun:'🌥️',cloud:'☁️',water:'💧',sun:'☀️',rain:'🌧️',rainbow:'🌈',tnt:'🧨',spark:'✨',puff:'💨',egg:'🥚',chick:'🐣',chicken:'🐔',keyNew:'🔑',keyOld:'🗝️',glasses:'👓',pin:'📌',flashlight:'🔦',balloon:'🎈',present:'🎁'};
 const emojiOf=id=>ITEMS[id]||id;
@@ -127,7 +130,37 @@ const LEVELS=[
 }
 ];
 
-const state={levelIndex:0,level:null,inventory:{},invOrder:[],selectedItem:null,face:'🙂',busy:false,auto:false,statusTimer:null,entryInventory:{},roomSerial:0,suppressClickUntil:0,waveEpoch:performance.now(),moveHold:null};
+const state={levelIndex:0,level:null,inventory:{},invOrder:[],selectedItem:null,face:'🙂',busy:false,auto:false,statusTimer:null,entryInventory:{},entryInvOrder:[],roomSerial:0,suppressClickUntil:0,waveEpoch:performance.now(),moveHold:null,completed:new Set(),highestReached:0,savedLevels:{},suspendSave:false,saveTimer:null};
+function serializeLevel(l){
+  if(!l)return null;
+  return{
+    walls:[...l.walls],floors:[...l.floors],voids:[...l.voids],doors:[...l.doors],lakes:[...l.lakes],breakables:[...l.breakables],
+    player:{...l.player},objects:[...l.objects].filter(([,id])=>id!=='puff'),specials:[...l.specials],slots:[...l.slots],openDoor:!!l.openDoor,
+    sourceReady:[...l.sourceReady],caveOpened:!!l.caveOpened,hearthLit:!!l.hearthLit,shelfOpened:!!l.shelfOpened,
+    libraryClueKnown:!!l.libraryClueKnown,libraryReadCount:l.libraryReadCount||0,pinSolved:!!l.pinSolved,pinAttempts:l.pinAttempts||0,
+    flashDir:l.flashDir?[...l.flashDir]:[1,0],partyReady:!!l.partyReady,partyPopped:!!l.partyPopped,bookSeq:[...(l.bookSeq||[])],
+    torchOn:!!l.torchOn,postPopSnapshot:l.postPopSnapshot?clone(l.postPopSnapshot):null,tntInput:l.tntInput||null
+  }
+}
+function restoreLevel(def,snap){
+  const l=parseLevel(def);if(!snap)return l;
+  const set=(name)=>{if(Array.isArray(snap[name]))l[name]=new Set(snap[name])},map=(name)=>{if(Array.isArray(snap[name]))l[name]=new Map(snap[name])};
+  ['walls','floors','voids','doors','lakes','breakables'].forEach(set);['objects','specials','slots','sourceReady'].forEach(map);
+  if(snap.player)l.player={...snap.player};
+  for(const k of ['openDoor','caveOpened','hearthLit','shelfOpened','libraryClueKnown','pinSolved','partyReady','partyPopped','torchOn'])if(k in snap)l[k]=!!snap[k];
+  for(const k of ['libraryReadCount','pinAttempts'])if(k in snap)l[k]=snap[k]||0;
+  l.flashDir=Array.isArray(snap.flashDir)?[...snap.flashDir]:l.flashDir;l.bookSeq=Array.isArray(snap.bookSeq)?[...snap.bookSeq]:[];
+  l.postPopSnapshot=snap.postPopSnapshot?clone(snap.postPopSnapshot):null;l.tntInput=snap.tntInput||null;
+  return l
+}
+function progressPayload(){return{version:SAVE_VERSION,currentLevel:state.levelIndex,highestReached:state.highestReached,completed:[...state.completed],inventory:clone(state.inventory),invOrder:[...state.invOrder],face:state.face,entryInventory:clone(state.entryInventory),entryInvOrder:[...state.entryInvOrder],levels:clone(state.savedLevels)}}
+function writeProgress(){if(state.suspendSave)return;try{localStorage.setItem(SAVE_KEY,JSON.stringify(progressPayload()))}catch(_){ }}
+function queueSave(){if(state.suspendSave||!state.level)return;state.savedLevels[state.levelIndex]=serializeLevel(state.level);clearTimeout(state.saveTimer);state.saveTimer=setTimeout(writeProgress,60)}
+function flushSave(){if(state.suspendSave||!state.level)return;state.savedLevels[state.levelIndex]=serializeLevel(state.level);clearTimeout(state.saveTimer);writeProgress()}
+function readProgress(){try{const raw=localStorage.getItem(SAVE_KEY);if(!raw)return null;const p=JSON.parse(raw);return p&&p.version===SAVE_VERSION?p:null}catch(_){return null}}
+function clearProgress(){try{localStorage.removeItem(SAVE_KEY)}catch(_){ }}
+function markLevelComplete(index){state.completed.add(index);state.highestReached=Math.max(state.highestReached,index+1);state.savedLevels[index]=serializeLevel(state.level);writeProgress()}
+function updateNavButtons(){const prev=$('#prevLevel'),next=$('#nextLevel');if(prev){prev.disabled=state.levelIndex<=0;prev.style.opacity=prev.disabled?'.28':'1'}if(next){const locked=!TEST_UNLOCK_ALL&&state.levelIndex>=state.highestReached;next.disabled=state.levelIndex>=LEVELS.length-1||locked;next.style.opacity=next.disabled?'.28':'1'}}
 function addInv(id,n=1){state.inventory[id]=(state.inventory[id]||0)+n;if(state.inventory[id]<=0){delete state.inventory[id];state.invOrder=state.invOrder.filter(v=>v!==id)}else{state.invOrder=state.invOrder.filter(v=>v!==id);state.invOrder.unshift(id)}renderInventory()}
 function takeInv(id,n=1){if((state.inventory[id]||0)<n)return false;state.inventory[id]-=n;if(state.inventory[id]<=0){delete state.inventory[id];state.invOrder=state.invOrder.filter(v=>v!==id);if(state.selectedItem===id)state.selectedItem=null}renderInventory();return true}
 function hasInv(id){return(state.inventory[id]||0)>0}
@@ -147,15 +180,23 @@ function parseLevel(def){
   breakables.forEach(k=>{walls.delete(k);floors.add(k)});
   return{def,width,height,walls,floors,voids,doors,lakes,breakables,player:{x:def.player[0],y:def.player[1]},objects:new Map(Object.entries(def.objects||{})),specials:new Map(Object.entries(def.specials||{})),slots:new Map(Object.entries(def.slots||{})),openDoor:false,sourceReady:new Map(),caveOpened:false,hearthLit:false,shelfOpened:false,libraryClueKnown:false,libraryReadCount:0,pinSolved:false,pinAttempts:0,flashDir:def.flashDir?def.flashDir.slice():[1,0],partyReady:false,partyPopped:false,bookSeq:[],torchOn:false,postPopSnapshot:null,tntInput:null};
 }
-function loadLevel(index,preserveInventory=true){
-  state.levelIndex=index;state.level=parseLevel(LEVELS[index]);state.face='🙂';state.selectedItem=null;state.busy=false;state.auto=false;state.roomSerial++;
-  if(!preserveInventory){state.inventory={};state.invOrder=[]}state.entryInventory=clone(state.inventory);state.entryInvOrder=[...state.invOrder];
-  $('#levelName').textContent=LEVELS[index].name;$('#levelNum').textContent=`ROOM ${index+1} / ${LEVELS.length}`;
-  sizeBoard();renderAll();say(LEVELS[index].messages?.intro||'',1800);
+function loadLevel(index,preserveInventory=true,opts={}){
+  if(index<0||index>=LEVELS.length)return;
+  if(state.level&&!state.suspendSave){state.savedLevels[state.levelIndex]=serializeLevel(state.level);writeProgress()}
+  state.suspendSave=true;state.levelIndex=index;state.selectedItem=null;state.busy=false;state.auto=false;state.roomSerial++;
+  if(!preserveInventory){state.inventory={};state.invOrder=[]}
+  const snap=state.savedLevels[index]||null;state.level=restoreLevel(LEVELS[index],snap);
+  // A solved room stays solved on revisit, but you re-enter it at its normal entrance so backtracking is quick and predictable.
+  if(state.completed.has(index)&&!opts.resumeCurrent)state.level.player={x:LEVELS[index].player[0],y:LEVELS[index].player[1]};
+  state.face=opts.resumeFace||'🙂';state.entryInventory=clone(state.inventory);state.entryInvOrder=[...state.invOrder];
+  $('#levelName').textContent=LEVELS[index].name;$('#levelNum').textContent=`ROOM ${index+1} / ${LEVELS.length}`;updateNavButtons();
+  sizeBoard();renderBoard();renderInventory();state.suspendSave=false;queueSave();
+  if(!opts.silent)say(state.completed.has(index)?'ROOM COMPLETE':(LEVELS[index].messages?.intro||''),state.completed.has(index)?700:1800);
+  if(index===2&&state.level.hearthLit)startSmokeEmitter();
 }
-function resetRoom(){if(state.levelIndex===5&&state.level.partyPopped&&state.level.postPopSnapshot){const l=state.level,s=l.postPopSnapshot;l.objects=new Map(s.objects);l.walls=new Set(s.walls);l.floors=new Set(s.floors);l.specials=new Map(s.specials);l.player={...s.player};l.openDoor=true;l.partyReady=true;l.partyPopped=true;l.torchOn=false;state.inventory=clone(s.inventory);state.invOrder=[...(s.invOrder||Object.keys(s.inventory))];state.face='🙂';state.selectedItem=null;state.busy=false;renderAll();say('PRESENTS RESET',700);return}state.inventory=clone(state.entryInventory);state.invOrder=[...(state.entryInvOrder||Object.keys(state.inventory))];loadLevel(state.levelIndex,true);say('ROOM RESET',850)}
+function resetRoom(){if(state.completed.has(state.levelIndex)&&state.savedLevels[state.levelIndex]){state.suspendSave=true;state.level=restoreLevel(LEVELS[state.levelIndex],state.savedLevels[state.levelIndex]);state.level.player={x:LEVELS[state.levelIndex].player[0],y:LEVELS[state.levelIndex].player[1]};state.face='🙂';state.selectedItem=null;state.busy=false;state.suspendSave=false;renderAll();say('ROOM COMPLETE',650);return}if(state.levelIndex===5&&state.level.partyPopped&&state.level.postPopSnapshot){const l=state.level,s=l.postPopSnapshot;l.objects=new Map(s.objects);l.walls=new Set(s.walls);l.floors=new Set(s.floors);l.specials=new Map(s.specials);l.player={...s.player};l.openDoor=true;l.partyReady=true;l.partyPopped=true;l.torchOn=false;state.inventory=clone(s.inventory);state.invOrder=[...(s.invOrder||Object.keys(s.inventory))];state.face='🙂';state.selectedItem=null;state.busy=false;renderAll();say('PRESENTS RESET',700);return}state.inventory=clone(state.entryInventory);state.invOrder=[...(state.entryInvOrder||Object.keys(state.inventory))];loadLevel(state.levelIndex,true);say('ROOM RESET',850)}
 function sizeBoard(){const l=state.level;if(!l)return;const maxW=Math.min(window.innerWidth-16,580),reserved=245,maxH=Math.max(250,window.innerHeight-reserved);const cell=Math.floor(Math.min(48,(maxW-(l.width-1)*2)/l.width,(maxH-(l.height-1)*2)/l.height));document.documentElement.style.setProperty('--cell',`${Math.max(24,cell)}px`);$('#board').style.gridTemplateColumns=`repeat(${l.width},var(--cell))`;$('#board').style.gridTemplateRows=`repeat(${l.height},var(--cell))`}
-function renderAll(){renderBoard();renderInventory()}
+function renderAll(){renderBoard();renderInventory();queueSave()}
 function wallEmojiAt(k){return state.level.breakables.has(k)?'🪨':state.level.def.wallEmoji}
 function slotAt(k){return state.level.slots.get(k)||null}
 function renderBoard(){
@@ -260,7 +301,7 @@ function moveOne(dx,dy){
   if(state.busy)return false;const l=state.level,nx=l.player.x+dx,ny=l.player.y+dy,nk=key(nx,ny);
   if(!isFloor(nx,ny))return false;
   if(l.doors.has(nk)){
-    if(l.openDoor){l.player={x:nx,y:ny};renderBoard();setTimeout(nextLevel,150);return true}
+    if(l.openDoor){l.player={x:nx,y:ny};renderBoard();markLevelComplete(state.levelIndex);setTimeout(nextLevel,150);return true}
     if(state.levelIndex===0){if(hasInv('rainbow')){takeInv('rainbow');animateDoorOpen('🌈  DOOR OPEN');return false}say('🚪  NEEDS  🌈',1800);return false}
     if(state.levelIndex===3){if(hasInv('keyOld')){takeInv('keyOld');animateDoorOpen('🗝️  DOOR OPEN');return false}say('🚪  NEEDS  🗝️',1800);return false}
     if(state.levelIndex===4){if(l.shelfOpened){animateDoorOpen('');return false}say('',0);return false}
@@ -474,15 +515,15 @@ function explodeTnt(x,y){
 
 function spawnEffect(x,y,emoji,cls,duration){const cell=getCell(x,y);if(!cell)return;const s=document.createElement('span');s.className=`fx ${cls||''}`;s.textContent=emoji;cell.appendChild(s);setTimeout(()=>s.remove(),duration||400)}
 function getCell(x,y){return document.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`)}
-function nextLevel(){if(state.levelIndex<LEVELS.length-1)loadLevel(state.levelIndex+1,true);else finishGame()}
-function finishGame(){state.busy=true;const inv=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))].filter(id=>state.inventory[id]>0).map(id=>[id,state.inventory[id]]).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">SIX ROOMS ESCAPED</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{state.inventory={};state.invOrder=[];$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
+function nextLevel(){if(state.levelIndex<LEVELS.length-1){state.highestReached=Math.max(state.highestReached,state.levelIndex+1);loadLevel(state.levelIndex+1,true)}else finishGame()}
+function finishGame(){markLevelComplete(state.levelIndex);state.busy=true;const inv=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))].filter(id=>state.inventory[id]>0).map(id=>[id,state.inventory[id]]).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">SIX ROOMS ESCAPED</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{clearProgress();state.inventory={};state.invOrder=[];state.completed=new Set();state.highestReached=0;state.savedLevels={};$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
 function showHelp(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">🙂</div><div class="modalTitle">ESCAPE</div><div class="helpText">Move with the arrows.<br>Walk over items to collect them.<br>Tap inventory items to use them.</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=closeOverlay;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
 function jumpLevel(delta){
-  const ni=(state.levelIndex+delta+LEVELS.length)%LEVELS.length;
-  if(ni>=3&&!hasInv('spark'))addInv('spark');
-  if(ni===4&&!hasInv('glasses'))addInv('glasses');
-  if(ni===5&&!hasInv('pin'))addInv('pin');
-  loadLevel(ni,true);say(`ROOM ${ni+1}`,450)
+  const ni=state.levelIndex+delta;if(ni<0||ni>=LEVELS.length)return;
+  if(delta>0&&!TEST_UNLOCK_ALL&&ni>state.highestReached){say('ROOM NOT REACHED YET',850);return}
+  // Prototype-only forward navigation keeps its old prerequisite gifts for isolated room testing.
+  if(TEST_UNLOCK_ALL&&delta>0){if(ni>=3&&!hasInv('spark'))addInv('spark');if(ni===4&&!hasInv('glasses'))addInv('glasses');if(ni===5&&!hasInv('pin'))addInv('pin')}
+  loadLevel(ni,true);say(state.completed.has(ni)?'ROOM COMPLETE':`ROOM ${ni+1}`,500)
 }
 
 document.querySelectorAll('.dpad button[data-move]').forEach(btn=>{
@@ -500,7 +541,14 @@ $('#resetBtn').addEventListener('click',resetRoom);$('#helpBtn').addEventListene
 let lastTouchEnd=0;document.addEventListener('touchend',e=>{const now=Date.now();if(now-lastTouchEnd<320)e.preventDefault();lastTouchEnd=now},{passive:false});
 document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 document.addEventListener('contextmenu',e=>{if(e.target.closest('#app'))e.preventDefault()});document.addEventListener('selectstart',e=>{if(e.target.closest('#app'))e.preventDefault()});document.addEventListener('dragstart',e=>{if(e.target.closest('#app'))e.preventDefault()});
-loadLevel(0,false);
+window.addEventListener('pagehide',flushSave);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave()});
+const saved=readProgress();
+if(saved){
+  state.inventory=saved.inventory||{};state.invOrder=Array.isArray(saved.invOrder)?saved.invOrder:[];state.completed=new Set(saved.completed||[]);
+  state.highestReached=Math.max(0,Math.min(LEVELS.length-1,saved.highestReached||0));state.savedLevels=saved.levels||{};
+  state.entryInventory=saved.entryInventory||clone(state.inventory);state.entryInvOrder=Array.isArray(saved.entryInvOrder)?saved.entryInvOrder:[...state.invOrder];
+  const start=Math.max(0,Math.min(LEVELS.length-1,saved.currentLevel||0));loadLevel(start,true,{resumeCurrent:true,resumeFace:saved.face||'🙂',silent:true});say('PROGRESS RESTORED',700)
+}else loadLevel(0,false);
 })();
 </script>
 </body>
