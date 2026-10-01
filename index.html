@@ -77,6 +77,8 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .cell.exitThreshold{background:rgba(225,243,255,.12)!important;box-shadow:inset 0 0 0 2px rgba(215,240,255,.48),0 0 18px rgba(173,224,255,.28)!important;animation:exitGlow 1.25s ease-in-out infinite}
 .exitArrow{font-size:calc(var(--cell)*.48);font-weight:900;color:#eefaff;text-shadow:0 0 8px rgba(194,232,255,.9)}
 @keyframes exitGlow{0%,100%{box-shadow:inset 0 0 0 2px rgba(215,240,255,.35),0 0 10px rgba(173,224,255,.16)}50%{box-shadow:inset 0 0 0 2px rgba(235,249,255,.75),0 0 23px rgba(173,224,255,.38)}}
+.cell.goalLeft .emoji{transform:rotate(-90deg)}
+.cell.goalRight .emoji{transform:rotate(90deg)}
 .cell.goalCell{background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)}
 .goalie{position:absolute;inset:0;display:grid;place-items:center;z-index:8;font-size:calc(var(--cell)*.62);filter:drop-shadow(0 0 5px rgba(255,255,255,.5))}
 .cell.tntPadCue{box-shadow:inset 0 0 0 2px rgba(255,225,111,.36),0 0 13px rgba(255,221,93,.10);background:rgba(255,221,93,.025)}
@@ -121,7 +123,7 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 <script>
 (() => {
 'use strict';
-const SAVE_VERSION='v19',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
+const SAVE_VERSION='v21',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
 // Every prototype build uses a new SAVE_VERSION. Older builds are intentionally ignored/removed.
 try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(SAVE_PREFIX)&&k!==SAVE_KEY)localStorage.removeItem(k)}}catch(_){ }
 const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, dirs=[[1,0],[-1,0],[0,1],[0,-1]], clone=o=>JSON.parse(JSON.stringify(o));
@@ -160,7 +162,7 @@ const LEVELS=[
 },
 {
   id:'fire',name:'Fire Yard',wallEmoji:'🌵',
-  map:['   ###.#D###','  ##......##',' ##........#','#..........#','#..........#','#..........#','##.........#','#..........#',' ##........#','  ##########'],
+  map:['   #####D###','  ##......##',' ##........#','#..........#','#..........#','#..........#','##.........#','#..........#',' ##........#','  ##########'],
   player:[3,8],objects:{'9,7':'ball','9,5':'spark'},
   specials:{'2,6':'woodHearth','5,0':'goal','0,3':'goal','11,7':'goal'},
   goals:[[11,7],[5,0],[0,3]],keeperPath:[],
@@ -357,7 +359,7 @@ function renderBoard(){
     if(l.voids.has(k)){cell.classList.add('void');board.appendChild(cell);continue}
     if(beam.has(k))cell.classList.add('beamCell');
     if(l.lakes.has(k)){cell.classList.add('lake');const phase=((performance.now()-state.waveEpoch)+(x*137+y*83))%1800;cell.innerHTML=`<span class="emoji" style="animation-delay:-${phase}ms">🌊</span>`;board.appendChild(cell);continue}
-    if(l.walls.has(k)||l.breakables.has(k)){cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');let we=wallEmojiAt(k);if(isLevel('fire')&&['goal','goalDone'].includes(l.specials.get(k))){we='🥅';cell.classList.add('goalCell');if(l.specials.get(k)==='goalDone')cell.style.opacity='.45'}else if(isLevel('party')&&l.specials.get(k)==='disco'){cell.classList.add('partyRoofDisco');if(l.partyReady)cell.classList.add('discoOn');we='🪩'}else if(isLevel('library')&&l.def.coloredBooks?.[k]){cell.classList.add('coloredBook');we=({red:'📕',blue:'📘',orange:'📙'})[l.def.coloredBooks[k]]}else if(isLevel('library')){cell.classList.add('libraryWall');we=''}cell.innerHTML=we?`<span class="emoji">${we}</span>`:'';cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);continue}
+    if(l.walls.has(k)||l.breakables.has(k)){cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');let we=wallEmojiAt(k);if(isLevel('fire')&&['goal','goalDone'].includes(l.specials.get(k))){we='🥅';cell.classList.add('goalCell');if(x===0)cell.classList.add('goalLeft');else if(x===l.w-1)cell.classList.add('goalRight');if(l.specials.get(k)==='goalDone')cell.style.opacity='.45'}else if(isLevel('party')&&l.specials.get(k)==='disco'){cell.classList.add('partyRoofDisco');if(l.partyReady)cell.classList.add('discoOn');we='🪩'}else if(isLevel('library')&&l.def.coloredBooks?.[k]){cell.classList.add('coloredBook');we=({red:'📕',blue:'📘',orange:'📙'})[l.def.coloredBooks[k]]}else if(isLevel('library')){cell.classList.add('libraryWall');we=''}cell.innerHTML=we?`<span class="emoji">${we}</span>`:'';cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);continue}
     cell.classList.add('floor');
     const special=l.specials.get(k),slot=slotAt(k);
     if(slot&&slot.role!=='output'&&isSlotActive(k,slot))cell.classList.add('slotActive')
@@ -665,15 +667,30 @@ function fireGoalsDone(){
   const l=state.level;
   return (l.def.goals||[]).filter(([x,y])=>l.specials.get(key(x,y))==='goalDone').length
 }
+function fireRestartSpot(){
+  const l=state.level;
+  const candidates=[[6,6],[6,5],[5,6],[7,6],[6,7],[5,5],[7,5]];
+  for(const [x,y] of candidates){
+    const k=key(x,y);
+    if(isFloor(x,y)&&!l.objects.has(k)&&!isMachineCell(x,y)&&!(l.player.x===x&&l.player.y===y))return{x,y};
+  }
+  return{x:6,y:6};
+}
 function scoreFireGoal(x,y,bx,by){
   const l=state.level;
   l.specials.set(key(x,y),'goalDone');
-  l.objects.set(key(bx,by),'ball');
   state.face='🙂';state.busy=true;renderAll();
   spawnEffect(x,y,'⚽','timeFlash',420);
   const done=fireGoalsDone(),total=(l.def.goals||[]).length;
   say(`GOAL!  ${done}/${total}`,650);
-  setTimeout(()=>{state.busy=false;if(done>=total&&!l.openDoor)animateDoorOpen('');else renderAll()},420)
+  setTimeout(()=>{
+    const r=fireRestartSpot();
+    l.objects.set(key(r.x,r.y),'ball');
+    spawnEffect(r.x,r.y,'⚽','timeFlash',300);
+    state.busy=false;
+    if(done>=total&&!l.openDoor)animateDoorOpen('');
+    else renderAll();
+  },420)
 }
 function pushBallWithBreath(x,y,dx,dy){
   const l=state.level,strong=state.face==='😤',maxSteps=strong?3:2;
