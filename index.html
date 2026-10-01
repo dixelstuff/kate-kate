@@ -121,7 +121,7 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 <script>
 (() => {
 'use strict';
-const SAVE_VERSION='v18',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
+const SAVE_VERSION='v19',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
 // Every prototype build uses a new SAVE_VERSION. Older builds are intentionally ignored/removed.
 try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(SAVE_PREFIX)&&k!==SAVE_KEY)localStorage.removeItem(k)}}catch(_){ }
 const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, dirs=[[1,0],[-1,0],[0,1],[0,-1]], clone=o=>JSON.parse(JSON.stringify(o));
@@ -159,9 +159,12 @@ const LEVELS=[
   player:[1,12],messages:{intro:''}
 },
 {
-  id:'fire',name:'Fire Yard',wallEmoji:'🌵',button:[8,2],
-  map:['   ###D###    ','  ##.....##   ',' ##.........# ','#...........# ','#............#','#............#','##...........#',' #...........#',' ##.........##','  ########### '],
-  player:[3,8],objects:{'3,7':'ball','9,5':'spark'},specials:{'2,6':'woodHearth','8,2':'button','12,2':'goal'},goals:[[12,2]],keeperPath:[[11,2],[11,3]],slots:{'2,5':{machine:'hearth',role:'spark'}},extraWalls:['9,4','8,1'],messages:{intro:'🔘  THEN  🥅'}
+  id:'fire',name:'Fire Yard',wallEmoji:'🌵',
+  map:['   ###.#D###','  ##......##',' ##........#','#..........#','#..........#','#..........#','##.........#','#..........#',' ##........#','  ##########'],
+  player:[3,8],objects:{'9,7':'ball','9,5':'spark'},
+  specials:{'2,6':'woodHearth','5,0':'goal','0,3':'goal','11,7':'goal'},
+  goals:[[11,7],[5,0],[0,3]],keeperPath:[],
+  slots:{'2,5':{machine:'hearth',role:'spark'}},extraWalls:['9,4'],messages:{intro:'🥅  🥅  🥅'}
 },
 {
   id:'time',name:'Old Future',wallEmoji:'🌲',
@@ -171,7 +174,7 @@ const LEVELS=[
 {
   id:'horse',type:'horse',name:'Paddock',wallEmoji:'🪵',
   map:["#############","#......#....#","#......#....#","#......#....#","#......##.###","#...........#","#...........#","#...........#","#...........#","#...........#","D...........#","#...........#","#############"],
-  player:[2,10],horse:[5,7],horseTarget:["8,1","9,1","10,1","11,1","8,2","9,2","10,2","11,2"],messages:{intro:''}
+  player:[2,10],horse:[5,7],horsePen:["8,1","9,1","10,1","11,1","8,2","9,2","10,2","11,2","8,3","9,3","10,3","11,3"],horseTarget:["8,1","9,1","10,1","11,1","8,2","9,2","10,2","11,2"],messages:{intro:''}
 },
 {
   id:'library',name:'The Library',wallEmoji:'🟫',
@@ -181,7 +184,7 @@ const LEVELS=[
 },
 {
   id:'mirror',type:'mirror',name:'Mirror Maze',wallEmoji:'⬛',
-  map:["################", "#..............#", "#.#####...#####D", "#.#........#####", "#.#............#", "#..............#", "#..............#", "#.............##", "###............#", "#..............#", "#..............#", "#....####......#", "#.....##########", "#..............#", "################"],
+  map:["###############","#.............#","#.#####...####D","#.#........####","#.#...........#","#.............#","#.............#","#.............#","###...........#","#.............#","#.............#","#....####.....#","#.....#########","#.............#","###############"],
   player:[2,12],mirrorPanels:[{id:'A',cx:4,cy:10,o:'h'},{id:'B',cx:11,cy:4,o:'h'},{id:'C',cx:12,cy:10,o:'v'}],
   mirrorButtons:[[8,5],[10,11],[10,3]],messages:{intro:'🔘 🔘 🔘'}
 },
@@ -189,8 +192,8 @@ const LEVELS=[
   id:'party',name:'Party Inside',wallEmoji:'🎀',
   map:['  #########  ',' ##.......## ','#...........#','#...........#','#..#######..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..###.###..#','#...........#','#...........D',' ##.........#','  ###########'],
   player:[6,1],objects:{'4,2':'flashlight','6,8':'balloon'},specials:{'6,11':'partyGate','6,4':'disco'},
-  blastWalls:['9,7','9,8','9,9'],
-  presentLayout:['9,8','10,3','11,5','10,7','11,9','9,10','8,12','10,12','11,13','7,13','5,2','8,3','10,6'],torchRecoveryPresents:[],
+  blastWalls:['9,8'],
+  presentLayout:['9,8','10,6','11,6','10,5','1,6','2,6','2,5','10,12','11,12','10,13'],torchRecoveryPresents:[],
   messages:{intro:'PARTY GOERS ONLY  •  🚪 LOCKED'}
 }
 ];
@@ -354,7 +357,7 @@ function renderBoard(){
     if(l.voids.has(k)){cell.classList.add('void');board.appendChild(cell);continue}
     if(beam.has(k))cell.classList.add('beamCell');
     if(l.lakes.has(k)){cell.classList.add('lake');const phase=((performance.now()-state.waveEpoch)+(x*137+y*83))%1800;cell.innerHTML=`<span class="emoji" style="animation-delay:-${phase}ms">🌊</span>`;board.appendChild(cell);continue}
-    if(l.walls.has(k)||l.breakables.has(k)){cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');let we=wallEmojiAt(k);if(isLevel('fire')&&l.specials.get(k)==='goal'){we=l.fireGoalActive?'🥅':'🌵';if(l.fireGoalActive)cell.classList.add('goalCell')}else if(isLevel('party')&&l.specials.get(k)==='disco'){cell.classList.add('partyRoofDisco');if(l.partyReady)cell.classList.add('discoOn');we='🪩'}else if(isLevel('library')&&l.def.coloredBooks?.[k]){cell.classList.add('coloredBook');we=({red:'📕',blue:'📘',orange:'📙'})[l.def.coloredBooks[k]]}else if(isLevel('library')){cell.classList.add('libraryWall');we=''}cell.innerHTML=we?`<span class="emoji">${we}</span>`:'';cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);continue}
+    if(l.walls.has(k)||l.breakables.has(k)){cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');let we=wallEmojiAt(k);if(isLevel('fire')&&['goal','goalDone'].includes(l.specials.get(k))){we='🥅';cell.classList.add('goalCell');if(l.specials.get(k)==='goalDone')cell.style.opacity='.45'}else if(isLevel('party')&&l.specials.get(k)==='disco'){cell.classList.add('partyRoofDisco');if(l.partyReady)cell.classList.add('discoOn');we='🪩'}else if(isLevel('library')&&l.def.coloredBooks?.[k]){cell.classList.add('coloredBook');we=({red:'📕',blue:'📘',orange:'📙'})[l.def.coloredBooks[k]]}else if(isLevel('library')){cell.classList.add('libraryWall');we=''}cell.innerHTML=we?`<span class="emoji">${we}</span>`:'';cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);continue}
     cell.classList.add('floor');
     const special=l.specials.get(k),slot=slotAt(k);
     if(slot&&slot.role!=='output'&&isSlotActive(k,slot))cell.classList.add('slotActive')
@@ -535,10 +538,6 @@ function updateButtonDoor(){
     else if(l.openDoor){l.openDoor=false;renderBoard()}
     return
   }
-  if(isLevel('fire')){
-    if(obj==='ball'&&!l.fireGoalActive){l.fireGoalActive=true;startFireKeeper();renderAll();for(const g of (l.def.goals||[]))spawnEffect(g[0],g[1],'🥅','timeFlash',430);say('🥅',650)}
-    if(l.fireGoalScored&&!l.openDoor)animateDoorOpen('GOAL!');
-  }
 }
 function animateDoorOpen(msg='DOOR OPEN'){
   const l=state.level;if(l.openDoor)return;
@@ -614,7 +613,7 @@ function popPartyBalloon(x,y){
     l.objects.delete(key(x,y));l.partyPopped=true;
     const disco=findSpecial('disco');if(disco){l.specials.delete(key(disco.x,disco.y));spawnEffect(disco.x,disco.y,'✨','timeFlash',360)}l.torchOn=false;state.face='🙂';
     for(const k of l.def.blastWalls||[]){l.walls.delete(k);l.floors.add(k);l.specials.delete(k)}
-    const gate=findSpecial('partyGate');if(gate){const gk=key(gate.x,gate.y);l.specials.delete(gk);if(gk!==key(l.player.x,l.player.y)&&!l.objects.has(gk))l.objects.set(gk,'present')}
+    const gate=findSpecial('partyGate');if(gate){const gk=key(gate.x,gate.y);l.specials.delete(gk);l.floors.delete(gk);l.walls.add(gk)}
     for(const k of l.def.presentLayout||[]){if(l.floors.has(k)&&!l.objects.has(k)&&k!==key(l.player.x,l.player.y))l.objects.set(k,'present')}
     for(const k of l.def.torchRecoveryPresents||[]){if(l.floors.has(k)&&!l.objects.has(k)&&k!==key(l.player.x,l.player.y))l.objects.set(k,'present')}
     l.openDoor=false;l.postPopSnapshot={objects:[...l.objects],walls:[...l.walls],floors:[...l.floors],specials:[...l.specials],player:{...l.player},inventory:clone(state.inventory),invOrder:[...state.invOrder]};state.busy=false;renderAll();
@@ -660,42 +659,37 @@ function emitSmokePuff(serial){
 
 function fireKeeperPos(){const l=state.level;if(!isLevel('fire')||!l.fireGoalActive||l.fireGoalScored||!l.def.keeperPath?.length)return null;const p=l.def.keeperPath[l.keeperIndex%l.def.keeperPath.length];return{x:p[0],y:p[1]}}
 function fireKeeperAt(x,y){const p=fireKeeperPos();return!!(p&&p.x===x&&p.y===y)}
-function renderFireGoalie(){const p=fireKeeperPos();if(!p)return;const c=getCell(p.x,p.y);if(!c)return;const g=document.createElement('span');g.className='goalie';g.textContent='🧤';c.appendChild(g)}
+function renderFireGoalie(){}
 function startFireKeeper(){stopFireKeeper();const l=state.level;if(!isLevel('fire')||!l.fireGoalActive||l.fireGoalScored)return;const serial=state.roomSerial;state.fireKeeperTimer=setInterval(()=>{if(serial!==state.roomSerial||!isLevel('fire')||l.fireGoalScored){stopFireKeeper();return}const n=l.def.keeperPath.length;let ni=l.keeperIndex+l.keeperDir;if(ni>=n){l.keeperDir=-1;ni=n-2}else if(ni<0){l.keeperDir=1;ni=1}const np=l.def.keeperPath[ni];if((l.player.x===np[0]&&l.player.y===np[1])||l.objects.has(key(np[0],np[1])))return;l.keeperIndex=ni;renderBoard()},620)}
-function scoreFireGoal(x,y){const l=state.level;l.objects.delete(key(x,y));l.fireGoalScored=true;stopFireKeeper();state.face='🙂';state.busy=true;renderAll();spawnEffect(x,y,'⚽','timeFlash',420);say('GOAL!',650);setTimeout(()=>{state.busy=false;updateButtonDoor()},420)}
+function fireGoalsDone(){
+  const l=state.level;
+  return (l.def.goals||[]).filter(([x,y])=>l.specials.get(key(x,y))==='goalDone').length
+}
+function scoreFireGoal(x,y,bx,by){
+  const l=state.level;
+  l.specials.set(key(x,y),'goalDone');
+  l.objects.set(key(bx,by),'ball');
+  state.face='🙂';state.busy=true;renderAll();
+  spawnEffect(x,y,'⚽','timeFlash',420);
+  const done=fireGoalsDone(),total=(l.def.goals||[]).length;
+  say(`GOAL!  ${done}/${total}`,650);
+  setTimeout(()=>{state.busy=false;if(done>=total&&!l.openDoor)animateDoorOpen('');else renderAll()},420)
+}
 function pushBallWithBreath(x,y,dx,dy){
-  const l=state.level,strong=l.fireGoalActive&&state.face==='😤',maxSteps=strong?6:3;
-  let cx=x,cy=y,steps=0,goalHit=false,saved=false;
-
-  while(steps<maxSteps){
+  const l=state.level,strong=state.face==='😤',maxSteps=strong?3:2;
+  let cx=x,cy=y,moved=0,goal=null,hitWall=false;
+  for(let i=0;i<maxSteps;i++){
     const nx=cx+dx,ny=cy+dy,nk=key(nx,ny),sp=l.specials.get(nk);
-
-    if(isLevel('fire')&&fireKeeperAt(nx,ny)){saved=true;break}
-
-    // The goal is embedded in the cactus wall. Only the double-puff shot
-    // can reach it from the final setup.
-    if(sp==='goal'&&isLevel('fire')){
-      if(l.fireGoalActive&&strong){cx=nx;cy=ny;steps++;goalHit=true}
-      break
-    }
-
-    if(!isFloor(nx,ny)||l.objects.has(nk)||l.doors.has(nk)||isMachineCell(nx,ny))break;
-    cx=nx;cy=ny;steps++;
+    if(sp==='goal'&&isLevel('fire')){goal={x:nx,y:ny,bx:cx,by:cy};break}
+    if(!isFloor(nx,ny)||l.objects.has(nk)||l.doors.has(nk)||isMachineCell(nx,ny)){hitWall=true;break}
+    cx=nx;cy=ny;moved++
   }
-
   state.face='🙂';
-
-  if(!steps&&saved){say('🧤',450);renderAll();return false}
-  if(!steps){say('BLOCKED',450);return false}
-
-  state.busy=true;l.objects.delete(key(x,y));renderAll();animateTravel(x,y,cx,cy,'⚽',strong?300:230);
-  setTimeout(()=>{
-    if(goalHit){state.busy=false;scoreFireGoal(cx,cy);return}
-    l.objects.set(key(cx,cy),'ball');state.busy=false;renderAll();updateButtonDoor();
-    if(saved)say('🧤',450);
-    else if(strong)say('😤  BIG KICK',560);
-  },strong?315:245);
-  return true;
+  if(goal){state.busy=true;l.objects.delete(key(x,y));renderAll();animateTravel(x,y,goal.x,goal.y,'⚽',strong?270:220);setTimeout(()=>scoreFireGoal(goal.x,goal.y,goal.bx,goal.by),strong?285:235);return true}
+  if(!moved){say('BLOCKED',350);renderAll();return false}
+  if(hitWall){const bx=cx-dx,by=cy-dy,bk=key(bx,by);if(isFloor(bx,by)&&!l.objects.has(bk)){cx=bx;cy=by}}
+  state.busy=true;l.objects.delete(key(x,y));renderAll();animateTravel(x,y,cx,cy,'⚽',strong?260:210);
+  setTimeout(()=>{l.objects.set(key(cx,cy),'ball');state.busy=false;renderAll();if(hitWall)say('↩️',320)},strong?275:225);return true
 }
 function animateTravel(x1,y1,x2,y2,emoji,duration){const cell=getCell(x1,y1);if(!cell)return;const e=document.createElement('span');e.className='fx travel';e.textContent=emoji;e.style.setProperty('--tx',`${(x2-x1)*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell'))+2)}px`);e.style.setProperty('--ty',`${(y2-y1)*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell'))+2)}px`);e.style.setProperty('--dur',`${duration}ms`);cell.appendChild(e);setTimeout(()=>e.remove(),duration+30)}
 
@@ -840,6 +834,7 @@ function marketFinishAttempt(kind){
 /* ---------- HORSE PADDOCK ---------- */
 const HORSE_DIR_NAME=(dx,dy)=>dx===1?'R':dx===-1?'L':dy===1?'D':'U',HORSE_INV={U:'D',D:'U',L:'R',R:'L'},HORSE_VEC={U:[0,-1],D:[0,1],L:[-1,0],R:[1,0]};
 function horseTargetHas(x,y){return state.level.def.horseTarget.includes(key(x,y))}
+function horsePenHas(x,y){return (state.level.def.horsePen||state.level.def.horseTarget).includes(key(x,y))}
 function renderHorseBoard(){
   const l=state.level,board=$('#board');board.classList.remove('partyDisco');board.innerHTML='';
   for(let y=0;y<l.height;y++)for(let x=0;x<l.width;x++){
@@ -847,7 +842,7 @@ function renderHorseBoard(){
     if(l.voids.has(k)){cell.classList.add('void');board.appendChild(cell);continue}
     if(l.walls.has(k)){cell.classList.add('wall','horseWall');cell.innerHTML='<span class="emoji">🪵</span>'}
     else if(l.doors.has(k)&&!l.openDoor){cell.classList.add('door');cell.innerHTML='<span class="emoji">🚪</span>'}
-    else{cell.classList.add('floor',horseTargetHas(x,y)?'horseTarget':'horseGrass');
+    else{cell.classList.add('floor',horsePenHas(x,y)?'horseTarget':'horseGrass');
       if(l.horse&&l.horse.x===x&&l.horse.y===y)cell.innerHTML='<span class="emoji horseActor">🐴</span>';
       if(l.player.x===x&&l.player.y===y)cell.innerHTML=`<span class="emoji player">${state.face}</span>`
     }
@@ -906,7 +901,7 @@ function renderMirrorBoard(){
     const k=key(x,y),cell=document.createElement('div');cell.className='cell';cell.dataset.x=x;cell.dataset.y=y;
     if(l.walls.has(k)){cell.classList.add('wall');cell.innerHTML='<span class="emoji">⬛</span>'}
     else if(l.doors.has(k)&&!l.openDoor){cell.classList.add('wall','mirrorDoorClosed');cell.innerHTML='<span class="emoji">⬛</span>'}
-    else{cell.classList.add('floor');if(l.doors.has(k)&&l.openDoor)cell.classList.add('exitThreshold');const b=mirrorButtons().find(v=>v.k===k);if(b){cell.classList.add('button');if(refPos.has(k))cell.classList.add('mirrorButtonOn');cell.innerHTML='<span class="emoji">🔘</span>'}}
+    else{cell.classList.add('floor');const b=mirrorButtons().find(v=>v.k===k);if(b){cell.classList.add('button');if(refPos.has(k))cell.classList.add('mirrorButtonOn');cell.innerHTML='<span class="emoji">🔘</span>'}}
     const pi=mirrorPanelIndexAt(x,y);if(pi>=0){cell.classList.remove('button');cell.classList.add('mirrorPanel');cell.dataset.mirrorPanel=pi;cell.innerHTML='<span class="emoji">🪞</span>'}
     board.appendChild(cell)
   }
