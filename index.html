@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
 <meta name="theme-color" content="#101114" />
-<title>Emoji Escape — 6 Room Demo v12</title>
+<title>Emoji Escape — 9 Room Demo v13</title>
 <style>
 :root{
   --bg:#101114;--panel:#191b20;--panel2:#23262d;--text:#f6f7f9;--muted:#9ca2ad;
@@ -45,6 +45,34 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .balloonPop{animation:balloonPop .22s ease-out forwards}@keyframes balloonPop{0%{transform:scale(1)}55%{transform:scale(1.35)}100%{transform:scale(.1);opacity:0}}
 .presentSpawn{animation:presentSpawn .36s cubic-bezier(.2,.9,.25,1.25)}@keyframes presentSpawn{from{transform:scale(.15) rotate(-12deg);opacity:.2}to{transform:scale(1);opacity:1}}
 .flyBack{position:fixed;z-index:80;pointer-events:none;font-size:30px;line-height:1;transition:transform .38s cubic-bezier(.25,.75,.3,1),opacity .38s ease}
+
+/* Integrated room-specific surfaces */
+.cell.horseGrass{background:rgba(116,151,77,.20);box-shadow:inset 0 0 0 1px rgba(166,205,112,.08)}
+.cell.horseTarget{background:rgba(151,187,99,.29);box-shadow:inset 0 0 0 1px rgba(202,232,154,.16)}
+.cell.horseWall{background:rgba(119,78,43,.08)}
+.horseJiggle{animation:horseJiggle .28s ease-in-out}
+@keyframes horseJiggle{0%,100%{transform:translateX(0)}28%{transform:translateX(-5px) rotate(-4deg)}62%{transform:translateX(5px) rotate(4deg)}}
+.horseHop{animation:horseHop .19s ease-in-out}
+@keyframes horseHop{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px) scale(1.04)}}
+
+.cell.marketFloor{background:rgba(255,255,255,.052);box-shadow:inset 0 0 0 1px rgba(255,255,255,.035)}
+.cell.marketShelf{background:rgba(117,78,43,.17);box-shadow:inset 0 0 0 1px rgba(183,133,80,.20)}
+.cell.marketShelf.sectionBreak{box-shadow:inset 0 2px 0 rgba(236,210,173,.34),inset 0 0 0 1px rgba(183,133,80,.20)}
+.cell.marketCheckout{background:rgba(255,255,255,.065);box-shadow:inset 0 0 0 1px rgba(255,255,255,.13)}
+.marketCartSlot{border:0;border-radius:12px;background:var(--panel2);height:46px;min-width:46px;padding:0;color:white;font-size:27px;display:flex;align-items:center;justify-content:center}
+.marketCartSlot.empty{font-size:14px;color:#545963}
+.marketHistory{margin-top:12px;max-height:230px;overflow:auto;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:6px;scrollbar-width:thin}
+.marketHistoryRow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.06)}
+.marketHistoryItems{font-size:22px;letter-spacing:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.marketHistoryTotal{font-size:14px;font-weight:900;font-variant-numeric:tabular-nums}
+
+.cell.mirrorPanel{background:rgba(173,207,226,.14);box-shadow:inset 0 0 0 1px rgba(207,232,245,.22),0 0 7px rgba(179,220,241,.08);font-size:calc(var(--cell)*.58)}
+.cell.mirrorButtonOn{background:rgba(255,255,255,.22)!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.64),0 0 18px rgba(255,255,255,.28)!important}
+.mirrorGhost{position:absolute;inset:0;display:grid;place-items:center;z-index:7;opacity:.53;filter:saturate(.7) brightness(1.18) drop-shadow(0 0 4px rgba(177,224,255,.35));transition:none!important}
+.mirrorGhost.deep{opacity:.34}.mirrorPlayer{position:absolute;inset:0;display:grid;place-items:center;z-index:10}
+.mirrorRefuse .emoji{animation:mirrorRefuse .26s ease-in-out}
+@keyframes mirrorRefuse{25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-2px)}}
+
 .modalClose{position:absolute;right:14px;top:12px;border:0;background:transparent;color:#ddd;font-size:28px;line-height:1;padding:4px}.modalCard{position:relative}.pinSlots{display:flex;justify-content:center;gap:10px;margin:12px 0 10px}.pinSlot{width:48px;height:52px;border-radius:10px;background:#111318;display:grid;place-items:center;font-size:24px;font-weight:850}.pinInput{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;border:0;border-radius:14px;background:#111318;color:#fff;font-size:24px;font-weight:850;letter-spacing:.28em;text-align:center;text-transform:uppercase;outline:none;margin:6px 0 12px;padding-left:.28em}
 .pinHint{min-height:22px;color:#aeb3bc;font-size:12px;margin-bottom:8px}
 
@@ -72,7 +100,7 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 <script>
 (() => {
 'use strict';
-const SAVE_VERSION='v12',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
+const SAVE_VERSION='v13',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
 // Every prototype build uses a new SAVE_VERSION. Older builds are intentionally ignored/removed.
 try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(SAVE_PREFIX)&&k!==SAVE_KEY)localStorage.removeItem(k)}}catch(_){ }
 const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, dirs=[[1,0],[-1,0],[0,1],[0,-1]], clone=o=>JSON.parse(JSON.stringify(o));
@@ -81,7 +109,7 @@ const emojiOf=id=>ITEMS[id]||id;
 
 const LEVELS=[
 {
-  name:'Rainbow Workshop',wallEmoji:'🌿',requirement:'rainbow',
+  id:'alchemy',name:'Rainbow Workshop',wallEmoji:'🌿',requirement:'rainbow',
   map:[
     '  #######  ',
     ' ##.....###',
@@ -99,29 +127,45 @@ const LEVELS=[
   slots:{'2,5':{machine:'minus',role:'left'},'4,5':{machine:'minus',role:'right'},'6,6':{machine:'plus',role:'left'},'8,6':{machine:'plus',role:'right'}},messages:{intro:'🚪 REQUIRES 🌈'}
 },
 {
-  name:'Iceworks',wallEmoji:'🪨',button:[7,3],
+  id:'ice',name:'Iceworks',wallEmoji:'🪨',button:[7,3],
   map:['   ###D###  ','  ##......# ',' ##........#','#.........~~','#......#.~~~','##.....#.~~~',' #.....#.~~~',' #.......~~~',' ##........# ','  ##......## ','   ########  '],
   player:[4,8],objects:{'2,7':'tnt'},specials:{'3,8':'snow','5,8':'chili','2,3':'iceWater','8,8':'iceWater','7,3':'button'},
   lakes:['9,3','10,3','9,4','10,4','11,4','9,5','10,5','11,5','9,6','10,6','11,6','9,7','10,7','11,7'],extraWalls:['7,1','9,1','7,2','9,2','7,4','7,5','7,6'],messages:{intro:'🔘 OPENS 🚪'}
 },
 {
-  name:'Fire Yard',wallEmoji:'🌵',button:[8,2],
+  id:'market',type:'market',name:'Market Run',wallEmoji:'🧱',
+  map:['#####D####','#........#','#........#','#........#','#........#','#........#','#........#','#........#','#........#','#........#','#........#','#........#','#........#','##########'],
+  player:[1,12],messages:{intro:''}
+},
+{
+  id:'fire',name:'Fire Yard',wallEmoji:'🌵',button:[8,2],
   map:['   ###D###   ','  ##.....##  ',' ##........# ','#..........# ','#..........##','#...........#','##..........#',' #..........#',' ##........##','  ########## '],
   player:[3,8],objects:{'3,7':'ball','9,5':'spark'},specials:{'2,6':'woodHearth','8,2':'button'},slots:{'2,5':{machine:'hearth',role:'spark'}},extraWalls:['9,4','8,1'],messages:{intro:'🔘 OPENS 🚪'}
 },
 {
-  name:'Old Future',wallEmoji:'🌲',
+  id:'time',name:'Old Future',wallEmoji:'🌲',
   map:['   #######  ',' ###.....D# ','##.........#','#....#.....#','#..........#','#..#.......#','#......#####','##.....#...#',' #.....#...#',' ###########'],
-  player:[2,8],objects:{'2,3':'egg','9,8':'glasses'},specials:{'5,5':'hourglass','8,3':'worm'},slots:{'4,5':{machine:'time',role:'left'},'6,5':{machine:'time',role:'right'}},breakables:['7,8'],caveReward:[9,8,'glasses'],chickenDetour:['6,4','7,4','8,4','9,4','9,3'],messages:{intro:'🚪 REQUIRES 🗝️'}
+  player:[2,8],objects:{'2,3':'egg','9,7':'glasses'},specials:{'5,5':'hourglass','9,8':'worm'},slots:{'4,5':{machine:'time',role:'left'},'6,5':{machine:'time',role:'right'}},breakables:['7,8'],caveReward:[9,7,'glasses'],chickenDetour:['6,6','6,7','6,8','7,8','8,8','9,8'],messages:{intro:'🚪 REQUIRES 🗝️'}
 },
 {
-  name:'The Library',wallEmoji:'📗',
+  id:'horse',type:'horse',name:'Paddock',wallEmoji:'🪵',
+  map:[" #########      ", "#.........#     ", "#.........##### ", "#.........#....#", "#.........#....#", "#..............D", "#.........#....#", "#.........#....#", "#.........##### ", "#.........#     ", " #########      "],
+  player:[3,8],horse:[5,5],horseTarget:["11,3", "12,3", "13,3", "14,3", "11,4", "12,4", "13,4", "14,4", "11,5", "12,5", "13,5", "14,5", "11,6", "12,6", "13,6", "14,6", "11,7", "12,7", "13,7", "14,7"],messages:{intro:'🐴 → SMALL PADDOCK'}
+},
+{
+  id:'library',name:'The Library',wallEmoji:'📗',
   map:['   #######   ','  ##.....### ',' ##......#..#','##.......#..#','#........#..#','#........#..D','#........#..#','##.......#..#',' ##......####','  #########  '],
   player:[2,7],objects:{},specials:{'3,6':'pinDesk','5,3':'clueBook'},pinOutput:[3,6],
   coloredBooks:{'5,0':'red','8,0':'blue','10,1':'orange','1,2':'blue','1,3':'orange','0,4':'red','0,6':'blue','1,7':'orange','2,8':'red','5,9':'blue','8,9':'orange','9,4':'blue','9,5':'red','9,6':'orange'},secretBooks:['9,4','9,5','9,6'],messages:{intro:'🚪 HIDDEN IN THE BOOKS'}
 },
 {
-  name:'Party Inside',wallEmoji:'🎀',
+  id:'mirror',type:'mirror',name:'Mirror Maze',wallEmoji:'⬛',
+  map:["#################", "#...............#", "#.#####...#####D#", "#.#........####.#", "#.#.............#", "#...............#", "#...............#", "#.............#.#", "###.............#", "#...............#", "#...............#", "#....####.......#", "#.....#########.#", "#...............#", "#################"],
+  player:[2,12],mirrorPanels:[{id:'A',cx:4,cy:10,o:'h'},{id:'B',cx:11,cy:4,o:'h'},{id:'C',cx:12,cy:10,o:'v'}],
+  mirrorButtons:[[8,5],[10,11],[10,3]],messages:{intro:'🔘 🔘 🔘'}
+},
+{
+  id:'party',name:'Party Inside',wallEmoji:'🎀',
   map:['  #########  ',' ##.......## ','#.......#####','#...#####...#','#...#...#...#','#...#...#...D','#...#...#...#','#...##.##...#','#.......#####',' ##.......## ','  #########  '],
   player:[5,1],objects:{'3,2':'flashlight','6,5':'balloon'},specials:{'6,7':'partyGate','1,8':'disco'},
   blastWalls:['6,3','4,5','8,5','6,7'],
@@ -130,7 +174,35 @@ const LEVELS=[
 }
 ];
 
-const state={levelIndex:0,level:null,inventory:{},invOrder:[],selectedItem:null,face:'🙂',busy:false,auto:false,statusTimer:null,entryInventory:{},entryInvOrder:[],roomSerial:0,suppressClickUntil:0,waveEpoch:performance.now(),moveHold:null,completed:new Set(),highestReached:0,savedLevels:{},suspendSave:false,saveTimer:null};
+const state={levelIndex:0,level:null,inventory:{},invOrder:[],selectedItem:null,face:'🙂',busy:false,auto:false,statusTimer:null,entryInventory:{},entryInvOrder:[],roomSerial:0,suppressClickUntil:0,waveEpoch:performance.now(),moveHold:null,completed:new Set(),highestReached:0,savedLevels:{},suspendSave:false,saveTimer:null,marketTimer:null};
+function levelId(){return state.level?.def?.id||''}
+function isLevel(id){return levelId()===id}
+function stopMarketTimer(){if(state.marketTimer){clearInterval(state.marketTimer);state.marketTimer=null}}
+
+const MARKET_ROUNDS=[{threshold:160,seconds:20},{threshold:180,seconds:17},{threshold:200,seconds:15}],MARKET_CAP=4;
+const MARKET_CATEGORIES={
+  fruit:['🍎','🍌','🍇','🍓','🍉','🍊'],
+  veg:['🥕','🥦','🥑','🌽'],
+  meat:['🥩','🍗','🥓','🌭'],
+  bakery:['🍞','🥐','🥖','🥨','🧁','🍩'],
+  chilled:['🥛','🧀','🥚','🍦','🧃'],
+  pantry:['🍚','🍝','🥫','🫘','🧂'],
+  snacks:['🍪','🍫','🍿'],
+  cleaning:['🧻','🧼','🧽','🧴','🪥','🪣','🧺']
+};
+const MARKET_PRICE={
+  '🍎':38,'🍌':24,'🍇':66,'🍓':31,'🍉':55,'🍊':46,
+  '🥕':65,'🥦':27,'🥑':39,'🌽':52,
+  '🥩':35,'🍗':63,'🥓':23,'🌭':49,
+  '🍞':54,'🥐':29,'🥖':67,'🥨':37,'🧁':22,'🍩':45,
+  '🥛':64,'🧀':34,'🥚':43,'🍦':25,'🧃':53,
+  '🍚':33,'🍝':62,'🥫':26,'🫘':51,'🧂':42,
+  '🍪':61,'🍫':28,'🍿':44,
+  '🧻':48,'🧼':21,'🧽':68,'🧴':36,'🪥':57,'🪣':30,'🧺':41
+};
+const MARKET_FACES=[{id:'LO',x:1,aisle:'L'},{id:'LC',x:4,aisle:'L'},{id:'RC',x:5,aisle:'R'},{id:'RO',x:8,aisle:'R'}];
+const MARKET_ROWS=[2,3,4,5,6,7,8,9,10,11];
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 function serializeLevel(l){
   if(!l)return null;
   return{
@@ -139,7 +211,10 @@ function serializeLevel(l){
     sourceReady:[...l.sourceReady],caveOpened:!!l.caveOpened,hearthLit:!!l.hearthLit,shelfOpened:!!l.shelfOpened,
     libraryClueKnown:!!l.libraryClueKnown,libraryReadCount:l.libraryReadCount||0,pinSolved:!!l.pinSolved,pinAttempts:l.pinAttempts||0,
     flashDir:l.flashDir?[...l.flashDir]:[1,0],partyReady:!!l.partyReady,partyPopped:!!l.partyPopped,bookSeq:[...(l.bookSeq||[])],
-    torchOn:!!l.torchOn,postPopSnapshot:l.postPopSnapshot?clone(l.postPopSnapshot):null,tntInput:l.tntInput||null
+    torchOn:!!l.torchOn,postPopSnapshot:l.postPopSnapshot?clone(l.postPopSnapshot):null,tntInput:l.tntInput||null,
+    horse:l.horse?{...l.horse}:null,horseBuffer:[...(l.horseBuffer||[])],
+    mirrorPanels:l.mirrorPanels?clone(l.mirrorPanels):null,
+    market:l.market?clone({...l.market,running:false,checkingOut:false}):null
   }
 }
 function restoreLevel(def,snap){
@@ -151,6 +226,10 @@ function restoreLevel(def,snap){
   for(const k of ['libraryReadCount','pinAttempts'])if(k in snap)l[k]=snap[k]||0;
   l.flashDir=Array.isArray(snap.flashDir)?[...snap.flashDir]:l.flashDir;l.bookSeq=Array.isArray(snap.bookSeq)?[...snap.bookSeq]:[];
   l.postPopSnapshot=snap.postPopSnapshot?clone(snap.postPopSnapshot):null;l.tntInput=snap.tntInput||null;
+  if(snap.horse)l.horse={...snap.horse};l.horseBuffer=Array.isArray(snap.horseBuffer)?[...snap.horseBuffer]:[];
+  if(Array.isArray(snap.mirrorPanels))l.mirrorPanels=clone(snap.mirrorPanels);
+  if(snap.market)l.market=clone(snap.market);
+  if(l.market){l.market.running=false;l.market.checkingOut=false}
   return l
 }
 function progressPayload(){return{version:SAVE_VERSION,currentLevel:state.levelIndex,highestReached:state.highestReached,completed:[...state.completed],inventory:clone(state.inventory),invOrder:[...state.invOrder],face:state.face,entryInventory:clone(state.entryInventory),entryInvOrder:[...state.entryInvOrder],levels:clone(state.savedLevels)}}
@@ -178,35 +257,65 @@ function parseLevel(def){
   (def.extraWalls||[]).forEach(k=>{walls.add(k);floors.delete(k)});
   lakes.forEach(k=>{floors.delete(k);walls.delete(k)});
   breakables.forEach(k=>{walls.delete(k);floors.add(k)});
-  return{def,width,height,walls,floors,voids,doors,lakes,breakables,player:{x:def.player[0],y:def.player[1]},objects:new Map(Object.entries(def.objects||{})),specials:new Map(Object.entries(def.specials||{})),slots:new Map(Object.entries(def.slots||{})),openDoor:false,sourceReady:new Map(),caveOpened:false,hearthLit:false,shelfOpened:false,libraryClueKnown:false,libraryReadCount:0,pinSolved:false,pinAttempts:0,flashDir:def.flashDir?def.flashDir.slice():[1,0],partyReady:false,partyPopped:false,bookSeq:[],torchOn:false,postPopSnapshot:null,tntInput:null};
+  return{def,width,height,walls,floors,voids,doors,lakes,breakables,player:{x:def.player[0],y:def.player[1]},objects:new Map(Object.entries(def.objects||{})),specials:new Map(Object.entries(def.specials||{})),slots:new Map(Object.entries(def.slots||{})),openDoor:false,sourceReady:new Map(),caveOpened:false,hearthLit:false,shelfOpened:false,libraryClueKnown:false,libraryReadCount:0,pinSolved:false,pinAttempts:0,flashDir:def.flashDir?def.flashDir.slice():[1,0],partyReady:false,partyPopped:false,bookSeq:[],torchOn:false,postPopSnapshot:null,tntInput:null,horse:def.horse?{x:def.horse[0],y:def.horse[1]}:null,horseBuffer:[],horseBusy:false,mirrorPanels:def.mirrorPanels?clone(def.mirrorPanels):null,mirrorUnlocking:false,market:def.type==='market'?{roundIndex:0,history:[],cart:[],required:[],sections:[],stock:{},sectionBreaks:{},taken:{},timeLeft:MARKET_ROUNDS[0].seconds,running:false,checkingOut:false,hasLeftCheckout:false,complete:false}:null};
 }
 function loadLevel(index,preserveInventory=true,opts={}){
   if(index<0||index>=LEVELS.length)return;
+  stopMarketTimer();
   if(state.level&&!state.suspendSave){state.savedLevels[state.levelIndex]=serializeLevel(state.level);writeProgress()}
   state.suspendSave=true;state.levelIndex=index;state.selectedItem=null;state.busy=false;state.auto=false;state.roomSerial++;
   if(!preserveInventory){state.inventory={};state.invOrder=[]}
   const snap=state.savedLevels[index]||null;state.level=restoreLevel(LEVELS[index],snap);
-  // A solved room stays solved on revisit, but you re-enter it at its normal entrance so backtracking is quick and predictable.
   if(state.completed.has(index)&&!opts.resumeCurrent)state.level.player={x:LEVELS[index].player[0],y:LEVELS[index].player[1]};
-  state.face=opts.resumeFace||'🙂';state.entryInventory=clone(state.inventory);state.entryInvOrder=[...state.invOrder];
+  state.face=LEVELS[index].id==='horse'?'🤠':(opts.resumeFace||'🙂');
+  state.entryInventory=clone(state.inventory);state.entryInvOrder=[...state.invOrder];
+
+  if(LEVELS[index].id==='market'&&state.level.market&&!state.level.market.required.length)marketPrepareAttempt(false);
+
   $('#levelName').textContent=LEVELS[index].name;$('#levelNum').textContent=`ROOM ${index+1} / ${LEVELS.length}`;updateNavButtons();
   sizeBoard();renderBoard();renderInventory();state.suspendSave=false;queueSave();
-  if(!opts.silent)say(state.completed.has(index)?'ROOM COMPLETE':(LEVELS[index].messages?.intro||''),state.completed.has(index)?700:1800);
-  if(index===2&&state.level.hearthLit)startSmokeEmitter();
+
+  if(LEVELS[index].id==='market'){
+    if(state.completed.has(index))say('ROOM COMPLETE',700);else marketUpdateStatus();
+  }else if(!opts.silent){
+    say(state.completed.has(index)?'ROOM COMPLETE':(LEVELS[index].messages?.intro||''),state.completed.has(index)?700:1800);
+  }
+  if(LEVELS[index].id==='fire'&&state.level.hearthLit)startSmokeEmitter();
 }
-function resetRoom(){if(state.completed.has(state.levelIndex)&&state.savedLevels[state.levelIndex]){state.suspendSave=true;state.level=restoreLevel(LEVELS[state.levelIndex],state.savedLevels[state.levelIndex]);state.level.player={x:LEVELS[state.levelIndex].player[0],y:LEVELS[state.levelIndex].player[1]};state.face='🙂';state.selectedItem=null;state.busy=false;state.suspendSave=false;renderAll();say('ROOM COMPLETE',650);return}if(state.levelIndex===5&&state.level.partyPopped&&state.level.postPopSnapshot){const l=state.level,s=l.postPopSnapshot;l.objects=new Map(s.objects);l.walls=new Set(s.walls);l.floors=new Set(s.floors);l.specials=new Map(s.specials);l.player={...s.player};l.openDoor=true;l.partyReady=true;l.partyPopped=true;l.torchOn=false;state.inventory=clone(s.inventory);state.invOrder=[...(s.invOrder||Object.keys(s.inventory))];state.face='🙂';state.selectedItem=null;state.busy=false;renderAll();say('PRESENTS RESET',700);return}state.inventory=clone(state.entryInventory);state.invOrder=[...(state.entryInvOrder||Object.keys(state.inventory))];loadLevel(state.levelIndex,true);say('ROOM RESET',850)}
-function sizeBoard(){const l=state.level;if(!l)return;const maxW=Math.min(window.innerWidth-16,580),reserved=245,maxH=Math.max(250,window.innerHeight-reserved);const cell=Math.floor(Math.min(48,(maxW-(l.width-1)*2)/l.width,(maxH-(l.height-1)*2)/l.height));document.documentElement.style.setProperty('--cell',`${Math.max(24,cell)}px`);$('#board').style.gridTemplateColumns=`repeat(${l.width},var(--cell))`;$('#board').style.gridTemplateRows=`repeat(${l.height},var(--cell))`}
+function resetRoom(){
+  stopMarketTimer();
+  if(state.completed.has(state.levelIndex)&&state.savedLevels[state.levelIndex]){
+    state.suspendSave=true;state.level=restoreLevel(LEVELS[state.levelIndex],state.savedLevels[state.levelIndex]);
+    state.level.player={x:LEVELS[state.levelIndex].player[0],y:LEVELS[state.levelIndex].player[1]};
+    state.face=isLevel('horse')?'🤠':'🙂';state.selectedItem=null;state.busy=false;state.suspendSave=false;renderAll();say('ROOM COMPLETE',650);return
+  }
+  if(isLevel('market')){marketPrepareAttempt(true);renderAll();marketUpdateStatus();return}
+  if(isLevel('horse')){
+    const l=state.level;l.player={x:l.def.player[0],y:l.def.player[1]};l.horse={x:l.def.horse[0],y:l.def.horse[1]};l.horseBuffer=[];l.horseBusy=false;l.openDoor=false;state.face='🤠';state.busy=false;renderAll();say('RESET',450);return
+  }
+  if(isLevel('mirror')){
+    const l=state.level;l.player={x:l.def.player[0],y:l.def.player[1]};l.mirrorPanels=clone(l.def.mirrorPanels);l.mirrorUnlocking=false;l.openDoor=false;state.face='🙂';state.busy=false;renderAll();say('RESET',450);return
+  }
+  if(isLevel('party')&&state.level.partyPopped&&state.level.postPopSnapshot){
+    const l=state.level,s=l.postPopSnapshot;l.objects=new Map(s.objects);l.walls=new Set(s.walls);l.floors=new Set(s.floors);l.specials=new Map(s.specials);l.player={...s.player};l.openDoor=true;l.partyReady=true;l.partyPopped=true;l.torchOn=false;state.inventory=clone(s.inventory);state.invOrder=[...(s.invOrder||Object.keys(s.inventory))];state.face='🙂';state.selectedItem=null;state.busy=false;renderAll();say('PRESENTS RESET',700);return
+  }
+  state.inventory=clone(state.entryInventory);state.invOrder=[...(state.entryInvOrder||Object.keys(state.inventory))];loadLevel(state.levelIndex,true);say('ROOM RESET',850)
+}
+function sizeBoard(){const l=state.level;if(!l)return;const maxW=Math.min(window.innerWidth-16,580),reserved=245,maxH=Math.max(250,window.innerHeight-reserved);const cell=Math.floor(Math.min(48,(maxW-(l.width-1)*2)/l.width,(maxH-(l.height-1)*2)/l.height)),minCell=isLevel('mirror')?18:isLevel('horse')?20:24;document.documentElement.style.setProperty('--cell',`${Math.max(minCell,cell)}px`);$('#board').style.gridTemplateColumns=`repeat(${l.width},var(--cell))`;$('#board').style.gridTemplateRows=`repeat(${l.height},var(--cell))`}
 function renderAll(){renderBoard();renderInventory();queueSave()}
 function wallEmojiAt(k){return state.level.breakables.has(k)?'🪨':state.level.def.wallEmoji}
 function slotAt(k){return state.level.slots.get(k)||null}
 function renderBoard(){
+  if(isLevel('market'))return renderMarketBoard();
+  if(isLevel('horse'))return renderHorseBoard();
+  if(isLevel('mirror'))return renderMirrorBoard();
   const l=state.level,board=$('#board');board.innerHTML='';const beam=getBeamCells();
   for(let y=0;y<l.height;y++)for(let x=0;x<l.width;x++){
     const k=key(x,y),cell=document.createElement('div');cell.className='cell';cell.dataset.x=x;cell.dataset.y=y;if(k===getTntInputKey()&&isTntInputActive())cell.classList.add('slotActive','tntInput');
     if(l.voids.has(k)){cell.classList.add('void');board.appendChild(cell);continue}
     if(beam.has(k))cell.classList.add('beamCell');
     if(l.lakes.has(k)){cell.classList.add('lake');const phase=((performance.now()-state.waveEpoch)+(x*137+y*83))%1800;cell.innerHTML=`<span class="emoji" style="animation-delay:-${phase}ms">🌊</span>`;board.appendChild(cell);continue}
-    if(l.walls.has(k)||l.breakables.has(k)){cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');let we=wallEmojiAt(k);if(state.levelIndex===4&&l.def.coloredBooks?.[k]){cell.classList.add('coloredBook');we=({red:'📕',blue:'📘',orange:'📙'})[l.def.coloredBooks[k]]}cell.innerHTML=`<span class="emoji">${we}</span>`;cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);continue}
+    if(l.walls.has(k)||l.breakables.has(k)){cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');let we=wallEmojiAt(k);if(isLevel('library')&&l.def.coloredBooks?.[k]){cell.classList.add('coloredBook');we=({red:'📕',blue:'📘',orange:'📙'})[l.def.coloredBooks[k]]}cell.innerHTML=`<span class="emoji">${we}</span>`;cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);continue}
     cell.classList.add('floor');
     const special=l.specials.get(k),slot=slotAt(k);
     if(slot&&slot.role!=='output'&&isSlotActive(k,slot))cell.classList.add('slotActive')
@@ -237,7 +346,7 @@ function renderBoard(){
     }
     cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);
   }
-  if(state.levelIndex===5)renderTorchBeam();
+  if(isLevel('party'))renderTorchBeam();
 }
 function renderTorchBeam(){
   const l=state.level;if(!l.torchOn)return;let fx=null;for(const[k,id]of l.objects)if(id==='flashlight'){const[x,y]=k.split(',').map(Number);fx={x,y};break}if(!fx)return;
@@ -246,7 +355,7 @@ function renderTorchBeam(){
   const ox=fx.x*step+cell*.24-3,oy=fx.y*step+cell*.76,ex=last.x*step+cell*.5,ey=last.y*step+cell*.5,dx=ex-ox,dy=ey-oy;
   const line=document.createElement('div');line.id='beamLine';line.style.left=`${ox}px`;line.style.top=`${oy}px`;line.style.width=`${Math.hypot(dx,dy)}px`;line.style.transform=`rotate(${Math.atan2(dy,dx)*180/Math.PI}deg)`;board.appendChild(line)
 }
-function renderInventory(){const inv=$('#inventory');inv.innerHTML='';const ids=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))];const entries=ids.filter(id=>(state.inventory[id]||0)>0).map(id=>[id,state.inventory[id]]);if(!entries.length){inv.innerHTML='<div class="emptyInv">empty</div>';return}entries.forEach(([id,n])=>{const b=document.createElement('button');b.className='invItem'+(state.selectedItem===id?' selected':'');b.innerHTML=`<span>${emojiOf(id)}</span>${n>1?`<span class="count">×${n}</span>`:''}`;b.addEventListener('click',()=>{if(state.busy)return;state.selectedItem=state.selectedItem===id?null:id;renderAll()});inv.appendChild(b)})}
+function renderInventory(){if(isLevel('market'))return renderMarketInventory();document.querySelector('.invLabel span').textContent='Inventory';const inv=$('#inventory');inv.innerHTML='';const ids=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))];const entries=ids.filter(id=>(state.inventory[id]||0)>0).map(id=>[id,state.inventory[id]]);if(!entries.length){inv.innerHTML='<div class="emptyInv">empty</div>';return}entries.forEach(([id,n])=>{const b=document.createElement('button');b.className='invItem'+(state.selectedItem===id?' selected':'');b.innerHTML=`<span>${emojiOf(id)}</span>${n>1?`<span class="count">×${n}</span>`:''}`;b.addEventListener('click',()=>{if(state.busy)return;state.selectedItem=state.selectedItem===id?null:id;renderAll()});inv.appendChild(b)})}
 function say(msg,ms=1300){const el=$('#status');clearTimeout(state.statusTimer);el.textContent=msg;el.style.opacity='1';if(ms)state.statusTimer=setTimeout(()=>{el.style.opacity='0'},ms)}
 function isAdjacent(x1,y1,x2,y2){return Math.abs(x1-x2)+Math.abs(y1-y2)===1}
 function isFloor(x,y){const l=state.level,k=key(x,y);return l.floors.has(k)&&!l.walls.has(k)&&!l.breakables.has(k)&&!l.lakes.has(k)}
@@ -255,8 +364,8 @@ function occupied(x,y){const l=state.level,k=key(x,y);return l.objects.has(k)||(
 function canPlaceSelectedAt(x,y){
   if(!state.selectedItem||!isFloor(x,y)||occupied(x,y)||state.level.doors.has(key(x,y))||isMachineCell(x,y))return false;const k=key(x,y),sl=slotAt(k),sp=state.level.specials.get(k);
   if(state.selectedItem==='spark'){
-    if(state.levelIndex===2&&sl?.machine==='hearth'&&playerNearMachineZone('hearth')&&!state.level.hearthLit)return true;
-    if(state.levelIndex===3&&k===getTntInputKey()&&isTntInputActive())return true;
+    if(isLevel('fire')&&sl?.machine==='hearth'&&playerNearMachineZone('hearth')&&!state.level.hearthLit)return true;
+    if(isLevel('time')&&k===getTntInputKey()&&isTntInputActive())return true;
     return false;
   }
   if(sl&&sl.role==='output')return false;if(['snow','chili','iceWater','waterSource','worm','button','pinDesk','clueBook','partyGate','disco','chair'].includes(sp))return false;return true
@@ -281,14 +390,14 @@ function isSlotActive(k,slot){
   if(slot.machine==='hearth'&&state.level.hearthLit)return false;
   return playerNearMachineZone(slot.machine);
 }
-function getTntInfo(){const l=state.level;if(!l||state.levelIndex!==3)return null;for(const[k,id]of l.objects)if(id==='tnt'){const[x,y]=k.split(',').map(Number);return{x,y,k}}return null}
+function getTntInfo(){const l=state.level;if(!l||!isLevel('time'))return null;for(const[k,id]of l.objects)if(id==='tnt'){const[x,y]=k.split(',').map(Number);return{x,y,k}}return null}
 function assignTntInput(x,y){const l=state.level;l.tntInput=null;for(const[dx,dy]of[[0,-1],[-1,0],[1,0],[0,1]]){const nx=x+dx,ny=y+dy,k=key(nx,ny);if(isFloor(nx,ny)&&!l.objects.has(k)&&!l.doors.has(k)&&!isMachineCell(nx,ny)&&!l.specials.get(k)&&!(l.player.x===nx&&l.player.y===ny)){l.tntInput=k;break}}}
 function getTntInputKey(){const t=getTntInfo();if(!t)return null;return state.level.tntInput}
 function isTntInputActive(){const t=getTntInfo(),ik=getTntInputKey();if(!t||!ik||!hasInv('spark'))return false;const[ix,iy]=ik.split(',').map(Number),p=state.level.player;return Math.min(Math.abs(p.x-t.x)+Math.abs(p.y-t.y),Math.abs(p.x-ix)+Math.abs(p.y-iy))<=1}
 function onCellTap(x,y){
   if(Date.now()<state.suppressClickUntil||state.busy)return;
   const p=state.level.player,k=key(x,y),sl=slotAt(k);
-  if(state.levelIndex===4&&state.level.walls.has(k)&&state.level.def.coloredBooks?.[k]){tapLibraryBook(k);return}
+  if(isLevel('library')&&state.level.walls.has(k)&&state.level.def.coloredBooks?.[k]){tapLibraryBook(k);return}
   if(state.selectedItem==='pin'&&state.level.objects.get(k)==='balloon'&&isAdjacent(p.x,p.y,x,y)){popPartyBalloon(x,y);return;}
   if(!state.selectedItem||!canPlaceSelectedAt(x,y))return;
   // Machine inputs can be filled from anywhere around the local machine cluster.
@@ -298,14 +407,17 @@ function onCellTap(x,y){
 }
 
 function moveOne(dx,dy){
+  if(isLevel('market'))return marketMove(dx,dy);
+  if(isLevel('horse'))return horseMove(dx,dy);
+  if(isLevel('mirror'))return mirrorMove(dx,dy);
   if(state.busy)return false;const l=state.level,nx=l.player.x+dx,ny=l.player.y+dy,nk=key(nx,ny);
   if(!isFloor(nx,ny))return false;
   if(l.doors.has(nk)){
     if(l.openDoor){l.player={x:nx,y:ny};renderBoard();markLevelComplete(state.levelIndex);setTimeout(nextLevel,150);return true}
-    if(state.levelIndex===0){if(hasInv('rainbow')){takeInv('rainbow');animateDoorOpen('🌈  DOOR OPEN');return false}say('🚪  NEEDS  🌈',1800);return false}
-    if(state.levelIndex===3){if(hasInv('keyOld')){takeInv('keyOld');animateDoorOpen('🗝️  DOOR OPEN');return false}say('🚪  NEEDS  🗝️',1800);return false}
-    if(state.levelIndex===4){if(l.shelfOpened){animateDoorOpen('');return false}say('',0);return false}
-    if(state.levelIndex===5){say('🎈',650);return false}
+    if(isLevel('alchemy')){if(hasInv('rainbow')){takeInv('rainbow');animateDoorOpen('🌈  DOOR OPEN');return false}say('🚪  NEEDS  🌈',1800);return false}
+    if(isLevel('time')){if(hasInv('keyOld')){takeInv('keyOld');animateDoorOpen('🗝️  DOOR OPEN');return false}say('🚪  NEEDS  🗝️',1800);return false}
+    if(isLevel('library')){if(l.shelfOpened){animateDoorOpen('');return false}say('',0);return false}
+    if(isLevel('party')){say('🎈',650);return false}
     say('🔘  IS HOLDING THE DOOR',1200);return false;
   }
   const obj=l.objects.get(nk);
@@ -321,7 +433,7 @@ function moveOne(dx,dy){
   if(obj==='ball'){if(state.face==='😮‍💨'){pushBallWithBreath(nx,ny,dx,dy);return true}say('⚽  NEEDS 💨',900);return false}
   if(obj==='chicken')return false;
   if(obj==='present'){pushPresent(nx,ny,dx,dy);return true}
-  if(obj==='balloon'){if(!hasInv('pin'))say('PIN NEEDED — LEVEL 5',1700);return false}
+  if(obj==='balloon'){if(!hasInv('pin'))say('PIN NEEDED — ROOM 7',1700);return false}
   const special=l.specials.get(nk);
   if(special==='pinDesk'){if(l.pinSolved){l.player={x:nx,y:ny};addInv('pin');l.specials.delete(nk);say('📌  ADDED',650);updateContextStates();renderAll();return true}openPinModal();return false}
   if(special==='clueBook'){if(hasInv('glasses')){state.face='🤓';renderAll()}readLibraryClue();return false}
@@ -344,7 +456,7 @@ function moveOne(dx,dy){
     else if(state.face==='🙂'){state.face='🥵';say('🥵',450)}
   }
   if(obj==='puff'){l.objects.delete(nk);state.face='😮‍💨';say('😮‍💨',520);renderAll();return true}
-  if(obj==='flashlight'&&state.levelIndex===5){l.objects.delete(nk);addInv('flashlight');if(l.partyReady&&!l.partyPopped){l.partyReady=false;l.torchOn=false;state.face='🙂';say('🔦  DISCO OFF',700)}else say('🔦  ADDED',650);updateContextStates();renderAll();return true}
+  if(obj==='flashlight'&&isLevel('party')){l.objects.delete(nk);addInv('flashlight');if(l.partyReady&&!l.partyPopped){l.partyReady=false;l.torchOn=false;state.face='🙂';say('🔦  DISCO OFF',700)}else say('🔦  ADDED',650);updateContextStates();renderAll();return true}
   if(obj&&isCollectibleObject(obj)){l.objects.delete(nk);addInv(obj);say(`${emojiOf(obj)}  ADDED`,650)}
   updateContextStates();renderAll();return true;
 }
@@ -369,7 +481,7 @@ function pushIce(x,y,dx,dy){
 function updateButtonDoor(){
   const l=state.level;if(!l.def.button)return;
   const k=key(l.def.button[0],l.def.button[1]),obj=l.objects.get(k);
-  const wantOpen=(state.levelIndex===1&&obj==='iceBlock')||(state.levelIndex===2&&obj==='ball');
+  const wantOpen=(isLevel('ice')&&obj==='iceBlock')||(isLevel('fire')&&obj==='ball');
   if(wantOpen&&!l.openDoor){animateDoorOpen('🚪  OPEN');return}
   if(!wantOpen&&l.openDoor){l.openDoor=false;renderBoard()}
 }
@@ -386,14 +498,14 @@ function placeSelected(x,y){
   const id=state.selectedItem;if(!id)return;const l=state.level,k=key(x,y);
   if(id==='spark'){
     state.selectedItem=null;
-    if(state.levelIndex===2&&slotAt(k)?.machine==='hearth'){igniteHearth(k);return}
-    if(state.levelIndex===3&&k===getTntInputKey()){igniteTnt(k);return}
+    if(isLevel('fire')&&slotAt(k)?.machine==='hearth'){igniteHearth(k);return}
+    if(isLevel('time')&&k===getTntInputKey()){igniteTnt(k);return}
     renderAll();return;
   }
   if(!takeInv(id))return;state.selectedItem=null;l.objects.set(k,id);renderAll();
-  if(state.levelIndex===0){checkAlchemyAround(x,y);return}
-  if(state.levelIndex===3){if(slotAt(k)?.machine==='time'){runTimeMachine(x,y,id);return}if(id==='tnt'){assignTntInput(x,y);renderAll();return}}
-  if(state.levelIndex===5&&id==='flashlight'){updateContextStates();renderAll();checkDiscoBeam()}
+  if(isLevel('alchemy')){checkAlchemyAround(x,y);return}
+  if(isLevel('time')){if(slotAt(k)?.machine==='time'){runTimeMachine(x,y,id);return}if(id==='tnt'){assignTntInput(x,y);renderAll();return}}
+  if(isLevel('party')&&id==='flashlight'){updateContextStates();renderAll();checkDiscoBeam()}
 }
 function checkAlchemyAround(x,y){const l=state.level,slot=slotAt(key(x,y));if(!slot||!['plus','minus'].includes(slot.machine))return;const m=slot.machine,op=findSpecial(m);if(!op)return;const opK=key(op.x,op.y),leftK=slotKeyFor(m,'left'),rightK=slotKeyFor(m,'right');if(!leftK||!rightK||l.objects.has(opK))return;const a=l.objects.get(leftK),b=l.objects.get(rightK);if(!a||!b)return;let result=null;if(m==='minus'&&a==='cloudSun'&&b==='cloud')result='sun';if(m==='plus'){const pair=[a,b].sort().join('+');result=({'cloud+water':'rain','rain+sun':'rainbow','bear+thread':'teddy'})[pair]||null}const cell=getCell(op.x,op.y);cell?.classList.add('machineReact');if(!result){returnAlchemyInputs(leftK,rightK,a,b,cell);return}state.busy=true;setTimeout(()=>{l.objects.delete(leftK);l.objects.delete(rightK);l.objects.set(opK,result);state.busy=false;renderAll();spawnEffect(op.x,op.y,emojiOf(result),'timeFlash',340);say(`${emojiOf(a)} ${m==='plus'?'+':'−'} ${emojiOf(b)} → ${emojiOf(result)}`,900)},260)}
 function slotKeyFor(machine,role){for(const[k,v]of state.level.slots){if(v.machine===machine&&v.role===role)return k}return null}
@@ -419,17 +531,17 @@ function openPinModal(){
 function closeOverlay(){const root=$('#overlayRoot');if(root)root.innerHTML=''}
 function bindBackdropClose(){const modal=document.querySelector('#overlayRoot .modal');if(!modal)return;const openedAt=Date.now();modal.addEventListener('click',e=>{if(e.target===modal&&Date.now()-openedAt>=420)closeOverlay()})}
 function readLibraryClue(){if(!hasInv('glasses')){showUnreadableBook();return}showBookClue()}
-function showUnreadableBook(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">📖</div><div class="modalTitle">?#% ▒▒ @!&</div><div class="modalText" style="font-size:17px">👓 &nbsp;←&nbsp; ROOM 4</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
+function showUnreadableBook(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">📖</div><div class="modalTitle">?#% ▒▒ @!&</div><div class="modalText" style="font-size:17px">👓 &nbsp;←&nbsp; ROOM 5</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
 function showBookClue(){const l=state.level;l.libraryReadCount=(l.libraryReadCount||0)+1;const hint=l.libraryReadCount>=3?'TAP SOME BOOKS':'';$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">📚</div><div class="modalText" style="font-size:18px;color:#fff">Nigel felt blue.<br>He read a book and ate two oranges.<br><br>It worked.</div><div class="pinHint">${hint}</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
 function tapLibraryBook(k){const l=state.level,xy=k.split(',').map(Number),cell=getCell(xy[0],xy[1]);cell?.classList.add('bookShake');setTimeout(()=>cell?.classList.remove('bookShake'),260);const color=l.def.coloredBooks[k],target=['blue','red','orange','orange'],i=l.bookSeq.length;if(color===target[i])l.bookSeq.push(color);else l.bookSeq=color===target[0]?[color]:[];if(l.bookSeq.length===target.length){l.bookSeq=[];state.busy=true;for(const bk of l.def.secretBooks){const[a,b]=bk.split(',').map(Number);const c=getCell(a,b);c?.classList.add('shelfSlide')}setTimeout(()=>{for(const bk of l.def.secretBooks){l.walls.delete(bk);l.floors.add(bk)}l.shelfOpened=true;state.busy=false;renderAll();const mid=l.def.secretBooks[1].split(',').map(Number);spawnEffect(mid[0],mid[1],'✨','timeFlash',420);setTimeout(()=>animateDoorOpen(''),250)},380)}}
-function updateContextStates(){const l=state.level;if(state.levelIndex===4){const c=findSpecial('clueBook'),near=c&&isAdjacent(l.player.x,l.player.y,c.x,c.y),next=near&&hasInv('glasses')?'🤓':'🙂';if(state.face!==next){state.face=next;if(next==='🤓')spawnEffect(l.player.x,l.player.y,'🤓','timeFlash',260)}}if(state.levelIndex===5){let fx=null;for(const[k,id]of l.objects)if(id==='flashlight'){const[x,y]=k.split(',').map(Number);fx={x,y};break}l.torchOn=!!(fx&&l.player.x===fx.x+1&&l.player.y===fx.y-1);if(l.torchOn)checkDiscoBeam()}}
+function updateContextStates(){const l=state.level;if(isLevel('library')){const c=findSpecial('clueBook'),near=c&&isAdjacent(l.player.x,l.player.y,c.x,c.y),next=near&&hasInv('glasses')?'🤓':'🙂';if(state.face!==next){state.face=next;if(next==='🤓')spawnEffect(l.player.x,l.player.y,'🤓','timeFlash',260)}}if(isLevel('party')){let fx=null;for(const[k,id]of l.objects)if(id==='flashlight'){const[x,y]=k.split(',').map(Number);fx={x,y};break}l.torchOn=!!(fx&&l.player.x===fx.x+1&&l.player.y===fx.y-1);if(l.torchOn)checkDiscoBeam()}}
 
 function openSecretShelf(x,y){
   const l=state.level;if(l.shelfOpened||state.busy)return;state.busy=true;const cell=getCell(x,y);cell?.classList.add('shelfSlide');
   setTimeout(()=>{const k=key(x,y);l.walls.delete(k);l.floors.add(k);l.shelfOpened=true;state.busy=false;renderAll();say('📚',450);setTimeout(()=>animateDoorOpen(''),260)},350)
 }
-function getBeamCells(){const l=state.level,out=new Set();if(state.levelIndex!==5||!l.torchOn)return out;let fx=null;for(const[k,id]of l.objects)if(id==='flashlight'){const[x,y]=k.split(',').map(Number);fx={x,y};break}if(!fx)return out;let x=fx.x-1,y=fx.y+1;while(x>=0&&y<l.height){const k=key(x,y);if(l.walls.has(k)||l.breakables.has(k)||(l.doors.has(k)&&!l.openDoor))break;out.add(k);if(l.specials.get(k)==='disco')break;x--;y++}return out}
-function checkDiscoBeam(){if(state.levelIndex!==5)return;const l=state.level,beam=getBeamCells(),d=findSpecial('disco');if(!d||!beam.has(key(d.x,d.y))||l.partyReady)return;l.partyReady=true;state.face='🥳';renderAll();spawnEffect(d.x,d.y,'✨','timeFlash',500);spawnEffect(l.player.x,l.player.y,'🥳','timeFlash',420);say('🥳  PARTY GOER',850)}
+function getBeamCells(){const l=state.level,out=new Set();if(!isLevel('party')||!l.torchOn)return out;let fx=null;for(const[k,id]of l.objects)if(id==='flashlight'){const[x,y]=k.split(',').map(Number);fx={x,y};break}if(!fx)return out;let x=fx.x-1,y=fx.y+1;while(x>=0&&y<l.height){const k=key(x,y);if(l.walls.has(k)||l.breakables.has(k)||(l.doors.has(k)&&!l.openDoor))break;out.add(k);if(l.specials.get(k)==='disco')break;x--;y++}return out}
+function checkDiscoBeam(){if(!isLevel('party'))return;const l=state.level,beam=getBeamCells(),d=findSpecial('disco');if(!d||!beam.has(key(d.x,d.y))||l.partyReady)return;l.partyReady=true;state.face='🥳';renderAll();spawnEffect(d.x,d.y,'✨','timeFlash',500);spawnEffect(l.player.x,l.player.y,'🥳','timeFlash',420);say('🥳  PARTY GOER',850)}
 
 function pushPresent(x,y,dx,dy){
   const l=state.level,nx=x+dx,ny=y+dy,nk=key(nx,ny);if(!isFloor(nx,ny)||l.objects.has(nk)||isMachineCell(nx,ny)||isSolidSpecial(l.specials.get(nk))||l.specials.get(nk)==='partyGate'){say('BLOCKED',420);return}
@@ -439,7 +551,7 @@ function pushPresent(x,y,dx,dy){
   l.objects.delete(key(x,y));l.objects.set(nk,'present');l.player={x,y};renderAll()
 }
 function popPartyBalloon(x,y){
-  const l=state.level;if(state.levelIndex!==5||l.partyPopped||state.busy)return;if(!hasInv('pin')){say('PIN NEEDED — LEVEL 5',1700);return}takeInv('pin');state.selectedItem=null;state.busy=true;getCell(x,y)?.querySelector('.emoji')?.classList.add('balloonPop');
+  const l=state.level;if(!isLevel('party')||l.partyPopped||state.busy)return;if(!hasInv('pin')){say('PIN NEEDED — ROOM 7',1700);return}takeInv('pin');state.selectedItem=null;state.busy=true;getCell(x,y)?.querySelector('.emoji')?.classList.add('balloonPop');
   setTimeout(()=>{
     l.objects.delete(key(x,y));l.partyPopped=true;
     const disco=findSpecial('disco');if(disco){l.specials.delete(key(disco.x,disco.y));spawnEffect(disco.x,disco.y,'✨','timeFlash',360)}l.torchOn=false;state.face='🙂';
@@ -460,11 +572,11 @@ function igniteHearth(inputK){
 }
 function startSmokeEmitter(){
   const serial=state.roomSerial,l=state.level;
-  const cycle=()=>{if(serial!==state.roomSerial||state.levelIndex!==2||!l.hearthLit)return;emitSmokePuff(serial);setTimeout(cycle,2200)};
+  const cycle=()=>{if(serial!==state.roomSerial||!isLevel('fire')||!l.hearthLit)return;emitSmokePuff(serial);setTimeout(cycle,2200)};
   setTimeout(cycle,520);
 }
 function emitSmokePuff(serial){
-  if(serial!==state.roomSerial||state.levelIndex!==2)return;
+  if(serial!==state.roomSerial||!isLevel('fire'))return;
   const l=state.level,h=findSpecial('woodHearth');if(!h)return;
   let cur={x:h.x,y:h.y-1};
   const firstK=key(cur.x,cur.y);
@@ -472,7 +584,7 @@ function emitSmokePuff(serial){
   if(!isFloor(cur.x,cur.y)||l.objects.has(firstK))return;
   l.objects.set(firstK,'puff');renderBoard();
   const step=()=>{
-    if(serial!==state.roomSerial||state.levelIndex!==2)return;
+    if(serial!==state.roomSerial||!isLevel('fire'))return;
     const ck=key(cur.x,cur.y);if(l.objects.get(ck)!=='puff')return;
     const next={x:cur.x,y:cur.y-1},nk=key(next.x,next.y);
     if(l.player.x===next.x&&l.player.y===next.y){l.objects.delete(ck);state.face='😮‍💨';renderAll();say('😮‍💨',420);return}
@@ -510,20 +622,243 @@ function igniteTnt(inputK){
 function explodeTnt(x,y){
   const l=state.level,k=key(x,y);l.objects.delete(k);l.tntInput=null;spawnEffect(x,y,'💥','boomCenter',360);const hit=[];
   for(const[dx,dy]of dirs){const nx=x+dx,ny=y+dy,nk=key(nx,ny);setTimeout(()=>spawnEffect(nx,ny,'💥','boomOuter',500),150);if(l.breakables.has(nk))hit.push(nk)}
-  setTimeout(()=>{for(const bk of hit){l.breakables.delete(bk);l.walls.delete(bk);l.floors.add(bk)}l.caveOpened=l.caveOpened||hit.length>0;state.busy=false;renderAll();say(hit.length?'🪨  OPEN':'💥',650)},620)
+  setTimeout(()=>{for(const bk of hit){l.breakables.delete(bk);l.walls.delete(bk);l.floors.add(bk)}l.caveOpened=l.caveOpened||hit.length>0;state.busy=false;renderAll();say(hit.length?'🪨  OPEN':'💥',650);if(hit.length&&isLevel('time')){for(const[ck,id]of l.objects)if(id==='chicken'){const[cx,cy]=ck.split(',').map(Number);setTimeout(()=>startChicken(cx,cy),420);break}}},620)
+}
+
+
+/* ---------- MARKET RUN ---------- */
+function marketIsShelf(x,y){return y>=2&&y<=11&&(x===1||x===4||x===5||x===8)}
+function marketIsFloor(x,y){return x>0&&x<9&&y>0&&y<13&&!marketIsShelf(x,y)}
+function marketShelfAccessible(x,dx){if(x===1)return dx===-1;if(x===4)return dx===1;if(x===5)return dx===-1;if(x===8)return dx===1;return false}
+function marketVisibleTotal(n){return n>200?'>$200':`$${n}`}
+function marketCategoryForProduct(p){return Object.keys(MARKET_CATEGORIES).find(c=>MARKET_CATEGORIES[c].includes(p))}
+function marketFaceById(id){return MARKET_FACES.find(f=>f.id===id)}
+function marketBuildSections(){
+  const m=state.level.market,by={3:[],4:[],5:[],6:[],7:[]};
+  Object.keys(MARKET_CATEGORIES).forEach(c=>by[MARKET_CATEGORIES[c].length].push(c));Object.values(by).forEach(a=>{const s=shuffle(a);a.splice(0,a.length,...s)});
+  const pairs=[[by[6].pop(),by[4].pop()],[by[6].pop(),by[4].pop()],[by[5].pop(),by[5].pop()],[by[7].pop(),by[3].pop()]],faces=shuffle(MARKET_FACES);
+  m.sections=[];m.sectionBreaks={};
+  faces.forEach((f,i)=>{let y=2;shuffle(pairs[i]).forEach((cat,j)=>{const len=MARKET_CATEGORIES[cat].length;m.sections.push({category:cat,faceId:f.id,x:f.x,aisle:f.aisle,start:y,end:y+len-1});if(j===1)m.sectionBreaks[f.x]=y;y+=len})})
+}
+function marketChooseRequired(){
+  const m=state.level.market;let a,b;
+  if(m.roundIndex===0){[a,b]=shuffle(m.sections).slice(0,2)}
+  else{
+    const left=m.sections.filter(s=>s.aisle==='L'),right=m.sections.filter(s=>s.aisle==='R'),pairs=[];
+    left.forEach(l=>right.forEach(r=>pairs.push({l,r,spread:Math.abs((l.start+l.end-r.start-r.end)/2)})));
+    pairs.sort((x,y)=>y.spread-x.spread);const p=pairs[Math.floor(Math.random()*Math.min(4,pairs.length))];a=p.l;b=p.r
+  }
+  m.required=[a,b].map(s=>{const arr=MARKET_CATEGORIES[s.category];return arr[Math.floor(Math.random()*arr.length)]})
+}
+function marketBuildStock(){
+  const m=state.level.market;m.stock={};m.taken={};
+  m.sections.forEach(sec=>{
+    let items=shuffle(MARKET_CATEGORIES[sec.category]),req=m.required.find(p=>marketCategoryForProduct(p)===sec.category);
+    if(req){items=items.filter(p=>p!==req);items.splice(Math.floor(Math.random()*(items.length+1)),0,req)}
+    if(m.roundIndex===2&&items.length>2){
+      // Keep the exact layout unpredictable, but make one valuable choice in each section tend toward its farther end.
+      const hi=[...items].sort((a,b)=>MARKET_PRICE[b]-MARKET_PRICE[a])[0],i=items.indexOf(hi);if(i>0&&Math.random()<.65)[items[0],items[i]]=[items[i],items[0]]
+    }
+    for(let y=sec.start,i=0;y<=sec.end;y++,i++)m.stock[key(sec.x,y)]=items[i]
+  })
+}
+function marketPrepareAttempt(keepHistory=true){
+  const l=state.level,m=l.market;if(!m)return;stopMarketTimer();
+  const history=keepHistory?[...(m.history||[])]:[],roundIndex=m.roundIndex||0;
+  m.history=history;m.roundIndex=roundIndex;m.cart=[];m.running=false;m.checkingOut=false;m.hasLeftCheckout=false;m.timeLeft=MARKET_ROUNDS[m.roundIndex].seconds;m.complete=false;
+  l.player={x:l.def.player[0],y:l.def.player[1]};l.openDoor=false;
+  marketBuildSections();marketChooseRequired();marketBuildStock();queueSave()
+}
+function marketUpdateStatus(){
+  const m=state.level.market;if(!m||m.complete)return;
+  clearTimeout(state.statusTimer);const r=MARKET_ROUNDS[m.roundIndex],el=$('#status');el.textContent=`$${r.threshold}+  ·  NEED ${m.required.join(' ')}  ·  0:${String(Math.max(0,m.timeLeft)).padStart(2,'0')}`;el.style.opacity='1'
+}
+function marketStartTimer(){
+  const m=state.level.market;if(!m||m.running||m.complete)return;m.running=true;const serial=state.roomSerial;stopMarketTimer();m.running=true;
+  state.marketTimer=setInterval(()=>{if(serial!==state.roomSerial||!isLevel('market')){stopMarketTimer();return}m.timeLeft--;marketUpdateStatus();queueSave();if(m.timeLeft<=0){stopMarketTimer();m.running=false;marketFinishAttempt('time')}},1000)
+}
+function renderMarketBoard(){
+  const l=state.level,m=l.market,board=$('#board');board.innerHTML='';
+  for(let y=0;y<l.height;y++)for(let x=0;x<l.width;x++){
+    const k=key(x,y),cell=document.createElement('div');cell.className='cell';cell.dataset.x=x;cell.dataset.y=y;
+    if(x===0&&y===12){cell.classList.add('marketCheckout');cell.innerHTML='<span class="emoji">🧾</span>'}
+    else if(l.doors.has(k)){if(!l.openDoor){cell.classList.add('door');cell.innerHTML='<span class="emoji">🚪</span>'}else cell.classList.add('floor','marketFloor')}
+    else if(x===0||x===9||y===0||y===13){cell.classList.add('wall');cell.innerHTML='<span class="emoji">🧱</span>'}
+    else if(marketIsShelf(x,y)){
+      cell.classList.add('marketShelf');if(+m.sectionBreaks[x]===y)cell.classList.add('sectionBreak');
+      if(!m.taken[k]&&m.stock[k])cell.innerHTML=`<span class="emoji">${m.stock[k]}</span>`
+    }else cell.classList.add('floor','marketFloor');
+    if(l.player.x===x&&l.player.y===y)cell.innerHTML='<span class="emoji player">🛒</span>';
+    board.appendChild(cell)
+  }
+}
+function renderMarketInventory(){
+  const inv=$('#inventory'),m=state.level.market;document.querySelector('.invLabel span').textContent=`Trolley  ${m.cart.length} / ${MARKET_CAP}`;inv.innerHTML='';
+  for(let i=0;i<MARKET_CAP;i++){const d=document.createElement('div');d.className='marketCartSlot'+(m.cart[i]?'':' empty');d.textContent=m.cart[i]||'·';inv.appendChild(d)}
+}
+function marketCollect(x,y){
+  const l=state.level,m=l.market,k=key(x,y);if(m.cart.length>=MARKET_CAP){say('4 / 4',420);return}if(m.taken[k]||!m.stock[k])return;
+  m.cart.push(m.stock[k]);m.taken[k]=true;renderAll();marketUpdateStatus()
+}
+function marketMove(dx,dy){
+  const l=state.level,m=l.market;if(state.busy||m.checkingOut||document.querySelector('#overlayRoot .modal'))return false;
+  const nx=l.player.x+dx,ny=l.player.y+dy,nk=key(nx,ny);
+  if(l.doors.has(nk)){
+    if(l.openDoor){l.player={x:nx,y:ny};renderBoard();markLevelComplete(state.levelIndex);setTimeout(nextLevel,150);return true}
+    return false
+  }
+  if(marketIsShelf(nx,ny)){if(!m.complete){marketStartTimer();if(dy===0&&marketShelfAccessible(nx,dx))marketCollect(nx,ny)}return false}
+  if(!marketIsFloor(nx,ny))return false;
+  marketStartTimer();l.player={x:nx,y:ny};if(nx!==1||ny!==12)m.hasLeftCheckout=true;renderAll();marketUpdateStatus();
+  if(!m.complete&&m.hasLeftCheckout&&nx===1&&ny===12){m.checkingOut=true;stopMarketTimer();m.running=false;setTimeout(()=>{if(isLevel('market')){m.checkingOut=false;marketFinishAttempt('checkout')}},230)}
+  return true
+}
+function marketTotal(){return state.level.market.cart.reduce((n,p)=>n+(MARKET_PRICE[p]||0),0)}
+function marketHistoryHtml(){
+  const h=state.level.market.history||[];if(!h.length)return'';
+  return `<div class="marketHistory">${h.map(a=>`<div class="marketHistoryRow"><div class="marketHistoryItems">${a.items.join(' ')}</div><div class="marketHistoryTotal">${marketVisibleTotal(a.total)}</div></div>`).join('')}</div>`
+}
+function marketResultModal(big,items,small,button,action){
+  $('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">${big}</div>${items?`<div class="modalText" style="font-size:23px">${items}</div>`:''}${small?`<div class="modalTitle" style="margin-top:8px">${small}</div>`:''}${marketHistoryHtml()}<button class="primary" id="marketNext">${button}</button></div></div>`;
+  $('#marketNext').onclick=action
+}
+function marketFinishAttempt(kind){
+  const l=state.level,m=l.market;if(!m||m.complete)return;stopMarketTimer();m.running=false;const r=MARKET_ROUNDS[m.roundIndex],missing=m.required.filter(p=>!m.cart.includes(p)),full=m.cart.length===MARKET_CAP;
+  if(kind==='time'){marketResultModal('TIME',m.cart.join(' '),'','RETRY',()=>{closeOverlay();marketPrepareAttempt(true);renderAll();marketUpdateStatus()});return}
+  if(missing.length){marketResultModal(`NEED ${missing.join(' ')}`,m.cart.join(' '),'','RETRY',()=>{closeOverlay();marketPrepareAttempt(true);renderAll();marketUpdateStatus()});return}
+  if(!full){marketResultModal(`${m.cart.length} / ${MARKET_CAP}`,m.cart.join(' '),'','RETRY',()=>{closeOverlay();marketPrepareAttempt(true);renderAll();marketUpdateStatus()});return}
+  const total=marketTotal(),pass=total>=r.threshold;m.history.unshift({items:[...m.cart],total});if(m.history.length>12)m.history.length=12;queueSave();
+  if(!pass){marketResultModal(marketVisibleTotal(total),m.cart.join(' '),`$${r.threshold}+`,'RETRY',()=>{closeOverlay();marketPrepareAttempt(true);renderAll();marketUpdateStatus()});return}
+  const round=m.roundIndex+1;
+  marketResultModal(`ROUND ${round} ✓`,m.cart.join(' '),marketVisibleTotal(total),round===MARKET_ROUNDS.length?'CONTINUE':'NEXT',()=>{
+    closeOverlay();
+    if(round<MARKET_ROUNDS.length){m.roundIndex++;marketPrepareAttempt(true);renderAll();marketUpdateStatus()}
+    else{m.complete=true;m.running=false;clearTimeout(state.statusTimer);$('#status').textContent='ROUND 3 ✓';$('#status').style.opacity='1';queueSave();setTimeout(()=>animateDoorOpen(''),120)}
+  })
+}
+
+/* ---------- HORSE PADDOCK ---------- */
+const HORSE_DIR_NAME=(dx,dy)=>dx===1?'R':dx===-1?'L':dy===1?'D':'U',HORSE_INV={U:'D',D:'U',L:'R',R:'L'},HORSE_VEC={U:[0,-1],D:[0,1],L:[-1,0],R:[1,0]};
+function horseTargetHas(x,y){return state.level.def.horseTarget.includes(key(x,y))}
+function renderHorseBoard(){
+  const l=state.level,board=$('#board');board.innerHTML='';
+  for(let y=0;y<l.height;y++)for(let x=0;x<l.width;x++){
+    const k=key(x,y),cell=document.createElement('div');cell.className='cell';cell.dataset.x=x;cell.dataset.y=y;
+    if(l.voids.has(k)){cell.classList.add('void');board.appendChild(cell);continue}
+    if(l.walls.has(k)){cell.classList.add('wall','horseWall');cell.innerHTML='<span class="emoji">🪵</span>'}
+    else if(l.doors.has(k)&&!l.openDoor){cell.classList.add('door');cell.innerHTML='<span class="emoji">🚪</span>'}
+    else{cell.classList.add('floor',horseTargetHas(x,y)?'horseTarget':'horseGrass');
+      if(l.horse&&l.horse.x===x&&l.horse.y===y)cell.innerHTML='<span class="emoji horseActor">🐴</span>';
+      if(l.player.x===x&&l.player.y===y)cell.innerHTML='<span class="emoji player">🤠</span>'
+    }
+    board.appendChild(cell)
+  }
+}
+function horseValidCommand(a){if(a.length!==3)return false;const[A,B,C]=a,va=HORSE_VEC[A],vb=HORSE_VEC[B],perp=(x,y)=>HORSE_VEC[x][0]*HORSE_VEC[y][0]+HORSE_VEC[x][1]*HORSE_VEC[y][1]===0;return(A===B&&B!==C&&perp(B,C))||(A!==B&&B===C&&perp(A,B))}
+function horseUsefulPrefix(a){if(a.length===1)return true;if(a.length!==2)return false;const[A,B]=a;return A===B||(HORSE_VEC[A][0]*HORSE_VEC[B][0]+HORSE_VEC[A][1]*HORSE_VEC[B][1]===0)}
+function horseFeedMove(d){
+  const l=state.level;l.horseBuffer.push(d);
+  if(l.horseBuffer.length>=3&&horseValidCommand(l.horseBuffer.slice(-3))){const cmd=l.horseBuffer.slice(-3).map(x=>HORSE_INV[x]);l.horseBuffer=[];horseExecute(cmd);return}
+  const last2=l.horseBuffer.slice(-2);l.horseBuffer=last2.length===2&&horseUsefulPrefix(last2)?last2:[l.horseBuffer[l.horseBuffer.length-1]]
+}
+function horseExecute(seq){
+  const l=state.level;if(state.busy)return;let p={...l.horse},path=[],blocked=false;
+  for(const d of seq){const[dx,dy]=HORSE_VEC[d],np={x:p.x+dx,y:p.y+dy},nk=key(np.x,np.y);if(!isFloor(np.x,np.y)||l.doors.has(nk)){blocked=true;break}path.push(np);p=np}
+  if(blocked){const c=getCell(l.horse.x,l.horse.y);c?.querySelector('.emoji')?.classList.add('horseJiggle');setTimeout(()=>c?.querySelector('.emoji')?.classList.remove('horseJiggle'),300);return}
+  state.busy=true;let i=0;const step=()=>{if(i>=path.length){state.busy=false;if(horseTargetHas(l.horse.x,l.horse.y)&&!l.openDoor)animateDoorOpen('');queueSave();return}l.horse={...path[i++]};renderBoard();getCell(l.horse.x,l.horse.y)?.querySelector('.emoji')?.classList.add('horseHop');setTimeout(step,175)};setTimeout(step,70)
+}
+function horseMove(dx,dy){
+  const l=state.level;if(state.busy)return false;const nx=l.player.x+dx,ny=l.player.y+dy,nk=key(nx,ny);
+  if(l.doors.has(nk)){if(l.openDoor){l.player={x:nx,y:ny};renderBoard();markLevelComplete(state.levelIndex);setTimeout(nextLevel,150);return true}return false}
+  if(!isFloor(nx,ny)||(l.horse&&l.horse.x===nx&&l.horse.y===ny))return false;
+  l.player={x:nx,y:ny};renderAll();horseFeedMove(HORSE_DIR_NAME(dx,dy));return true
+}
+
+/* ---------- MIRROR MAZE ---------- */
+function mirrorButtons(){return state.level.def.mirrorButtons.map(([x,y])=>({x,y,k:key(x,y)}))}
+function mirrorPanelCells(p,o=p.o,cx=p.cx,cy=p.cy){return o==='h'?[[cx-1,cy],[cx,cy],[cx+1,cy]]:[[cx,cy-1],[cx,cy],[cx,cy+1]]}
+function mirrorPanelIndexAt(x,y,panels=state.level.mirrorPanels){for(let i=0;i<panels.length;i++)if(mirrorPanelCells(panels[i]).some(([a,b])=>a===x&&b===y))return i;return-1}
+function mirrorBlocksRay(x,y,sourcePanel){
+  const l=state.level,k=key(x,y);if(l.walls.has(k))return true;if(l.doors.has(k)&&!l.openDoor)return true;const i=mirrorPanelIndexAt(x,y);return i>=0&&i!==sourcePanel
+}
+function mirrorReflectPoint(pt,i){
+  const l=state.level,p=l.mirrorPanels[i],x=pt.x,y=pt.y;
+  if(p.o==='v'){
+    if(y<p.cy-1||y>p.cy+1||x===p.cx)return null;const rx=2*p.cx-x;if(rx<=0||rx>=l.width-1)return null;
+    const s1=p.cx>x?1:-1;for(let xx=x+s1;xx!==p.cx;xx+=s1)if(mirrorBlocksRay(xx,y,i))return null;
+    const s2=rx>p.cx?1:-1;for(let xx=p.cx+s2;;xx+=s2){if(mirrorBlocksRay(xx,y,i))return null;if(xx===rx)break}
+    return{x:rx,y,fx:!pt.fx,fy:!!pt.fy}
+  }
+  if(x<p.cx-1||x>p.cx+1||y===p.cy)return null;const ry=2*p.cy-y;if(ry<=0||ry>=l.height-1)return null;
+  const s1=p.cy>y?1:-1;for(let yy=y+s1;yy!==p.cy;yy+=s1)if(mirrorBlocksRay(x,yy,i))return null;
+  const s2=ry>p.cy?1:-1;for(let yy=p.cy+s2;;yy+=s2){if(mirrorBlocksRay(x,yy,i))return null;if(yy===ry)break}
+  return{x,y:ry,fx:!!pt.fx,fy:!pt.fy}
+}
+function mirrorReflections(){
+  const l=state.level,out=[],q=[{pt:{x:l.player.x,y:l.player.y,fx:false,fy:false},depth:0,last:-1,path:''}],seen=new Set();
+  while(q.length){const cur=q.shift();if(cur.depth>=3)continue;for(let i=0;i<l.mirrorPanels.length;i++){if(i===cur.last)continue;const r=mirrorReflectPoint(cur.pt,i);if(!r)continue;const path=cur.path+l.mirrorPanels[i].id,sig=`${r.x},${r.y},${r.fx?1:0},${r.fy?1:0},${path}`;if(seen.has(sig))continue;seen.add(sig);const item={...r,depth:cur.depth+1,path};out.push(item);q.push({pt:r,depth:cur.depth+1,last:i,path})}}
+  return out
+}
+function renderMirrorBoard(){
+  const l=state.level,board=$('#board'),refs=mirrorReflections(),refPos=new Set(refs.map(r=>key(r.x,r.y)));board.innerHTML='';
+  for(let y=0;y<l.height;y++)for(let x=0;x<l.width;x++){
+    const k=key(x,y),cell=document.createElement('div');cell.className='cell';cell.dataset.x=x;cell.dataset.y=y;
+    if(l.walls.has(k)){cell.classList.add('wall');cell.innerHTML='<span class="emoji">⬛</span>'}
+    else if(l.doors.has(k)&&!l.openDoor){cell.classList.add('door');cell.innerHTML='<span class="emoji">🚪</span>'}
+    else{cell.classList.add('floor');const b=mirrorButtons().find(v=>v.k===k);if(b){cell.classList.add('button');if(refPos.has(k))cell.classList.add('mirrorButtonOn');cell.innerHTML='<span class="emoji">🔘</span>'}}
+    const pi=mirrorPanelIndexAt(x,y);if(pi>=0){cell.classList.remove('button');cell.classList.add('mirrorPanel');cell.dataset.mirrorPanel=pi;cell.innerHTML='<span class="emoji">🪞</span>'}
+    board.appendChild(cell)
+  }
+  refs.forEach(r=>{const c=getCell(r.x,r.y);if(!c||c.classList.contains('wall'))return;const s=document.createElement('span');s.className='emoji mirrorGhost'+(r.depth>=2?' deep':'');s.textContent='🙂';s.style.transform=`scale(${r.fx?-1:1},${r.fy?-1:1})`;c.appendChild(s)});
+  const pc=getCell(l.player.x,l.player.y);if(pc){const s=document.createElement('span');s.className='emoji player mirrorPlayer';s.textContent='🙂';pc.appendChild(s)}
+}
+function mirrorSolidForPanel(x,y,ignore){
+  const l=state.level,k=key(x,y);if(l.walls.has(k)||l.doors.has(k)||mirrorButtons().some(b=>b.k===k)||(l.player.x===x&&l.player.y===y))return true;
+  for(let i=0;i<l.mirrorPanels.length;i++){if(i===ignore)continue;if(mirrorPanelCells(l.mirrorPanels[i]).some(([a,b])=>a===x&&b===y))return true}return false
+}
+function mirrorCanTranslate(i,dx,dy){const p=state.level.mirrorPanels[i];return mirrorPanelCells(p,p.o,p.cx+dx,p.cy+dy).every(([x,y])=>!mirrorSolidForPanel(x,y,i))}
+function mirrorCanRotate(i,hit,dx,dy){
+  const p=state.level.mirrorPanels[i],no=p.o==='h'?'v':'h';if(!mirrorPanelCells(p,no).every(([x,y])=>!mirrorSolidForPanel(x,y,i)))return false;let sweep;
+  if(p.o==='h'){if(dx!==0||![0,2].includes(hit))return false;const ex=hit===0?-1:1;sweep=[[p.cx+ex,p.cy+dy],[p.cx-ex,p.cy-dy]]}
+  else{if(dy!==0||![0,2].includes(hit))return false;const ey=hit===0?-1:1;sweep=[[p.cx+dx,p.cy+ey],[p.cx-dx,p.cy-ey]]}
+  return sweep.every(([x,y])=>!mirrorSolidForPanel(x,y,i))
+}
+function mirrorJiggle(i){document.querySelectorAll(`.cell[data-mirror-panel="${i}"]`).forEach(c=>{c.classList.remove('mirrorRefuse');void c.offsetWidth;c.classList.add('mirrorRefuse')})}
+function mirrorCheckSolved(){
+  const l=state.level;if(l.openDoor||l.mirrorUnlocking)return;const pos=new Set(mirrorReflections().map(r=>key(r.x,r.y)));if(mirrorButtons().every(b=>pos.has(b.k))){l.mirrorUnlocking=true;setTimeout(()=>{if(isLevel('mirror'))animateDoorOpen('')},80)}
+}
+function mirrorMove(dx,dy){
+  const l=state.level;if(state.busy)return false;const nx=l.player.x+dx,ny=l.player.y+dy,nk=key(nx,ny),i=mirrorPanelIndexAt(nx,ny);
+  if(i>=0){
+    const p=l.mirrorPanels[i],cells=mirrorPanelCells(p),hit=cells.findIndex(([a,b])=>a===nx&&b===ny),along=(p.o==='h'&&dy===0)||(p.o==='v'&&dx===0),perp=(p.o==='h'&&dx===0)||(p.o==='v'&&dy===0),translate=along||(perp&&hit===1),rotate=perp&&(hit===0||hit===2);
+    if(translate){
+      if(!mirrorCanTranslate(i,dx,dy)){mirrorJiggle(i);return false}
+      p.cx+=dx;p.cy+=dy;l.player={x:nx,y:ny};renderAll();mirrorCheckSolved();return true
+    }
+    if(rotate){
+      if(!mirrorCanRotate(i,hit,dx,dy)){mirrorJiggle(i);return false}
+      p.o=p.o==='h'?'v':'h';if(mirrorPanelIndexAt(nx,ny)<0)l.player={x:nx,y:ny};renderAll();mirrorCheckSolved();return true
+    }
+    mirrorJiggle(i);return false
+  }
+  if(l.doors.has(nk)){
+    if(l.openDoor){l.player={x:nx,y:ny};renderBoard();markLevelComplete(state.levelIndex);setTimeout(nextLevel,150);return true}
+    return false
+  }
+  if(!isFloor(nx,ny))return false;l.player={x:nx,y:ny};renderAll();mirrorCheckSolved();return true
 }
 
 function spawnEffect(x,y,emoji,cls,duration){const cell=getCell(x,y);if(!cell)return;const s=document.createElement('span');s.className=`fx ${cls||''}`;s.textContent=emoji;cell.appendChild(s);setTimeout(()=>s.remove(),duration||400)}
 function getCell(x,y){return document.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`)}
 function nextLevel(){if(state.levelIndex<LEVELS.length-1){state.highestReached=Math.max(state.highestReached,state.levelIndex+1);loadLevel(state.levelIndex+1,true)}else finishGame()}
-function finishGame(){markLevelComplete(state.levelIndex);state.busy=true;const inv=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))].filter(id=>state.inventory[id]>0).map(id=>[id,state.inventory[id]]).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">SIX ROOMS ESCAPED</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{clearProgress();state.inventory={};state.invOrder=[];state.completed=new Set();state.highestReached=0;state.savedLevels={};$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
-function showHelp(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">🙂</div><div class="modalTitle">ESCAPE</div><div class="helpText">Move with the arrows.<br>Walk over items to collect them.<br>Tap inventory items to use them.</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=closeOverlay;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
+function finishGame(){markLevelComplete(state.levelIndex);state.busy=true;const inv=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))].filter(id=>state.inventory[id]>0).map(id=>[id,state.inventory[id]]).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">NINE ROOMS ESCAPED</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{clearProgress();state.inventory={};state.invOrder=[];state.completed=new Set();state.highestReached=0;state.savedLevels={};$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
+function showHelp(){const text=isLevel('market')?'4 ITEMS · BOTH REQUIRED + 2 CHOICES<br>RETURN TO START':isLevel('horse')?'MOVE':isLevel('mirror')?'MOVE':`Move with the arrows.<br>Walk over items to collect them.<br>Tap inventory items to use them.`;$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">${isLevel('market')?'🛒':state.face}</div><div class="modalTitle">ESCAPE</div><div class="helpText">${text}</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=closeOverlay;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
 function jumpLevel(delta){
   const ni=state.levelIndex+delta;if(ni<0||ni>=LEVELS.length)return;
   if(delta>0&&!TEST_UNLOCK_ALL&&ni>state.highestReached){say('ROOM NOT REACHED YET',850);return}
-  // Prototype-only forward navigation keeps its old prerequisite gifts for isolated room testing.
-  if(TEST_UNLOCK_ALL&&delta>0){if(ni>=3&&!hasInv('spark'))addInv('spark');if(ni===4&&!hasInv('glasses'))addInv('glasses');if(ni===5&&!hasInv('pin'))addInv('pin')}
-  loadLevel(ni,true);say(state.completed.has(ni)?'ROOM COMPLETE':`ROOM ${ni+1}`,500)
+  // Prototype-only forward navigation supplies prerequisites when skipping unsolved rooms.
+  if(TEST_UNLOCK_ALL&&delta>0){const target=LEVELS[ni].id;if(target==='time'){if(!hasInv('tnt'))addInv('tnt');if(!hasInv('spark'))addInv('spark')}if(target==='library'&&!hasInv('glasses'))addInv('glasses');if(target==='party'&&!hasInv('pin'))addInv('pin')}
+  loadLevel(ni,true);if(!isLevel('market'))say(state.completed.has(ni)?'ROOM COMPLETE':`ROOM ${ni+1}`,500)
 }
 
 document.querySelectorAll('.dpad button[data-move]').forEach(btn=>{
@@ -547,7 +882,7 @@ if(saved){
   state.inventory=saved.inventory||{};state.invOrder=Array.isArray(saved.invOrder)?saved.invOrder:[];state.completed=new Set(saved.completed||[]);
   state.highestReached=Math.max(0,Math.min(LEVELS.length-1,saved.highestReached||0));state.savedLevels=saved.levels||{};
   state.entryInventory=saved.entryInventory||clone(state.inventory);state.entryInvOrder=Array.isArray(saved.entryInvOrder)?saved.entryInvOrder:[...state.invOrder];
-  const start=Math.max(0,Math.min(LEVELS.length-1,saved.currentLevel||0));loadLevel(start,true,{resumeCurrent:true,resumeFace:saved.face||'🙂',silent:true});say('PROGRESS RESTORED',700)
+  const start=Math.max(0,Math.min(LEVELS.length-1,saved.currentLevel||0));loadLevel(start,true,{resumeCurrent:true,resumeFace:saved.face||'🙂',silent:true});if(!isLevel('market'))say('PROGRESS RESTORED',700);else marketUpdateStatus()
 }else loadLevel(0,false);
 })();
 </script>
