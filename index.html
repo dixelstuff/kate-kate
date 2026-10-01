@@ -119,7 +119,7 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 <script>
 (() => {
 'use strict';
-const SAVE_VERSION='v15',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
+const SAVE_VERSION='v16',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
 // Every prototype build uses a new SAVE_VERSION. Older builds are intentionally ignored/removed.
 try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(SAVE_PREFIX)&&k!==SAVE_KEY)localStorage.removeItem(k)}}catch(_){ }
 const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, dirs=[[1,0],[-1,0],[0,1],[0,-1]], clone=o=>JSON.parse(JSON.stringify(o));
@@ -934,17 +934,31 @@ function jumpLevel(delta){
   loadLevel(ni,true);if(!isLevel('market'))say(state.completed.has(ni)?'ROOM COMPLETE':`ROOM ${ni+1}`,500)
 }
 
+let dpadDelay=null,dpadRepeat=null,dpadPointer=null;
+function stopDpad(){
+  if(dpadDelay)clearTimeout(dpadDelay);
+  if(dpadRepeat)clearInterval(dpadRepeat);
+  dpadDelay=dpadRepeat=null;dpadPointer=null;
+}
 document.querySelectorAll('.dpad button[data-move]').forEach(btn=>{
-  let delayTimer=null,repeatTimer=null,activePointer=null;
-  const stop=()=>{if(delayTimer)clearTimeout(delayTimer);if(repeatTimer)clearInterval(repeatTimer);delayTimer=repeatTimer=null;activePointer=null};
   btn.addEventListener('pointerdown',e=>{
-    e.preventDefault();stop();activePointer=e.pointerId;try{btn.setPointerCapture(e.pointerId)}catch(_){ }
-    const[dx,dy]=btn.dataset.move.split(',').map(Number);if(!state.busy)moveOne(dx,dy);
-    delayTimer=setTimeout(()=>{repeatTimer=setInterval(()=>{if(!state.busy)moveOne(dx,dy)},115)},260);
+    e.preventDefault();
+    stopDpad();
+    dpadPointer=e.pointerId;
+    const[dx,dy]=btn.dataset.move.split(',').map(Number);
+    if(!state.busy)moveOne(dx,dy);
+    dpadDelay=setTimeout(()=>{
+      dpadRepeat=setInterval(()=>{if(!state.busy)moveOne(dx,dy)},115);
+    },260);
   });
-  ['pointerup','pointercancel','lostpointercapture','pointerleave'].forEach(ev=>btn.addEventListener(ev,e=>{if(activePointer===null||e.pointerId===activePointer)stop()}));
   btn.addEventListener('click',e=>e.preventDefault());
 });
+window.addEventListener('pointerup',stopDpad,{passive:true});
+window.addEventListener('pointercancel',stopDpad,{passive:true});
+window.addEventListener('touchend',stopDpad,{passive:true});
+window.addEventListener('touchcancel',stopDpad,{passive:true});
+window.addEventListener('blur',stopDpad);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible')stopDpad()});
 $('#resetBtn').addEventListener('click',resetRoom);$('#helpBtn').addEventListener('click',showHelp);$('#prevLevel').addEventListener('click',()=>jumpLevel(-1));$('#nextLevel').addEventListener('click',()=>jumpLevel(1));window.addEventListener('resize',()=>{sizeBoard();renderBoard()});window.addEventListener('keydown',e=>{const m={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(m[e.key]){e.preventDefault();moveOne(...m[e.key])}});
 let lastTouchEnd=0;document.addEventListener('touchend',e=>{const now=Date.now();if(now-lastTouchEnd<320)e.preventDefault();lastTouchEnd=now},{passive:false});
 document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
