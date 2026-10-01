@@ -77,8 +77,8 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .cell.exitThreshold{background:rgba(225,243,255,.12)!important;box-shadow:inset 0 0 0 2px rgba(215,240,255,.48),0 0 18px rgba(173,224,255,.28)!important;animation:exitGlow 1.25s ease-in-out infinite}
 .exitArrow{font-size:calc(var(--cell)*.48);font-weight:900;color:#eefaff;text-shadow:0 0 8px rgba(194,232,255,.9)}
 @keyframes exitGlow{0%,100%{box-shadow:inset 0 0 0 2px rgba(215,240,255,.35),0 0 10px rgba(173,224,255,.16)}50%{box-shadow:inset 0 0 0 2px rgba(235,249,255,.75),0 0 23px rgba(173,224,255,.38)}}
-.cell.goalLeft .emoji{transform:rotate(-90deg)}
-.cell.goalRight .emoji{transform:rotate(90deg)}
+.cell.goalLeft > .emoji{transform:rotate(-90deg) !important}
+.cell.goalRight > .emoji{transform:rotate(90deg) !important}
 .cell.goalCell{background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)}
 .goalie{position:absolute;inset:0;display:grid;place-items:center;z-index:8;font-size:calc(var(--cell)*.62);filter:drop-shadow(0 0 5px rgba(255,255,255,.5))}
 .cell.tntPadCue{box-shadow:inset 0 0 0 2px rgba(255,225,111,.36),0 0 13px rgba(255,221,93,.10);background:rgba(255,221,93,.025)}
@@ -123,7 +123,7 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 <script>
 (() => {
 'use strict';
-const SAVE_VERSION='v21',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
+const SAVE_VERSION='v22',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
 // Every prototype build uses a new SAVE_VERSION. Older builds are intentionally ignored/removed.
 try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(SAVE_PREFIX)&&k!==SAVE_KEY)localStorage.removeItem(k)}}catch(_){ }
 const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, dirs=[[1,0],[-1,0],[0,1],[0,-1]], clone=o=>JSON.parse(JSON.stringify(o));
@@ -186,9 +186,9 @@ const LEVELS=[
 },
 {
   id:'mirror',type:'mirror',name:'Mirror Maze',wallEmoji:'⬛',
-  map:["###############","#.............#","#.#####...####D","#.#........####","#.#...........#","#.............#","#.............#","#.............#","###...........#","#.............#","#.............#","#....####.....#","#.....#########","#.............#","###############"],
-  player:[2,12],mirrorPanels:[{id:'A',cx:4,cy:10,o:'h'},{id:'B',cx:11,cy:4,o:'h'},{id:'C',cx:12,cy:10,o:'v'}],
-  mirrorButtons:[[8,5],[10,11],[10,3]],messages:{intro:'🔘 🔘 🔘'}
+  map:["###############","#.............#","#####...#####D#","#........####.#","#.............#","#.............#","#.............#","#...........#.#","#.............#","#.............#","#.............#","#..####.......#","#...#########.#","#.............#","###############"],
+  player:[1,12],mirrorPanels:[{id:'A',cx:2,cy:10,o:'h'},{id:'B',cx:9,cy:4,o:'h'},{id:'C',cx:10,cy:10,o:'v'}],
+  mirrorButtons:[[6,5],[8,11],[8,3]],messages:{intro:'🔘 🔘 🔘'}
 },
 {
   id:'party',name:'Party Inside',wallEmoji:'🎀',
@@ -359,7 +359,7 @@ function renderBoard(){
     if(l.voids.has(k)){cell.classList.add('void');board.appendChild(cell);continue}
     if(beam.has(k))cell.classList.add('beamCell');
     if(l.lakes.has(k)){cell.classList.add('lake');const phase=((performance.now()-state.waveEpoch)+(x*137+y*83))%1800;cell.innerHTML=`<span class="emoji" style="animation-delay:-${phase}ms">🌊</span>`;board.appendChild(cell);continue}
-    if(l.walls.has(k)||l.breakables.has(k)){cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');let we=wallEmojiAt(k);if(isLevel('fire')&&['goal','goalDone'].includes(l.specials.get(k))){we='🥅';cell.classList.add('goalCell');if(x===0)cell.classList.add('goalLeft');else if(x===l.w-1)cell.classList.add('goalRight');if(l.specials.get(k)==='goalDone')cell.style.opacity='.45'}else if(isLevel('party')&&l.specials.get(k)==='disco'){cell.classList.add('partyRoofDisco');if(l.partyReady)cell.classList.add('discoOn');we='🪩'}else if(isLevel('library')&&l.def.coloredBooks?.[k]){cell.classList.add('coloredBook');we=({red:'📕',blue:'📘',orange:'📙'})[l.def.coloredBooks[k]]}else if(isLevel('library')){cell.classList.add('libraryWall');we=''}cell.innerHTML=we?`<span class="emoji">${we}</span>`:'';cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);continue}
+    if(l.walls.has(k)||l.breakables.has(k)){cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');let we=wallEmojiAt(k);if(isLevel('fire')&&['goal','goalDone'].includes(l.specials.get(k))){we='🥅';cell.classList.add('goalCell');if(x===0)cell.classList.add('goalLeft');else if(x===l.width-1)cell.classList.add('goalRight');if(l.specials.get(k)==='goalDone')cell.style.opacity='.45'}else if(isLevel('party')&&l.specials.get(k)==='disco'){cell.classList.add('partyRoofDisco');if(l.partyReady)cell.classList.add('discoOn');we='🪩'}else if(isLevel('library')&&l.def.coloredBooks?.[k]){cell.classList.add('coloredBook');we=({red:'📕',blue:'📘',orange:'📙'})[l.def.coloredBooks[k]]}else if(isLevel('library')){cell.classList.add('libraryWall');we=''}cell.innerHTML=we?`<span class="emoji">${we}</span>`:'';cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);continue}
     cell.classList.add('floor');
     const special=l.specials.get(k),slot=slotAt(k);
     if(slot&&slot.role!=='output'&&isSlotActive(k,slot))cell.classList.add('slotActive')
