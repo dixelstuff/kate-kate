@@ -134,6 +134,18 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .finalHeart{animation:finalHeart .75s ease-out}
 @keyframes finalHeart{0%{transform:scale(.2);opacity:.1}45%{transform:scale(1.45);opacity:1}100%{transform:scale(1);opacity:1}}
 
+
+.cell.mirrorDoorClosed{
+  background:rgba(255,255,255,.055)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)!important;
+}
+.cell.mirrorExitOpen{
+  background:rgba(114,221,205,.18)!important;
+  box-shadow:inset 0 0 0 2px rgba(170,255,240,.42),0 0 18px rgba(115,235,214,.24)!important;
+  animation:mirrorExitPulse 1s ease-in-out infinite alternate;
+}
+@keyframes mirrorExitPulse{from{filter:brightness(.95)}to{filter:brightness(1.35)}}
+
 </style>
 </head>
 <body>
@@ -156,11 +168,11 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 <script>
 (() => {
 'use strict';
-const SAVE_VERSION='homecoming1',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=false;
+const SAVE_VERSION='homecoming2',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=false;
 // Every prototype build uses a new SAVE_VERSION. Older builds are intentionally ignored/removed.
 try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(SAVE_PREFIX)&&k!==SAVE_KEY)localStorage.removeItem(k)}}catch(_){ }
 const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, dirs=[[1,0],[-1,0],[0,1],[0,-1]], clone=o=>JSON.parse(JSON.stringify(o));
-const ITEMS={cloudSun:'🌥️',cloud:'☁️',water:'💧',sun:'☀️',rain:'🌧️',rainbow:'🌈',tnt:'🧨',spark:'✨',puff:'💨',egg:'🥚',chick:'🐣',chicken:'🐔',keyNew:'🔑',keyOld:'🗝️',glasses:'👓',pin:'📌',flashlight:'🔦',balloon:'🎈',present:'🎁',milk:'🥛',clock:'🕐',cookie:'🍪',caterpillar:'🐛',butterfly:'🦋',lipstick:'💄',sandglass:'⏳',gem:'💎'};
+const ITEMS={cloudSun:'🌥️',cloud:'☁️',water:'💧',sun:'☀️',rain:'🌧️',rainbow:'🌈',tnt:'🧨',spark:'✨',puff:'💨',egg:'🥚',chick:'🐣',chicken:'🐔',keyNew:'🔑',keyOld:'🗝️',glasses:'👓',pin:'📌',flashlight:'🔦',balloon:'🎈',present:'🎁',milk:'🥛',clock:'🕐',cookie:'🍪',caterpillar:'🐛',butterfly:'🦋',lipstick:'💄',sandglass:'⏳'};
 const emojiOf=id=>ITEMS[id]||id;
 
 const LEVELS=[
@@ -213,7 +225,7 @@ const LEVELS=[
 {
   id:'time',name:'Old Future',wallEmoji:'🌲',
   map:['   #######  ',' ###.....D# ','##.........#','#....#.....#','#..........#','#..#.......#','#......#####','##.....#...#',' #.....#...#',' ###########'],
-  player:[2,8],objects:{'2,3':'egg','3,7':'glasses','3,6':'clock','4,7':'caterpillar','9,7':'gem'},specials:{'5,5':'hourglass','8,3':'worm'},slots:{'4,5':{machine:'time',role:'left'},'6,5':{machine:'time',role:'right'}},breakables:['7,8'],tntPad:'6,8',caveReward:[9,7,'gem'],chickenDetour:['6,4','7,4','7,3'],messages:{intro:'🚪 REQUIRES 🗝️'}
+  player:[2,8],objects:{'2,3':'egg','3,6':'clock','4,7':'caterpillar','9,7':'glasses'},specials:{'5,5':'hourglass','8,3':'worm'},slots:{'4,5':{machine:'time',role:'left'},'6,5':{machine:'time',role:'right'}},breakables:['7,8'],tntPad:'6,8',caveReward:[9,7,'glasses'],chickenDetour:['6,4','7,4','7,3'],messages:{intro:'🚪 REQUIRES 🗝️'}
 },
 {
   id:'horse',type:'horse',name:'Paddock',wallEmoji:'🪵',
@@ -228,16 +240,16 @@ const LEVELS=[
 },
 {
   id:'mirror',type:'mirror',name:'Mirror Maze',wallEmoji:'⬛',
-  map:["###############","#.............#","#####...#####D#","#........####.#","#.............#","#.............#","#.............#","#...........#.#","#.............#","#.............#","#.............#","#..####.......#","#...#########.#","#.............#","###############"],
+  map:["###############","#.............#","#####...#######","#........####.#","#.............#","#.............#","#.............#","#...........#.D","#.............#","#.............#","#.............#","#..####.......#","#...#########.#","#.............#","###############"],
   player:[1,12],mirrorPanels:[{id:'A',cx:2,cy:10,o:'h'},{id:'B',cx:9,cy:4,o:'h'},{id:'C',cx:10,cy:10,o:'v'}],
   mirrorButtons:[[6,5],[8,11],[8,3]],messages:{intro:'🔘 🔘 🔘'}
 },
 {
   id:'party',name:'Party Inside',wallEmoji:'🎀',
   map:['  #########  ',' ##.......## ','#...........#','#...........#','#..#######..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..###.###..#','#...........#','#...........D',' ##.........#','  ###########'],
-  player:[6,1],objects:{'4,2':'flashlight','6,8':'balloon','9,14':'lipstick'},specials:{'6,11':'partyGate','6,4':'disco'},
+  player:[6,1],objects:{'4,2':'flashlight','6,8':'balloon','11,13':'lipstick'},specials:{'6,11':'partyGate','6,4':'disco'},
   blastWalls:['9,8'],
-  presentLayout:['9,8','10,6','11,6','10,5','1,6','2,6','2,5','10,12','11,12','10,13'],torchRecoveryPresents:[],
+  presentLayout:['9,8','10,7','11,6','10,5','10,9','1,6','2,6','10,12','11,12','10,13'],torchRecoveryPresents:[],
   messages:{intro:'PARTY GOERS ONLY  •  🚪 LOCKED'}
 },
 {
@@ -259,7 +271,7 @@ const LEVELS=[
   ],
   player:[6,10],
   objects:{},
-  specials:{'3,9':'plus','8,9':'timePedestal','10,8':'finalMirror','6,6':'finalRelease'},
+  specials:{'3,9':'plus','8,9':'timePedestal','10,8':'finalMirror','9,8':'finalMirrorFront','6,6':'finalRelease'},
   slots:{
     '2,9':{machine:'plus',role:'left'},'4,9':{machine:'plus',role:'right'},
     '7,9':{machine:'time',role:'left'},'9,9':{machine:'time',role:'right'}
@@ -360,7 +372,7 @@ function parseLevel(def){
   (def.extraWalls||[]).forEach(k=>{walls.add(k);floors.delete(k)});
   lakes.forEach(k=>{floors.delete(k);walls.delete(k)});
   breakables.forEach(k=>{walls.delete(k);floors.add(k)});
-  return{def,width,height,walls,floors,voids,doors,lakes,breakables,player:{x:def.player[0],y:def.player[1]},objects:new Map(Object.entries(def.objects||{})),specials:new Map(Object.entries(def.specials||{})),slots:new Map(Object.entries(def.slots||{})),openDoor:false,sourceReady:new Map(),caveOpened:false,hearthLit:false,shelfOpened:false,libraryClueKnown:false,libraryReadCount:0,libraryGlassesOn:false,pinSolved:false,pinAttempts:0,flashDir:def.flashDir?def.flashDir.slice():[1,0],partyReady:false,partyPopped:false,bookSeq:[],torchOn:false,postPopSnapshot:null,tntInput:null,iceTntRevealed:false,fireGoalActive:false,fireGoalScored:false,keeperIndex:0,keeperDir:1,horse:def.horse?{x:def.horse[0],y:def.horse[1]}:null,horseBuffer:[],horseBusy:false,horseEngaged:false,horseSolved:false,mirrorPanels:def.mirrorPanels?clone(def.mirrorPanels):null,mirrorUnlocking:false,coolPlus:false,coolMinus:false,coolSequence:[],coolMarks:new Set(),coolPulse:false,finalTimeActive:false,finalFrog:def.frog?{x:def.frog[0],y:def.frog[1]}:null,finalFrogLured:false,finalDemoDone:false,finalLipstickUsed:false,market:def.type==='market'?{roundIndex:0,history:[],cart:[],required:[],sections:[],stock:{},sectionBreaks:{},taken:{},timeLeft:MARKET_ROUNDS[0].seconds,running:false,checkingOut:false,hasLeftCheckout:false,complete:false,introShown:false}:null};
+  return{def,width,height,walls,floors,voids,doors,lakes,breakables,player:{x:def.player[0],y:def.player[1]},objects:new Map(Object.entries(def.objects||{})),specials:new Map(Object.entries(def.specials||{})),slots:new Map(Object.entries(def.slots||{})),openDoor:false,sourceReady:new Map(),caveOpened:false,hearthLit:false,shelfOpened:false,libraryClueKnown:false,libraryReadCount:0,libraryGlassesOn:false,pinSolved:false,pinAttempts:0,flashDir:def.flashDir?def.flashDir.slice():[1,0],partyReady:false,partyPopped:false,bookSeq:[],torchOn:false,postPopSnapshot:null,tntInput:null,iceTntRevealed:false,fireGoalActive:false,fireGoalScored:false,keeperIndex:0,keeperDir:1,horse:def.horse?{x:def.horse[0],y:def.horse[1]}:null,horseBuffer:[],horseBusy:false,horseEngaged:false,horseSolved:false,mirrorPanels:def.mirrorPanels?clone(def.mirrorPanels):null,mirrorUnlocking:false,coolPlus:false,coolMinus:false,coolSequence:[],coolMarks:new Set(),coolPulse:false,finalTimeActive:false,finalFrog:def.frog?{x:def.frog[0],y:def.frog[1]}:null,finalButterfly:null,finalFrogLured:false,finalDemoDone:false,finalLipstickUsed:false,market:def.type==='market'?{roundIndex:0,history:[],cart:[],required:[],sections:[],stock:{},sectionBreaks:{},taken:{},timeLeft:MARKET_ROUNDS[0].seconds,running:false,checkingOut:false,hasLeftCheckout:false,complete:false,introShown:false,rewardReady:false}:null};
 }
 function loadLevel(index,preserveInventory=true,opts={}){
   if(index<0||index>=LEVELS.length)return;
@@ -376,10 +388,14 @@ function loadLevel(index,preserveInventory=true,opts={}){
   if(LEVELS[index].id==='market'&&state.level.market&&!state.level.market.required.length)marketPrepareAttempt(false);
   if(LEVELS[index].id==='finale')ensureFinaleKit();
   const marketIntroNow=LEVELS[index].id==='market'&&!state.completed.has(index)&&state.level.market&&!state.level.market.introShown;
-  if(marketIntroNow)showMarketIntro();
 
   $('#levelName').textContent=LEVELS[index].name;$('#levelNum').textContent=`ROOM ${index+1} / ${LEVELS.length}`;updateNavButtons();
   sizeBoard();renderBoard();renderInventory();state.suspendSave=false;queueSave();
+
+  if(marketIntroNow){
+    state.busy=true;
+    setTimeout(()=>{if(isLevel('market')&&!document.querySelector('#overlayRoot .modal')){state.busy=false;showMarketIntro()}},720);
+  }
 
   if(LEVELS[index].id==='market'){
     if(state.completed.has(index))say('ROOM COMPLETE',700);else marketUpdateStatus();
@@ -544,7 +560,7 @@ function canPlaceSelectedAt(x,y){
   if(isLevel('cool')&&sl&&['plus','minus'].includes(sl.machine)&&!coolOperatorUnlocked(sl.machine))return false;
   if(isLevel('finale')&&state.selectedItem==='sandglass'&&sp==='timePedestal')return isAdjacent(state.level.player.x,state.level.player.y,x,y);
   if(isLevel('finale')&&state.selectedItem==='butterfly'&&sp==='finalRelease')return isAdjacent(state.level.player.x,state.level.player.y,x,y)&&!state.level.finalFrogLured;
-  if(isLevel('finale')&&state.selectedItem==='lipstick'&&sp==='finalMirror')return isAdjacent(state.level.player.x,state.level.player.y,x,y);
+  if(isLevel('finale')&&state.selectedItem==='lipstick'&&(sp==='finalMirror'||sp==='finalMirrorFront'))return isAdjacent(state.level.player.x,state.level.player.y,x,y);
   if(isLevel('library')&&state.selectedItem==='glasses')return sl?.machine==='glasses'&&playerNearMachineZone('glasses')&&!state.level.libraryGlassesOn;
   if(isMachineCell(x,y))return false;
   if(state.selectedItem==='spark'){
@@ -587,6 +603,10 @@ function onCellTap(x,y){
   const p=state.level.player,k=key(x,y),sl=slotAt(k);
   if(isLevel('library')&&state.level.walls.has(k)&&state.level.def.coloredBooks?.[k]){tapLibraryBook(k);return}
   if(state.selectedItem==='pin'&&state.level.objects.get(k)==='balloon'&&isAdjacent(p.x,p.y,x,y)){popPartyBalloon(x,y);return;}
+  if(isLevel('finale')&&state.selectedItem==='lipstick'&&x===p.x&&y===p.y){
+    const m=findSpecial('finalMirror');
+    if(m&&isAdjacent(p.x,p.y,m.x,m.y)){applyFinalLipstick(p.x,p.y);return}
+  }
   if(isLevel('finale')&&state.selectedItem&&['sandglass','butterfly','lipstick'].includes(state.selectedItem)&&canPlaceSelectedAt(x,y)){placeSelected(x,y);return;}
   if(!state.selectedItem||!canPlaceSelectedAt(x,y))return;
   // Machine inputs can be filled from anywhere around the local machine cluster.
@@ -689,6 +709,15 @@ function animateDoorOpen(msg='DOOR OPEN'){
   setTimeout(()=>{l.openDoor=true;state.busy=false;renderAll()},640)
 }
 
+
+function applyFinalLipstick(fx=null,fy=null){
+  const l=state.level;if(!isLevel('finale')||l.finalLipstickUsed)return false;
+  if(hasInv('lipstick'))takeInv('lipstick');
+  state.selectedItem=null;l.finalLipstickUsed=true;state.face='😘';renderAll();
+  const m=findSpecial('finalMirror');if(m)spawnEffect(m.x,m.y,'💄','timeFlash',300);
+  spawnEffect(fx??l.player.x,fy??l.player.y,'😘','timeFlash',380);say('😘',520);queueSave();return true
+}
+
 function placeSelected(x,y){
   const id=state.selectedItem;if(!id)return;const l=state.level,k=key(x,y),sp=l.specials.get(k);
   if(isLevel('finale')&&id==='sandglass'&&sp==='timePedestal'){
@@ -698,7 +727,7 @@ function placeSelected(x,y){
     if(!takeInv(id))return;state.selectedItem=null;finaleLureFrog();return;
   }
   if(isLevel('finale')&&id==='lipstick'&&sp==='finalMirror'){
-    if(!takeInv(id))return;state.selectedItem=null;l.finalLipstickUsed=true;state.face='😘';renderAll();spawnEffect(x,y,'💄','timeFlash',300);spawnEffect(l.player.x,l.player.y,'😘','timeFlash',360);say('😘',500);return;
+    applyFinalLipstick(l.player.x,l.player.y);return;
   }
   if(id==='spark'){
     state.selectedItem=null;
@@ -882,11 +911,7 @@ function explodeTnt(x,y){
 
 
 /* ---------- THE POND / FINALE ---------- */
-function ensureFinaleKit(){
-  // End-game safety: if an earlier experimental placement stranded a key item,
-  // restore exactly one here so the delivered game can always be completed.
-  for(const id of ['milk','cookie','clock','caterpillar','lipstick','spark'])if(!hasInv(id))addInv(id);
-}
+function ensureFinaleKit(){ /* items now come only from the journey itself */ }
 function finaleLake(x,y){return y>=1&&y<=5&&x>=1&&x<=11}
 function finaleLilyAt(x,y){return (state.level.def.lilies||[]).some(([a,b])=>a===x&&b===y)}
 function renderFinaleBoard(){
@@ -902,8 +927,10 @@ function renderFinaleBoard(){
     else if(sp==='hourglass'){cell.classList.add('machine');cell.innerHTML='<span class="emoji">⏳</span>'}
     else if(sp==='timePedestal'){cell.classList.add('finalPedestal');cell.innerHTML='<span style="font-size:calc(var(--cell)*.28);opacity:.35">◇</span>'}
     else if(sp==='finalMirror'){cell.classList.add('finalMirror');cell.innerHTML='<span class="emoji">🪞</span>'}
+    else if(sp==='finalMirrorFront'){if(state.selectedItem==='lipstick')cell.classList.add('slotActive')}
     else if(sp==='finalRelease'){cell.classList.add('finalRelease');cell.innerHTML='<span class="emoji">🌼</span>'}
     const obj=l.objects.get(k);if(obj)cell.innerHTML=`<span class="emoji">${emojiOf(obj)}</span>`;
+    if(l.finalButterfly&&l.finalButterfly.x===x&&l.finalButterfly.y===y)cell.innerHTML='<span class="emoji butterflyFloat">🦋</span>';
     if(l.finalFrog&&l.finalFrog.x===x&&l.finalFrog.y===y)cell.innerHTML='<span class="emoji">🐸</span>';
     if(l.player.x===x&&l.player.y===y)cell.innerHTML=`<span class="emoji player">${state.face}</span>`;
     cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell)
@@ -917,6 +944,9 @@ function finaleMove(dx,dy){
   }
   if(finaleLake(nx,ny)||l.walls.has(nk))return false;
   const obj=l.objects.get(nk);
+  if(obj==='lipstick'&&sp==='finalMirrorFront'){
+    l.objects.delete(nk);l.player={x:nx,y:ny};addInv('lipstick');applyFinalLipstick(nx,ny);return true
+  }
   if(obj&&isCollectibleObject(obj)){l.objects.delete(nk);l.player={x:nx,y:ny};addInv(obj);renderAll();say(`${emojiOf(obj)}  ADDED`,550);return true}
   if(sp==='plus'||sp==='hourglass'||sp==='timePedestal'||sp==='finalMirror')return false;
   if(sp==='finalRelease'&&state.selectedItem==='butterfly'){placeSelected(nx,ny);return false}
@@ -924,20 +954,41 @@ function finaleMove(dx,dy){
 }
 function finaleDemo(){
   const l=state.level;if(!isLevel('finale')||l.finalDemoDone)return;l.finalDemoDone=true;state.busy=true;
-  setTimeout(()=>{if(!isLevel('finale'))return;spawnEffect(7,3,'🦋','butterflyFloat',650);setTimeout(()=>{
-    if(!isLevel('finale'))return;l.finalFrog={x:5,y:3};renderAll();getCell(5,3)?.querySelector('.emoji')?.classList.add('frogHop');setTimeout(()=>{
-      if(!isLevel('finale'))return;l.finalFrog={x:3,y:3};state.busy=false;renderAll();queueSave()
-    },420)
-  },520)},420)
+  const serial=state.roomSerial;
+  const hop=(x,y,cb)=>{
+    if(serial!==state.roomSerial||!isLevel('finale'))return;
+    l.finalFrog={x,y};renderAll();getCell(x,y)?.querySelector('.emoji')?.classList.add('frogHop');setTimeout(cb,430)
+  };
+  setTimeout(()=>{
+    if(serial!==state.roomSerial||!isLevel('finale'))return;
+    l.finalButterfly={x:7,y:3};renderAll();say('🦋',650);
+    setTimeout(()=>hop(5,3,()=>hop(7,3,()=>{
+      l.finalButterfly=null;renderAll();spawnEffect(7,3,'✨','timeFlash',260);say('🐸 → 🦋',850);
+      setTimeout(()=>{
+        l.finalButterfly={x:3,y:3};renderAll();
+        setTimeout(()=>hop(5,3,()=>hop(3,3,()=>{
+          l.finalButterfly=null;state.busy=false;renderAll();queueSave()
+        })),700)
+      },650)
+    })),850)
+  },500)
 }
 function finaleLureFrog(){
   const l=state.level;if(l.finalFrogLured||state.busy)return;l.finalFrogLured=true;state.busy=true;
   const path=l.def.frogPath||[],serial=state.roomSerial;let i=0;
   const step=()=>{
     if(serial!==state.roomSerial||!isLevel('finale'))return;
-    if(i>=path.length){state.busy=false;renderAll();say('🐸',650);queueSave();return}
-    const [x,y]=path[i++];spawnEffect(x,y,'🦋','butterflyFloat',430);
-    setTimeout(()=>{if(serial!==state.roomSerial||!isLevel('finale'))return;l.finalFrog={x,y};renderAll();getCell(x,y)?.querySelector('.emoji')?.classList.add('frogHop');setTimeout(step,300)},190)
+    if(i>=path.length){
+      l.finalButterfly=null;state.busy=false;renderAll();spawnEffect(l.finalFrog.x,l.finalFrog.y,'✨','timeFlash',260);say('🐸',650);queueSave();return
+    }
+    const [x,y]=path[i++];
+    l.finalButterfly={x,y};renderAll();
+    setTimeout(()=>{
+      if(serial!==state.roomSerial||!isLevel('finale'))return;
+      l.finalFrog={x,y};l.finalButterfly=null;renderAll();
+      getCell(x,y)?.querySelector('.emoji')?.classList.add('frogHop');
+      setTimeout(step,360)
+    },520)
   };
   step()
 }
@@ -1017,6 +1068,8 @@ function renderMarketBoard(){
       cell.classList.add('marketShelf');if(+m.sectionBreaks[x]===y)cell.classList.add('sectionBreak');
       if(!m.taken[k]&&m.stock[k])cell.innerHTML=`<span class="emoji">${m.stock[k]}</span>`
     }else cell.classList.add('floor','marketFloor');
+    const reward=l.objects.get(k);
+    if(reward&&(reward==='milk'||reward==='cookie'))cell.innerHTML=`<span class="emoji">${emojiOf(reward)}</span>`;
     if(l.player.x===x&&l.player.y===y)cell.innerHTML='<span class="emoji player">🛒</span>';
     board.appendChild(cell)
   }
@@ -1038,7 +1091,18 @@ function marketMove(dx,dy){
   }
   if(marketIsShelf(nx,ny)){if(!m.complete){marketStartTimer();const endBump=(dy===1&&ny===2)||(dy===-1&&ny===11);if((dy===0&&marketShelfAccessible(nx,dx))||endBump)marketCollect(nx,ny)}return false}
   if(!marketIsFloor(nx,ny))return false;
-  marketStartTimer();l.player={x:nx,y:ny};if(nx!==1||ny!==12)m.hasLeftCheckout=true;renderAll();marketUpdateStatus();
+  marketStartTimer();l.player={x:nx,y:ny};if(nx!==1||ny!==12)m.hasLeftCheckout=true;
+  const reward=l.objects.get(nk);
+  if(m.complete&&(reward==='milk'||reward==='cookie')){
+    l.objects.delete(nk);addInv(reward);renderAll();say(`${emojiOf(reward)}  ADDED`,520);
+    if(![...l.objects.values()].some(v=>v==='milk'||v==='cookie')){
+      setTimeout(()=>{if(isLevel('market')&&!l.openDoor)animateDoorOpen('SHOPPING DONE')},260)
+    }else{
+      $('#status').textContent='COLLECT  🥛  🍪';$('#status').style.opacity='1';
+    }
+    queueSave();return true
+  }
+  renderAll();marketUpdateStatus();
   if(!m.complete&&m.hasLeftCheckout&&nx===1&&ny===12){m.checkingOut=true;stopMarketTimer();m.running=false;setTimeout(()=>{if(isLevel('market')){m.checkingOut=false;marketFinishAttempt('checkout')}},230)}
   return true
 }
@@ -1064,13 +1128,19 @@ function marketFinishAttempt(kind){
   marketResultModal(marketVisibleTotal(total),m.cart.join(' '),`✓  $${r.threshold}+` ,round===MARKET_ROUNDS.length?'CONTINUE':'NEXT',()=>{
     closeOverlay();
     if(round<MARKET_ROUNDS.length){m.roundIndex++;marketPrepareAttempt(true);renderAll();marketUpdateStatus()}
-    else{m.complete=true;m.running=false;if(!hasInv('milk'))addInv('milk');if(!hasInv('cookie'))addInv('cookie');clearTimeout(state.statusTimer);$('#status').textContent='🥛  🍪  PACKED';$('#status').style.opacity='1';queueSave();setTimeout(()=>animateDoorOpen(''),180)}
+    else{
+      m.complete=true;m.running=false;m.rewardReady=true;
+      if(!hasInv('milk'))l.objects.set('2,12','milk');
+      if(!hasInv('cookie'))l.objects.set('3,12','cookie');
+      clearTimeout(state.statusTimer);$('#status').textContent='COLLECT  🥛  🍪';$('#status').style.opacity='1';
+      renderAll();queueSave()
+    }
   },'pass')
 }
 
 /* ---------- HORSE PADDOCK ---------- */
 const HORSE_DIR_NAME=(dx,dy)=>dx===1?'R':dx===-1?'L':dy===1?'D':'U',HORSE_INV={U:'D',D:'U',L:'R',R:'L'},HORSE_VEC={U:[0,-1],D:[0,1],L:[-1,0],R:[1,0]};
-function horseTargetHas(x,y){return state.level.def.horseTarget.includes(key(x,y))}
+function horseTargetHas(x,y){return horsePenHas(x,y)}
 function horsePenHas(x,y){return (state.level.def.horsePen||state.level.def.horseTarget).includes(key(x,y))}
 function renderHorseBoard(){
   const l=state.level,board=$('#board');board.classList.remove('partyDisco');board.innerHTML='';
@@ -1098,7 +1168,16 @@ function horseExecute(seq){
   const l=state.level;if(state.busy||!l.horseEngaged||l.horseSolved)return;let p={...l.horse},path=[],blocked=false;
   for(const d of seq){const[dx,dy]=HORSE_VEC[d],np={x:p.x+dx,y:p.y+dy},nk=key(np.x,np.y);if(!isFloor(np.x,np.y)||l.doors.has(nk)){blocked=true;break}path.push(np);p=np}
   if(blocked){const c=getCell(l.horse.x,l.horse.y);c?.querySelector('.emoji')?.classList.add('horseJiggle');setTimeout(()=>c?.querySelector('.emoji')?.classList.remove('horseJiggle'),300);return}
-  state.busy=true;let i=0;const step=()=>{if(i>=path.length){state.busy=false;if(horseTargetHas(l.horse.x,l.horse.y)&&!l.horseSolved){l.horseSolved=true;l.horseEngaged=false;l.horseBuffer=[];state.face='🙂';renderAll();animateDoorOpen('')}queueSave();return}l.horse={...path[i++]};renderBoard();getCell(l.horse.x,l.horse.y)?.querySelector('.emoji')?.classList.add('horseHop');setTimeout(step,175)};setTimeout(step,70)
+  const solveHorse=()=>{
+    if(l.horseSolved)return;
+    l.horseSolved=true;l.horseEngaged=false;l.horseBuffer=[];state.face='🙂';state.busy=false;renderAll();animateDoorOpen('');queueSave()
+  };
+  state.busy=true;let i=0;const step=()=>{
+    if(i>=path.length){state.busy=false;if(horsePenHas(l.horse.x,l.horse.y))solveHorse();else queueSave();return}
+    l.horse={...path[i++]};renderBoard();getCell(l.horse.x,l.horse.y)?.querySelector('.emoji')?.classList.add('horseHop');
+    if(horsePenHas(l.horse.x,l.horse.y)){setTimeout(solveHorse,110);return}
+    setTimeout(step,175)
+  };setTimeout(step,70)
 }
 function horseMove(dx,dy){
   const l=state.level;if(state.busy)return false;const nx=l.player.x+dx,ny=l.player.y+dy,nk=key(nx,ny);
@@ -1137,7 +1216,8 @@ function renderMirrorBoard(){
   for(let y=0;y<l.height;y++)for(let x=0;x<l.width;x++){
     const k=key(x,y),cell=document.createElement('div');cell.className='cell';cell.dataset.x=x;cell.dataset.y=y;
     if(l.walls.has(k)){cell.classList.add('wall');cell.innerHTML='<span class="emoji">⬛</span>'}
-    else if(l.doors.has(k)&&!l.openDoor){cell.classList.add('wall','mirrorDoorClosed');cell.innerHTML='<span class="emoji">⬛</span>'}
+    else if(l.doors.has(k)&&!l.openDoor){cell.classList.add('door','mirrorDoorClosed');cell.innerHTML='<span class="emoji">🚪</span>'}
+    else if(l.doors.has(k)&&l.openDoor){cell.classList.add('floor','mirrorExitOpen');cell.innerHTML='<span class="emoji">➡️</span>'}
     else{cell.classList.add('floor');const b=mirrorButtons().find(v=>v.k===k);if(b){cell.classList.add('button');if(refPos.has(k))cell.classList.add('mirrorButtonOn');cell.innerHTML='<span class="emoji">🔘</span>'}}
     const pi=mirrorPanelIndexAt(x,y);if(pi>=0){cell.classList.remove('button');cell.classList.add('mirrorPanel');cell.dataset.mirrorPanel=pi;cell.innerHTML='<span class="emoji">🪞</span>'}
     board.appendChild(cell)
@@ -1185,6 +1265,13 @@ function spawnEffect(x,y,emoji,cls,duration){const cell=getCell(x,y);if(!cell)re
 function getCell(x,y){return document.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`)}
 function nextLevel(){if(state.levelIndex<LEVELS.length-1){state.highestReached=Math.max(state.highestReached,state.levelIndex+1);loadLevel(state.levelIndex+1,true)}else finishGame()}
 function finishGame(){markLevelComplete(state.levelIndex);state.busy=true;const inv=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))].filter(id=>state.inventory[id]>0).map(id=>[id,state.inventory[id]]).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">JOURNEY COMPLETE</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{clearProgress();state.inventory={};state.invOrder=[];state.completed=new Set();state.highestReached=0;state.savedLevels={};$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
+
+function showJourneyIntro(){
+  state.busy=true;
+  $('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">👸 🏠 🤴</div><div class="modalTitle">HOMEWARD</div><div class="modalText">Find your way home to Prince Andrew.</div><button class="primary" id="journeyGo">BEGIN</button></div></div>`;
+  $('#journeyGo').onclick=()=>{state.busy=false;closeOverlay();say(LEVELS[0].messages?.intro||'',1200)}
+}
+
 function showHelp(){const market=isLevel('market'),text=market?'Place 4 items in your trolley including the two required items and return to the counter. Be quick.':isLevel('horse')?'MOVE':isLevel('mirror')?'MOVE':`Move with the arrows.<br>Walk over items to collect them.<br>Tap inventory items to use them.`;$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">${market?'🛒':state.face}</div><div class="modalTitle">${market?'MARKET RUN':'ESCAPE'}</div><div class="helpText">${text}</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=closeOverlay;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
 function jumpLevel(delta){
   const ni=state.levelIndex+delta;if(ni<0||ni>=LEVELS.length)return;
@@ -1228,7 +1315,7 @@ if(saved){
   state.highestReached=Math.max(0,Math.min(LEVELS.length-1,saved.highestReached||0));state.savedLevels=saved.levels||{};
   state.entryInventory=saved.entryInventory||clone(state.inventory);state.entryInvOrder=Array.isArray(saved.entryInvOrder)?saved.entryInvOrder:[...state.invOrder];
   const start=Math.max(0,Math.min(LEVELS.length-1,saved.currentLevel||0));loadLevel(start,true,{resumeCurrent:true,resumeFace:saved.face||'🙂',silent:true});if(!isLevel('market'))say('PROGRESS RESTORED',700);else marketUpdateStatus()
-}else loadLevel(0,false);
+}else{loadLevel(0,false,{silent:true});setTimeout(showJourneyIntro,120)};
 })();
 </script>
 </body>
