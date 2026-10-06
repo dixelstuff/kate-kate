@@ -168,7 +168,7 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 <script>
 (() => {
 'use strict';
-const SAVE_VERSION='homecoming3',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=false;
+const SAVE_VERSION='homecoming4',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=false;
 // Every prototype build uses a new SAVE_VERSION. Older builds are intentionally ignored/removed.
 try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(SAVE_PREFIX)&&k!==SAVE_KEY)localStorage.removeItem(k)}}catch(_){ }
 const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, dirs=[[1,0],[-1,0],[0,1],[0,-1]], clone=o=>JSON.parse(JSON.stringify(o));
@@ -249,7 +249,7 @@ const LEVELS=[
   map:['  #########  ',' ##.......## ','#...........#','#...........#','#..#######..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..###.###..#','#...........#','#...........D',' ##.........#','  ###########'],
   player:[6,1],objects:{'4,2':'flashlight','6,8':'balloon','11,13':'lipstick'},specials:{'6,11':'partyGate','6,4':'disco'},
   blastWalls:['9,8'],
-  presentLayout:['4,9','5,7','5,6','8,5','7,8'],presentNoPush:['9,8'],postPopWalls:['5,5','5,8','7,10','8,10','7,9','6,7','8,9'],torchRecoveryPresents:[],
+  presentLayout:['6,6','6,7','7,7','7,8','8,8','8,9'],presentNoPush:[],postPopWalls:[],torchRecoveryPresents:[],
   messages:{intro:'PARTY GOERS ONLY  •  🚪 LOCKED'}
 },
 {
@@ -545,7 +545,7 @@ function renderTorchBeam(){
   const ox=fx.x*step+cell*.24-3,oy=fx.y*step+cell*.76,ex=last.x*step+cell*.5,ey=last.y*step+cell*.5,dx=ex-ox,dy=ey-oy;
   const line=document.createElement('div');line.id='beamLine';line.style.left=`${ox}px`;line.style.top=`${oy}px`;line.style.width=`${Math.hypot(dx,dy)}px`;line.style.transform=`rotate(${Math.atan2(dy,dx)*180/Math.PI}deg)`;board.appendChild(line)
 }
-function renderInventory(){if(isLevel('market'))return renderMarketInventory();document.querySelector('.invLabel span').textContent='Inventory';const inv=$('#inventory');inv.innerHTML='';const ids=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))];const entries=ids.filter(id=>(state.inventory[id]||0)>0).map(id=>[id,state.inventory[id]]);if(!entries.length){inv.innerHTML='<div class="emptyInv">empty</div>';return}entries.forEach(([id,n])=>{const b=document.createElement('button');b.className='invItem'+(state.selectedItem===id?' selected':'');b.dataset.item=id;b.innerHTML=`<span>${emojiOf(id)}</span>${n>1?`<span class="count">×${n}</span>`:''}`;b.addEventListener('click',()=>{if(state.busy)return;state.selectedItem=state.selectedItem===id?null:id;renderAll()});inv.appendChild(b)})}
+function renderInventory(){if(isLevel('market')&&!state.level.market.complete)return renderMarketInventory();document.querySelector('.invLabel span').textContent='Inventory';const inv=$('#inventory');inv.innerHTML='';const ids=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))];const entries=ids.filter(id=>(state.inventory[id]||0)>0).map(id=>[id,state.inventory[id]]);if(!entries.length){inv.innerHTML='<div class="emptyInv">empty</div>';return}entries.forEach(([id,n])=>{const b=document.createElement('button');b.className='invItem'+(state.selectedItem===id?' selected':'');b.dataset.item=id;b.innerHTML=`<span>${emojiOf(id)}</span>${n>1?`<span class="count">×${n}</span>`:''}`;b.addEventListener('click',()=>{if(state.busy)return;state.selectedItem=state.selectedItem===id?null:id;renderAll()});inv.appendChild(b)})}
 function say(msg,ms=1300){const el=$('#status');clearTimeout(state.statusTimer);el.textContent=msg;el.style.opacity='1';if(ms)state.statusTimer=setTimeout(()=>{el.style.opacity='0'},ms)}
 function isAdjacent(x1,y1,x2,y2){return Math.abs(x1-x2)+Math.abs(y1-y2)===1}
 function isFloor(x,y){const l=state.level,k=key(x,y);return l.floors.has(k)&&!l.walls.has(k)&&!l.breakables.has(k)&&!l.lakes.has(k)}
@@ -782,7 +782,7 @@ function checkDiscoBeam(){if(!isLevel('party'))return;const l=state.level,beam=g
 
 function pushPresent(x,y,dx,dy){
   const l=state.level,nx=x+dx,ny=y+dy,nk=key(nx,ny);
-  if(l.doors.has(nk)||(l.def.presentNoPush||[]).includes(nk)){say('BLOCKED',420);return}
+  if(l.doors.has(nk)){say('BLOCKED',420);return}
   if(!isFloor(nx,ny)||l.objects.has(nk)||isMachineCell(nx,ny)||isSolidSpecial(l.specials.get(nk))||l.specials.get(nk)==='partyGate'){say('BLOCKED',420);return}
   l.objects.delete(key(x,y));l.objects.set(nk,'present');l.player={x,y};renderAll()
 }
@@ -1092,7 +1092,7 @@ function renderMarketBoard(){
     }else cell.classList.add('floor','marketFloor');
     const reward=l.objects.get(k);
     if(reward&&(reward==='egg'||reward==='cookie'))cell.innerHTML=`<span class="emoji">${emojiOf(reward)}</span>`;
-    if(l.player.x===x&&l.player.y===y)cell.innerHTML='<span class="emoji player">🛒</span>';
+    if(l.player.x===x&&l.player.y===y)cell.innerHTML=`<span class="emoji player">${m.complete?'🙂':'🛒'}</span>`;
     board.appendChild(cell)
   }
 }
