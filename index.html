@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
 <meta name="theme-color" content="#101114" />
-<title>Emoji Escape — 9 Room Demo v14</title>
+<title>Emoji Escape — Homecoming</title>
 <style>
 :root{
   --bg:#101114;--panel:#191b20;--panel2:#23262d;--text:#f6f7f9;--muted:#9ca2ad;
@@ -101,6 +101,39 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .modalCard.marketFail{box-shadow:0 20px 60px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,95,95,.20)}
 .blurredBook{filter:blur(3.2px);opacity:.78}
 
+
+/* ---------- COOL CHANGE ---------- */
+.cell.coolBrick{
+  border-radius:5px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),inset 0 -3px 0 rgba(0,0,0,.16);
+  transition:background .38s ease,box-shadow .38s ease,filter .38s ease,transform .38s ease;
+}
+#board.coolPulse .coolBrick{animation:coolBrickPulse .34s ease-out}
+@keyframes coolBrickPulse{0%{transform:scale(.96)}55%{transform:scale(1.035);filter:brightness(1.22)}100%{transform:scale(1)}}
+.cell.coolDay{background:rgba(255,255,255,.055);border-radius:0;color:#c9ced6;font-size:calc(var(--cell)*.21);font-weight:900;letter-spacing:.07em}
+.cell.coolTemp{background:rgba(255,255,255,.065);border-radius:0;color:#fff;font-size:calc(var(--cell)*.34);font-weight:900}
+.cell.coolTemp.selected{box-shadow:inset 0 0 0 1px rgba(255,255,255,.48),0 0 12px rgba(255,255,255,.12);filter:brightness(1.14)}
+.cell.coolTemp.jiggle{animation:coolTempJiggle .22s ease-in-out}
+@keyframes coolTempJiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
+.cell.coolTemp.solvePulse{animation:coolSolvePulse .58s ease-out}
+@keyframes coolSolvePulse{0%{transform:scale(1)}35%{transform:scale(1.14);filter:brightness(2)}70%{transform:scale(.96);filter:brightness(1.35)}100%{transform:scale(1)}}
+.cell.coolPlusMachine{background:rgba(43,190,190,.25)!important;box-shadow:inset 0 0 0 2px rgba(102,238,230,.52),0 0 13px rgba(61,218,211,.16)!important}
+.cell.coolMinusMachine{background:rgba(225,112,79,.25)!important;box-shadow:inset 0 0 0 2px rgba(255,157,120,.52),0 0 13px rgba(239,112,79,.16)!important}
+
+/* ---------- FINAL POND ---------- */
+.cell.pondGrass{background:rgba(73,111,63,.12);box-shadow:inset 0 0 0 1px rgba(160,204,142,.05)}
+.cell.pondWater{background:rgba(55,139,190,.14);box-shadow:inset 0 0 0 1px rgba(117,195,231,.10)}
+.cell.lily{background:rgba(55,139,190,.14);font-size:calc(var(--cell)*.60)}
+.cell.finalPedestal{background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09)}
+.cell.finalRelease{background:rgba(115,153,91,.16);box-shadow:inset 0 0 0 1px rgba(186,219,157,.14)}
+.cell.finalMirror{background:rgba(175,211,230,.12);box-shadow:inset 0 0 0 1px rgba(207,232,245,.22)}
+.frogHop{animation:frogHop .28s ease-out}
+@keyframes frogHop{0%{transform:translateY(0) scale(1)}45%{transform:translateY(-10px) scale(1.12)}100%{transform:translateY(0) scale(1)}}
+.butterflyFloat{animation:butterflyFloat .5s ease-in-out}
+@keyframes butterflyFloat{0%{transform:translate(-5px,3px) rotate(-8deg);opacity:.25}50%{transform:translate(4px,-7px) rotate(8deg);opacity:1}100%{transform:translate(0,0);opacity:.95}}
+.finalHeart{animation:finalHeart .75s ease-out}
+@keyframes finalHeart{0%{transform:scale(.2);opacity:.1}45%{transform:scale(1.45);opacity:1}100%{transform:scale(1);opacity:1}}
+
 </style>
 </head>
 <body>
@@ -123,31 +156,40 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 <script>
 (() => {
 'use strict';
-const SAVE_VERSION='v22',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=true;
+const SAVE_VERSION='homecoming1',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=false;
 // Every prototype build uses a new SAVE_VERSION. Older builds are intentionally ignored/removed.
 try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(SAVE_PREFIX)&&k!==SAVE_KEY)localStorage.removeItem(k)}}catch(_){ }
 const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, dirs=[[1,0],[-1,0],[0,1],[0,-1]], clone=o=>JSON.parse(JSON.stringify(o));
-const ITEMS={cloudSun:'🌥️',cloud:'☁️',water:'💧',sun:'☀️',rain:'🌧️',rainbow:'🌈',tnt:'🧨',spark:'✨',puff:'💨',egg:'🥚',chick:'🐣',chicken:'🐔',keyNew:'🔑',keyOld:'🗝️',glasses:'👓',pin:'📌',flashlight:'🔦',balloon:'🎈',present:'🎁'};
+const ITEMS={cloudSun:'🌥️',cloud:'☁️',water:'💧',sun:'☀️',rain:'🌧️',rainbow:'🌈',tnt:'🧨',spark:'✨',puff:'💨',egg:'🥚',chick:'🐣',chicken:'🐔',keyNew:'🔑',keyOld:'🗝️',glasses:'👓',pin:'📌',flashlight:'🔦',balloon:'🎈',present:'🎁',milk:'🥛',clock:'🕐',cookie:'🍪',caterpillar:'🐛',butterfly:'🦋',lipstick:'💄',sandglass:'⏳',gem:'💎'};
 const emojiOf=id=>ITEMS[id]||id;
 
 const LEVELS=[
 {
-  id:'alchemy',name:'Rainbow Workshop',wallEmoji:'🌿',requirement:'rainbow',
+  id:'cool',name:'Cool Change',wallEmoji:'',
   map:[
-    '  #######  ',
-    ' ##.....###',
-    '##..#.....#',
-    '#.........#',
-    '#....##...#',
-    '##........D',
-    ' #..#......#',
-    ' #.........#',
-    ' ###....####',
-    '   ######   '
+    '   #######   ',
+    '  ##.....##  ',
+    ' ##.......## ',
+    '##.........##',
+    '#...........#',
+    '#...........#',
+    '#...........#',
+    '#...........D',
+    '#...........#',
+    '##.........##',
+    ' ##.......## ',
+    '  ##.....##  ',
+    '   #######   '
   ],
-  player:[2,7],objects:{'2,2':'cloudSun','7,2':'cloud','8,3':'rain'},
-  specials:{'3,5':'minus','7,6':'plus'},
-  slots:{'2,5':{machine:'minus',role:'left'},'4,5':{machine:'minus',role:'right'},'6,6':{machine:'plus',role:'left'},'8,6':{machine:'plus',role:'right'}},messages:{intro:'🚪 REQUIRES 🌈'}
+  player:[5,10],
+  objects:{'5,3':'cloudSun','6,3':'rain','7,3':'cloud'},
+  specials:{
+    '5,2':'coolDayMon','6,2':'coolDayTue','7,2':'coolDayWed',
+    '5,4':'coolTemp29','6,4':'coolTemp14','7,4':'coolTemp15',
+    '3,8':'minus','9,8':'plus'
+  },
+  slots:{'2,8':{machine:'minus',role:'left'},'4,8':{machine:'minus',role:'right'},'8,8':{machine:'plus',role:'left'},'10,8':{machine:'plus',role:'right'}},
+  messages:{intro:'🚪 REQUIRES 🌈'}
 },
 {
   id:'ice',name:'Iceworks',wallEmoji:'🪨',button:[7,3],
@@ -171,7 +213,7 @@ const LEVELS=[
 {
   id:'time',name:'Old Future',wallEmoji:'🌲',
   map:['   #######  ',' ###.....D# ','##.........#','#....#.....#','#..........#','#..#.......#','#......#####','##.....#...#',' #.....#...#',' ###########'],
-  player:[2,8],objects:{'2,3':'egg','9,7':'glasses'},specials:{'5,5':'hourglass','8,3':'worm'},slots:{'4,5':{machine:'time',role:'left'},'6,5':{machine:'time',role:'right'}},breakables:['7,8'],tntPad:'6,8',caveReward:[9,7,'glasses'],chickenDetour:['6,4','7,4','7,3'],messages:{intro:'🚪 REQUIRES 🗝️'}
+  player:[2,8],objects:{'2,3':'egg','3,7':'glasses','3,6':'clock','4,7':'caterpillar','9,7':'gem'},specials:{'5,5':'hourglass','8,3':'worm'},slots:{'4,5':{machine:'time',role:'left'},'6,5':{machine:'time',role:'right'}},breakables:['7,8'],tntPad:'6,8',caveReward:[9,7,'gem'],chickenDetour:['6,4','7,4','7,3'],messages:{intro:'🚪 REQUIRES 🗝️'}
 },
 {
   id:'horse',type:'horse',name:'Paddock',wallEmoji:'🪵',
@@ -193,10 +235,39 @@ const LEVELS=[
 {
   id:'party',name:'Party Inside',wallEmoji:'🎀',
   map:['  #########  ',' ##.......## ','#...........#','#...........#','#..#######..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..###.###..#','#...........#','#...........D',' ##.........#','  ###########'],
-  player:[6,1],objects:{'4,2':'flashlight','6,8':'balloon'},specials:{'6,11':'partyGate','6,4':'disco'},
+  player:[6,1],objects:{'4,2':'flashlight','6,8':'balloon','9,14':'lipstick'},specials:{'6,11':'partyGate','6,4':'disco'},
   blastWalls:['9,8'],
   presentLayout:['9,8','10,6','11,6','10,5','1,6','2,6','2,5','10,12','11,12','10,13'],torchRecoveryPresents:[],
   messages:{intro:'PARTY GOERS ONLY  •  🚪 LOCKED'}
+},
+{
+  id:'finale',type:'finale',name:'The Pond',wallEmoji:'🌿',
+  map:[
+    '#############',
+    '#~~~~~~~~~~~#',
+    '#~~~~~~~~~~~#',
+    '#~~~~~~~~~~~#',
+    '#~~~~~~~~~~~#',
+    '#~~~~~~~~~~~#',
+    '#...........#',
+    '#...........#',
+    '#...........#',
+    '#...........#',
+    '#...........#',
+    '#...........#',
+    '#############'
+  ],
+  player:[6,10],
+  objects:{},
+  specials:{'3,9':'plus','8,9':'timePedestal','10,8':'finalMirror','6,6':'finalRelease'},
+  slots:{
+    '2,9':{machine:'plus',role:'left'},'4,9':{machine:'plus',role:'right'},
+    '7,9':{machine:'time',role:'left'},'9,9':{machine:'time',role:'right'}
+  },
+  lilies:[[3,3],[5,3],[7,3],[9,3],[6,5]],
+  frog:[3,3],
+  frogPath:[[5,3],[7,3],[9,3],[9,5],[6,5],[6,6]],
+  messages:{intro:'🐸'}
 }
 ];
 
@@ -242,6 +313,8 @@ function serializeLevel(l){
     horse:l.horse?{...l.horse}:null,horseBuffer:[...(l.horseBuffer||[])],
     mirrorPanels:l.mirrorPanels?clone(l.mirrorPanels):null,
     iceTntRevealed:!!l.iceTntRevealed,fireGoalActive:!!l.fireGoalActive,fireGoalScored:!!l.fireGoalScored,keeperIndex:l.keeperIndex||0,keeperDir:l.keeperDir||1,libraryGlassesOn:!!l.libraryGlassesOn,horseEngaged:!!l.horseEngaged,horseSolved:!!l.horseSolved,
+    coolPlus:!!l.coolPlus,coolMinus:!!l.coolMinus,coolSequence:[...(l.coolSequence||[])],coolMarks:[...(l.coolMarks||[])],
+    finalTimeActive:!!l.finalTimeActive,finalFrog:l.finalFrog?{...l.finalFrog}:null,finalFrogLured:!!l.finalFrogLured,finalDemoDone:!!l.finalDemoDone,finalLipstickUsed:!!l.finalLipstickUsed,
     market:l.market?clone({...l.market,running:false,checkingOut:false}):null
   }
 }
@@ -250,11 +323,13 @@ function restoreLevel(def,snap){
   const set=(name)=>{if(Array.isArray(snap[name]))l[name]=new Set(snap[name])},map=(name)=>{if(Array.isArray(snap[name]))l[name]=new Map(snap[name])};
   ['walls','floors','voids','doors','lakes','breakables'].forEach(set);['objects','specials','slots','sourceReady'].forEach(map);
   if(snap.player)l.player={...snap.player};
-  for(const k of ['openDoor','caveOpened','hearthLit','shelfOpened','libraryClueKnown','pinSolved','partyReady','partyPopped','torchOn','iceTntRevealed','fireGoalActive','fireGoalScored','libraryGlassesOn','horseEngaged','horseSolved'])if(k in snap)l[k]=!!snap[k];
+  for(const k of ['openDoor','caveOpened','hearthLit','shelfOpened','libraryClueKnown','pinSolved','partyReady','partyPopped','torchOn','iceTntRevealed','fireGoalActive','fireGoalScored','libraryGlassesOn','horseEngaged','horseSolved','coolPlus','coolMinus','finalTimeActive','finalFrogLured','finalDemoDone','finalLipstickUsed'])if(k in snap)l[k]=!!snap[k];
   for(const k of ['libraryReadCount','pinAttempts','keeperIndex','keeperDir'])if(k in snap)l[k]=snap[k]||0;
   l.flashDir=Array.isArray(snap.flashDir)?[...snap.flashDir]:l.flashDir;l.bookSeq=Array.isArray(snap.bookSeq)?[...snap.bookSeq]:[];
   l.postPopSnapshot=snap.postPopSnapshot?clone(snap.postPopSnapshot):null;l.tntInput=snap.tntInput||null;
   if(snap.horse)l.horse={...snap.horse};l.horseBuffer=Array.isArray(snap.horseBuffer)?[...snap.horseBuffer]:[];
+  l.coolSequence=Array.isArray(snap.coolSequence)?[...snap.coolSequence]:[];l.coolMarks=new Set(Array.isArray(snap.coolMarks)?snap.coolMarks:[]);
+  if(snap.finalFrog)l.finalFrog={...snap.finalFrog};
   if(Array.isArray(snap.mirrorPanels))l.mirrorPanels=clone(snap.mirrorPanels);
   if(snap.market)l.market=clone(snap.market);
   if(l.market){l.market.running=false;l.market.checkingOut=false}
@@ -285,7 +360,7 @@ function parseLevel(def){
   (def.extraWalls||[]).forEach(k=>{walls.add(k);floors.delete(k)});
   lakes.forEach(k=>{floors.delete(k);walls.delete(k)});
   breakables.forEach(k=>{walls.delete(k);floors.add(k)});
-  return{def,width,height,walls,floors,voids,doors,lakes,breakables,player:{x:def.player[0],y:def.player[1]},objects:new Map(Object.entries(def.objects||{})),specials:new Map(Object.entries(def.specials||{})),slots:new Map(Object.entries(def.slots||{})),openDoor:false,sourceReady:new Map(),caveOpened:false,hearthLit:false,shelfOpened:false,libraryClueKnown:false,libraryReadCount:0,libraryGlassesOn:false,pinSolved:false,pinAttempts:0,flashDir:def.flashDir?def.flashDir.slice():[1,0],partyReady:false,partyPopped:false,bookSeq:[],torchOn:false,postPopSnapshot:null,tntInput:null,iceTntRevealed:false,fireGoalActive:false,fireGoalScored:false,keeperIndex:0,keeperDir:1,horse:def.horse?{x:def.horse[0],y:def.horse[1]}:null,horseBuffer:[],horseBusy:false,horseEngaged:false,horseSolved:false,mirrorPanels:def.mirrorPanels?clone(def.mirrorPanels):null,mirrorUnlocking:false,market:def.type==='market'?{roundIndex:0,history:[],cart:[],required:[],sections:[],stock:{},sectionBreaks:{},taken:{},timeLeft:MARKET_ROUNDS[0].seconds,running:false,checkingOut:false,hasLeftCheckout:false,complete:false,introShown:false}:null};
+  return{def,width,height,walls,floors,voids,doors,lakes,breakables,player:{x:def.player[0],y:def.player[1]},objects:new Map(Object.entries(def.objects||{})),specials:new Map(Object.entries(def.specials||{})),slots:new Map(Object.entries(def.slots||{})),openDoor:false,sourceReady:new Map(),caveOpened:false,hearthLit:false,shelfOpened:false,libraryClueKnown:false,libraryReadCount:0,libraryGlassesOn:false,pinSolved:false,pinAttempts:0,flashDir:def.flashDir?def.flashDir.slice():[1,0],partyReady:false,partyPopped:false,bookSeq:[],torchOn:false,postPopSnapshot:null,tntInput:null,iceTntRevealed:false,fireGoalActive:false,fireGoalScored:false,keeperIndex:0,keeperDir:1,horse:def.horse?{x:def.horse[0],y:def.horse[1]}:null,horseBuffer:[],horseBusy:false,horseEngaged:false,horseSolved:false,mirrorPanels:def.mirrorPanels?clone(def.mirrorPanels):null,mirrorUnlocking:false,coolPlus:false,coolMinus:false,coolSequence:[],coolMarks:new Set(),coolPulse:false,finalTimeActive:false,finalFrog:def.frog?{x:def.frog[0],y:def.frog[1]}:null,finalFrogLured:false,finalDemoDone:false,finalLipstickUsed:false,market:def.type==='market'?{roundIndex:0,history:[],cart:[],required:[],sections:[],stock:{},sectionBreaks:{},taken:{},timeLeft:MARKET_ROUNDS[0].seconds,running:false,checkingOut:false,hasLeftCheckout:false,complete:false,introShown:false}:null};
 }
 function loadLevel(index,preserveInventory=true,opts={}){
   if(index<0||index>=LEVELS.length)return;
@@ -299,6 +374,7 @@ function loadLevel(index,preserveInventory=true,opts={}){
   state.entryInventory=clone(state.inventory);state.entryInvOrder=[...state.invOrder];
 
   if(LEVELS[index].id==='market'&&state.level.market&&!state.level.market.required.length)marketPrepareAttempt(false);
+  if(LEVELS[index].id==='finale')ensureFinaleKit();
   const marketIntroNow=LEVELS[index].id==='market'&&!state.completed.has(index)&&state.level.market&&!state.level.market.introShown;
   if(marketIntroNow)showMarketIntro();
 
@@ -312,6 +388,7 @@ function loadLevel(index,preserveInventory=true,opts={}){
   }
   if(LEVELS[index].id==='fire'&&state.level.hearthLit)startSmokeEmitter();
   if(LEVELS[index].id==='fire'&&state.level.fireGoalActive&&!state.level.fireGoalScored)startFireKeeper();
+  if(LEVELS[index].id==='finale'&&!state.level.finalDemoDone)finaleDemo();
 }
 function resetRoom(){
   stopMarketTimer();stopFireKeeper();stopDpad();
@@ -345,31 +422,84 @@ function resetRoom(){
   state.suspendSave=false;
   sizeBoard();renderAll();updateNavButtons();say('RESET',450)
 }
+
+const COOL_PLUS_SEQS=[[14,15,29],[15,14,29]],COOL_MINUS_SEQS=[[29,14,15],[29,15,14]],COOL_TOTAL_STEPS=15;
+function coolOperatorUnlocked(machine){if(!isLevel('cool'))return true;return machine==='plus'?state.level.coolPlus:machine==='minus'?state.level.coolMinus:true}
+function coolProgress(){return isLevel('cool')?Math.min(1,(state.level.coolMarks?.size||0)/COOL_TOTAL_STEPS):0}
+function coolAdvance(mark){
+  const l=state.level;if(!isLevel('cool')||l.coolMarks.has(mark))return;
+  l.coolMarks.add(mark);l.coolPulse=true;clearTimeout(l._coolPulseTimer);
+  l._coolPulseTimer=setTimeout(()=>{if(isLevel('cool')){l.coolPulse=false;renderBoard()}},360);
+}
+function coolBrickStyle(cell,x,y){
+  const p=coolProgress(),spread=(x*31+y*47)%360,off=(((x*11+y*7)%19)-9);let hue,sat,light;
+  if(p>=1){hue=spread;sat=64;light=39}
+  else{hue=216-(30*p)+off*(.18+.38*p);sat=38+27*p;light=17+15*p}
+  cell.style.background=`hsl(${hue}deg ${sat}% ${light}%)`;
+  if(p>.72)cell.style.boxShadow=`inset 0 0 0 1px rgba(255,255,255,${.05+.10*p}), inset 0 -3px 0 rgba(0,0,0,.16), 0 0 ${Math.round(7*p)}px hsla(${hue}deg,70%,50%,${.08*p})`;
+}
+function coolTempValue(sp){return sp==='coolTemp29'?29:sp==='coolTemp14'?14:sp==='coolTemp15'?15:null}
+function coolSeqPrefix(seq,list){return list.some(t=>seq.every((v,i)=>t[i]===v))}
+function coolBumpTemp(x,y,sp){
+  const l=state.level,v=coolTempValue(sp),cell=getCell(x,y);if(v==null)return;
+  cell?.classList.remove('jiggle');void cell?.offsetWidth;cell?.classList.add('jiggle');setTimeout(()=>cell?.classList.remove('jiggle'),240);
+  if(l.coolSequence.includes(v)){l.coolSequence=[v];renderBoard();return}
+  l.coolSequence.push(v);
+  let dir=coolSeqPrefix(l.coolSequence,COOL_PLUS_SEQS)?'plus':coolSeqPrefix(l.coolSequence,COOL_MINUS_SEQS)?'minus':null;
+  if(dir)coolAdvance(`temp-${dir}-${l.coolSequence.length}`);
+  renderBoard();
+  if(l.coolSequence.length===3){
+    const plus=COOL_PLUS_SEQS.some(t=>t.every((n,i)=>n===l.coolSequence[i]));
+    const minus=COOL_MINUS_SEQS.some(t=>t.every((n,i)=>n===l.coolSequence[i]));
+    if(plus||minus){
+      document.querySelectorAll('.coolTemp.selected').forEach(c=>c.classList.add('solvePulse'));
+      state.busy=true;setTimeout(()=>{
+        if(!isLevel('cool'))return;
+        if(plus)l.coolPlus=true;if(minus)l.coolMinus=true;l.coolSequence=[];state.busy=false;renderAll();
+        const op=findSpecial(plus?'plus':'minus');if(op)spawnEffect(op.x,op.y,plus?'+':'−','timeFlash',380);
+        say(plus?'＋':'−',600);
+      },430);return;
+    }
+    setTimeout(()=>{if(isLevel('cool')){l.coolSequence=[];renderBoard()}},150);return;
+  }
+  if(!dir)setTimeout(()=>{if(isLevel('cool')){l.coolSequence=[];renderBoard()}},120);
+}
+function coolCorrectIngredient(machine,id){
+  return machine==='minus'?(id==='cloudSun'||id==='cloud'):machine==='plus'?(id==='sun'||id==='rain'):false
+}
+
 function sizeBoard(){const l=state.level;if(!l)return;const maxW=Math.min(window.innerWidth-16,580),reserved=245,maxH=Math.max(250,window.innerHeight-reserved);const cell=Math.floor(Math.min(48,(maxW-(l.width-1)*2)/l.width,(maxH-(l.height-1)*2)/l.height)),minCell=isLevel('mirror')?18:isLevel('horse')?20:24;document.documentElement.style.setProperty('--cell',`${Math.max(minCell,cell)}px`);$('#board').style.gridTemplateColumns=`repeat(${l.width},var(--cell))`;$('#board').style.gridTemplateRows=`repeat(${l.height},var(--cell))`}
 function renderAll(){renderBoard();renderInventory();queueSave()}
 function wallEmojiAt(k){return state.level.breakables.has(k)?'🪨':state.level.def.wallEmoji}
 function slotAt(k){return state.level.slots.get(k)||null}
 function renderBoard(){
+  if(isLevel('finale'))return renderFinaleBoard();
   if(isLevel('market'))return renderMarketBoard();
   if(isLevel('horse'))return renderHorseBoard();
   if(isLevel('mirror'))return renderMirrorBoard();
-  const l=state.level,board=$('#board');board.innerHTML='';board.classList.toggle('partyDisco',isLevel('party')&&l.partyReady&&!l.partyPopped);const beam=getBeamCells();
+  const l=state.level,board=$('#board');board.innerHTML='';board.className=(isLevel('party')&&l.partyReady&&!l.partyPopped?'partyDisco ':'')+(isLevel('cool')&&l.coolPulse?'coolPulse':'');const beam=getBeamCells();
   for(let y=0;y<l.height;y++)for(let x=0;x<l.width;x++){
     const k=key(x,y),cell=document.createElement('div');cell.className='cell';cell.dataset.x=x;cell.dataset.y=y;if(k===getTntInputKey()&&isTntInputActive())cell.classList.add('slotActive','tntInput');if(isTntPadCue(k))cell.classList.add('tntPadCue');
-    if(l.voids.has(k)){cell.classList.add('void');board.appendChild(cell);continue}
+    if(l.voids.has(k)){if(isLevel('cool')){cell.classList.add('coolBrick');coolBrickStyle(cell,x,y)}else cell.classList.add('void');board.appendChild(cell);continue}
     if(beam.has(k))cell.classList.add('beamCell');
     if(l.lakes.has(k)){cell.classList.add('lake');const phase=((performance.now()-state.waveEpoch)+(x*137+y*83))%1800;cell.innerHTML=`<span class="emoji" style="animation-delay:-${phase}ms">🌊</span>`;board.appendChild(cell);continue}
-    if(l.walls.has(k)||l.breakables.has(k)){cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');let we=wallEmojiAt(k);if(isLevel('fire')&&['goal','goalDone'].includes(l.specials.get(k))){we='🥅';cell.classList.add('goalCell');if(x===0)cell.classList.add('goalLeft');else if(x===l.width-1)cell.classList.add('goalRight');if(l.specials.get(k)==='goalDone')cell.style.opacity='.45'}else if(isLevel('party')&&l.specials.get(k)==='disco'){cell.classList.add('partyRoofDisco');if(l.partyReady)cell.classList.add('discoOn');we='🪩'}else if(isLevel('library')&&l.def.coloredBooks?.[k]){cell.classList.add('coloredBook');we=({red:'📕',blue:'📘',orange:'📙'})[l.def.coloredBooks[k]]}else if(isLevel('library')){cell.classList.add('libraryWall');we=''}cell.innerHTML=we?`<span class="emoji">${we}</span>`:'';cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);continue}
+    if(l.walls.has(k)||l.breakables.has(k)){if(isLevel('cool')){cell.classList.add('coolBrick');coolBrickStyle(cell,x,y);cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);continue}cell.classList.add('wall');if(l.breakables.has(k))cell.classList.add('breakable');let we=wallEmojiAt(k);if(isLevel('fire')&&['goal','goalDone'].includes(l.specials.get(k))){we='🥅';cell.classList.add('goalCell');if(x===0)cell.classList.add('goalLeft');else if(x===l.width-1)cell.classList.add('goalRight');if(l.specials.get(k)==='goalDone')cell.style.opacity='.45'}else if(isLevel('party')&&l.specials.get(k)==='disco'){cell.classList.add('partyRoofDisco');if(l.partyReady)cell.classList.add('discoOn');we='🪩'}else if(isLevel('library')&&l.def.coloredBooks?.[k]){cell.classList.add('coloredBook');we=({red:'📕',blue:'📘',orange:'📙'})[l.def.coloredBooks[k]]}else if(isLevel('library')){cell.classList.add('libraryWall');we=''}cell.innerHTML=we?`<span class="emoji">${we}</span>`:'';cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell);continue}
     cell.classList.add('floor');
     const special=l.specials.get(k),slot=slotAt(k);
     if(slot&&slot.role!=='output'&&isSlotActive(k,slot))cell.classList.add('slotActive')
     if(special==='button'){cell.classList.add('button');const pulsePhase=(performance.now()-state.waveEpoch)%1800;cell.style.animationDelay=`-${pulsePhase}ms`;}
-    if(['plus','minus','hourglass','woodHearth'].includes(special))cell.classList.add('machine');
+    if(['plus','minus','hourglass','woodHearth'].includes(special)&&(!(isLevel('cool')&&['plus','minus'].includes(special))||coolOperatorUnlocked(special)))cell.classList.add('machine');
     if(l.doors.has(k)&&!l.openDoor){cell.classList.add('door');cell.innerHTML='<span class="emoji">🚪</span>'}
     else{
       let underlying='';
-      if(special==='plus')cell.innerHTML='<span class="operatorGlyph">+</span>';
-      else if(special==='minus')cell.innerHTML='<span class="operatorGlyph">−</span>';
+      if(isLevel('cool')&&special?.startsWith('coolDay')){
+        cell.classList.add('coolDay');cell.innerHTML=special==='coolDayMon'?'MON':special==='coolDayTue'?'TUE':'WED';
+      }
+      else if(isLevel('cool')&&special?.startsWith('coolTemp')){
+        cell.classList.add('coolTemp');const v=coolTempValue(special);if(l.coolSequence.includes(v))cell.classList.add('selected');cell.innerHTML=`<span>${v}</span>`;
+      }
+      else if(special==='plus'&&coolOperatorUnlocked('plus')){cell.classList.add('coolPlusMachine');cell.innerHTML='<span class="operatorGlyph">+</span>'}
+      else if(special==='minus'&&coolOperatorUnlocked('minus')){cell.classList.add('coolMinusMachine');cell.innerHTML='<span class="operatorGlyph">−</span>'}
       else if(special==='snow')underlying='❄️';
       else if(special==='chili')underlying='🌶️';
       else if(special==='iceWater')underlying='💧';
@@ -406,11 +536,15 @@ function renderInventory(){if(isLevel('market'))return renderMarketInventory();d
 function say(msg,ms=1300){const el=$('#status');clearTimeout(state.statusTimer);el.textContent=msg;el.style.opacity='1';if(ms)state.statusTimer=setTimeout(()=>{el.style.opacity='0'},ms)}
 function isAdjacent(x1,y1,x2,y2){return Math.abs(x1-x2)+Math.abs(y1-y2)===1}
 function isFloor(x,y){const l=state.level,k=key(x,y);return l.floors.has(k)&&!l.walls.has(k)&&!l.breakables.has(k)&&!l.lakes.has(k)}
-function isMachineCell(x,y){const k=key(x,y),s=state.level.specials.get(k);if((s==='plus'||s==='minus')&&state.level.objects.has(k))return false;return['plus','minus','hourglass','woodHearth'].includes(s)}
+function isMachineCell(x,y){const k=key(x,y),s=state.level.specials.get(k);if((s==='plus'||s==='minus')&&isLevel('cool')&&!coolOperatorUnlocked(s))return false;if((s==='plus'||s==='minus')&&state.level.objects.has(k))return false;return['plus','minus','hourglass','woodHearth'].includes(s)}
 function occupied(x,y){const l=state.level,k=key(x,y);return l.objects.has(k)||(l.player.x===x&&l.player.y===y)}
 function canPlaceSelectedAt(x,y){
   if(!state.selectedItem||!isFloor(x,y)||occupied(x,y)||state.level.doors.has(key(x,y)))return false;
   const k=key(x,y),sl=slotAt(k),sp=state.level.specials.get(k);
+  if(isLevel('cool')&&sl&&['plus','minus'].includes(sl.machine)&&!coolOperatorUnlocked(sl.machine))return false;
+  if(isLevel('finale')&&state.selectedItem==='sandglass'&&sp==='timePedestal')return isAdjacent(state.level.player.x,state.level.player.y,x,y);
+  if(isLevel('finale')&&state.selectedItem==='butterfly'&&sp==='finalRelease')return isAdjacent(state.level.player.x,state.level.player.y,x,y)&&!state.level.finalFrogLured;
+  if(isLevel('finale')&&state.selectedItem==='lipstick'&&sp==='finalMirror')return isAdjacent(state.level.player.x,state.level.player.y,x,y);
   if(isLevel('library')&&state.selectedItem==='glasses')return sl?.machine==='glasses'&&playerNearMachineZone('glasses')&&!state.level.libraryGlassesOn;
   if(isMachineCell(x,y))return false;
   if(state.selectedItem==='spark'){
@@ -418,7 +552,7 @@ function canPlaceSelectedAt(x,y){
     if(isLevel('time')&&k===getTntInputKey()&&isTntInputActive())return true;
     return false;
   }
-  if(sl&&sl.role==='output')return false;if(['snow','chili','iceWater','waterSource','worm','button','pinDesk','clueBook','partyGate','disco','chair'].includes(sp))return false;return true
+  if(sl&&sl.role==='output')return false;if(['snow','chili','iceWater','waterSource','worm','button','pinDesk','clueBook','partyGate','disco','chair','timePedestal','finalRelease','finalMirror'].includes(sp))return false;return true
 }
 function isCollectibleObject(id){return !['iceBlock','ball','chicken','balloon','present'].includes(id)}
 function isSolidSpecial(sp){return ['pinDesk','clueBook','disco','chair','goal'].includes(sp)}
@@ -436,6 +570,8 @@ function playerNearMachineZone(machine){
   return machineCells(machine).some(c=>Math.abs(p.x-c.x)+Math.abs(p.y-c.y)<=1);
 }
 function isSlotActive(k,slot){
+  if(isLevel('cool')&&['plus','minus'].includes(slot.machine)&&!coolOperatorUnlocked(slot.machine))return false;
+  if(isLevel('finale')&&slot.machine==='time'&&!state.level.finalTimeActive)return false;
   if(state.level.objects.has(k))return false;
   if(slot.machine==='hearth'&&state.level.hearthLit)return false;
   if(slot.machine==='glasses')return isLevel('library')&&hasInv('glasses')&&!state.level.libraryGlassesOn&&playerNearMachineZone('glasses');
@@ -451,6 +587,7 @@ function onCellTap(x,y){
   const p=state.level.player,k=key(x,y),sl=slotAt(k);
   if(isLevel('library')&&state.level.walls.has(k)&&state.level.def.coloredBooks?.[k]){tapLibraryBook(k);return}
   if(state.selectedItem==='pin'&&state.level.objects.get(k)==='balloon'&&isAdjacent(p.x,p.y,x,y)){popPartyBalloon(x,y);return;}
+  if(isLevel('finale')&&state.selectedItem&&['sandglass','butterfly','lipstick'].includes(state.selectedItem)&&canPlaceSelectedAt(x,y)){placeSelected(x,y);return;}
   if(!state.selectedItem||!canPlaceSelectedAt(x,y))return;
   // Machine inputs can be filled from anywhere around the local machine cluster.
   if(sl&&['plus','minus','time','hearth','glasses'].includes(sl.machine)&&playerNearMachineZone(sl.machine)){placeSelected(x,y);return}
@@ -459,16 +596,18 @@ function onCellTap(x,y){
 }
 
 function moveOne(dx,dy){
+  if(isLevel('finale'))return finaleMove(dx,dy);
   if(isLevel('market'))return marketMove(dx,dy);
   if(isLevel('horse'))return horseMove(dx,dy);
   if(isLevel('mirror'))return mirrorMove(dx,dy);
   if(state.busy)return false;const l=state.level,nx=l.player.x+dx,ny=l.player.y+dy,nk=key(nx,ny);
   if(isLevel('fire')&&fireKeeperAt(nx,ny))return false;
   if(isLevel('library')&&l.walls.has(nk)&&l.def.coloredBooks?.[nk]){tapLibraryBook(nk);return false}
+  if(isLevel('cool')){const sp=l.specials.get(nk);if(sp?.startsWith('coolDay'))return false;if(sp?.startsWith('coolTemp')){coolBumpTemp(nx,ny,sp);return false}}
   if(!isFloor(nx,ny))return false;
   if(l.doors.has(nk)){
     if(l.openDoor){l.player={x:nx,y:ny};renderBoard();markLevelComplete(state.levelIndex);setTimeout(nextLevel,150);return true}
-    if(isLevel('alchemy')){if(hasInv('rainbow')){takeInv('rainbow');animateDoorOpen('🌈  DOOR OPEN');return false}say('🚪  NEEDS  🌈',1800);return false}
+    if(isLevel('cool')){if(hasInv('rainbow')){takeInv('rainbow');animateDoorOpen('🌈  DOOR OPEN');return false}say('🚪  NEEDS  🌈',1800);return false}
     if(isLevel('time')){if(hasInv('keyOld')){takeInv('keyOld');animateDoorOpen('🗝️  DOOR OPEN');return false}say('🚪  NEEDS  🗝️',1800);return false}
     if(isLevel('library')){if(l.shelfOpened){animateDoorOpen('');return false}say('',0);return false}
     if(isLevel('party')){say('🎈',650);return false}
@@ -511,7 +650,7 @@ function moveOne(dx,dy){
   }
   if(obj==='puff'){l.objects.delete(nk);absorbSmoke();return true}
   if(obj==='flashlight'&&isLevel('party')){l.objects.delete(nk);addInv('flashlight');if(l.partyReady&&!l.partyPopped){l.partyReady=false;l.torchOn=false;state.face='🙂';say('🔦  DISCO OFF',700)}else if(l.partyPopped){say('🔦',450);setTimeout(()=>animateDoorOpen(''),120)}else say('🔦  ADDED',650);updateContextStates();renderAll();return true}
-  if(obj&&isCollectibleObject(obj)){l.objects.delete(nk);addInv(obj);say(`${emojiOf(obj)}  ADDED`,650)}
+  if(obj&&isCollectibleObject(obj)){l.objects.delete(nk);addInv(obj);if(isLevel('cool')&&['cloudSun','rain','cloud'].includes(obj))coolAdvance(`weather-${obj}`);if(isLevel('cool')&&obj==='sun')coolAdvance('result-sun');if(isLevel('cool')&&obj==='rainbow')coolAdvance('result-rainbow');say(`${emojiOf(obj)}  ADDED`,650)}
   updateContextStates();renderAll();return true;
 }
 function pushIce(x,y,dx,dy){
@@ -551,7 +690,16 @@ function animateDoorOpen(msg='DOOR OPEN'){
 }
 
 function placeSelected(x,y){
-  const id=state.selectedItem;if(!id)return;const l=state.level,k=key(x,y);
+  const id=state.selectedItem;if(!id)return;const l=state.level,k=key(x,y),sp=l.specials.get(k);
+  if(isLevel('finale')&&id==='sandglass'&&sp==='timePedestal'){
+    if(!takeInv(id))return;state.selectedItem=null;l.finalTimeActive=true;l.specials.set(k,'hourglass');renderAll();spawnEffect(x,y,'⏳','timeFlash',380);say('⏳',520);return;
+  }
+  if(isLevel('finale')&&id==='butterfly'&&sp==='finalRelease'){
+    if(!takeInv(id))return;state.selectedItem=null;finaleLureFrog();return;
+  }
+  if(isLevel('finale')&&id==='lipstick'&&sp==='finalMirror'){
+    if(!takeInv(id))return;state.selectedItem=null;l.finalLipstickUsed=true;state.face='😘';renderAll();spawnEffect(x,y,'💄','timeFlash',300);spawnEffect(l.player.x,l.player.y,'😘','timeFlash',360);say('😘',500);return;
+  }
   if(id==='spark'){
     state.selectedItem=null;
     if(isLevel('fire')&&slotAt(k)?.machine==='hearth'){igniteHearth(k);return}
@@ -562,11 +710,11 @@ function placeSelected(x,y){
     if(!takeInv(id))return;state.selectedItem=null;l.libraryGlassesOn=true;state.face='🤓';renderAll();spawnEffect(x,y,'👓','timeFlash',260);spawnEffect(l.player.x,l.player.y,'🤓','timeFlash',330);return
   }
   if(!takeInv(id))return;state.selectedItem=null;l.objects.set(k,id);renderAll();
-  if(isLevel('alchemy')){checkAlchemyAround(x,y);return}
-  if(isLevel('time')){if(slotAt(k)?.machine==='time'){runTimeMachine(x,y,id);return}if(id==='tnt'){assignTntInput(x,y);renderAll();return}}
+  if(isLevel('cool')||isLevel('finale')){if(slotAt(k)?.machine==='plus'||slotAt(k)?.machine==='minus'){if(isLevel('cool')&&coolCorrectIngredient(slotAt(k).machine,id))coolAdvance(`machine-${slotAt(k).machine}-${id}`);checkAlchemyAround(x,y);return}}
+  if((isLevel('time')||isLevel('finale'))&&slotAt(k)?.machine==='time'){runTimeMachine(x,y,id);return}if(isLevel('time')&&id==='tnt'){assignTntInput(x,y);renderAll();return}
   if(isLevel('party')&&id==='flashlight'){updateContextStates();renderAll();checkDiscoBeam()}
 }
-function checkAlchemyAround(x,y){const l=state.level,slot=slotAt(key(x,y));if(!slot||!['plus','minus'].includes(slot.machine))return;const m=slot.machine,op=findSpecial(m);if(!op)return;const opK=key(op.x,op.y),leftK=slotKeyFor(m,'left'),rightK=slotKeyFor(m,'right');if(!leftK||!rightK||l.objects.has(opK))return;const a=l.objects.get(leftK),b=l.objects.get(rightK);if(!a||!b)return;let result=null;if(m==='minus'&&a==='cloudSun'&&b==='cloud')result='sun';if(m==='plus'){const pair=[a,b].sort().join('+');result=({'cloud+water':'rain','rain+sun':'rainbow','bear+thread':'teddy'})[pair]||null}const cell=getCell(op.x,op.y);cell?.classList.add('machineReact');if(!result){returnAlchemyInputs(leftK,rightK,a,b,cell);return}state.busy=true;setTimeout(()=>{l.objects.delete(leftK);l.objects.delete(rightK);l.objects.set(opK,result);state.busy=false;renderAll();spawnEffect(op.x,op.y,emojiOf(result),'timeFlash',340);say(`${emojiOf(a)} ${m==='plus'?'+':'−'} ${emojiOf(b)} → ${emojiOf(result)}`,900)},260)}
+function checkAlchemyAround(x,y){const l=state.level,slot=slotAt(key(x,y));if(!slot||!['plus','minus'].includes(slot.machine))return;const m=slot.machine,op=findSpecial(m);if(!op)return;const opK=key(op.x,op.y),leftK=slotKeyFor(m,'left'),rightK=slotKeyFor(m,'right');if(!leftK||!rightK||l.objects.has(opK))return;const a=l.objects.get(leftK),b=l.objects.get(rightK);if(!a||!b)return;let result=null;if(m==='minus'&&a==='cloudSun'&&b==='cloud')result='sun';if(m==='plus'){const pair=[a,b].sort().join('+');result=({'cloud+water':'rain','rain+sun':'rainbow','clock+milk':'sandglass','bear+thread':'teddy'})[pair]||null}const cell=getCell(op.x,op.y);cell?.classList.add('machineReact');if(!result){returnAlchemyInputs(leftK,rightK,a,b,cell);return}state.busy=true;setTimeout(()=>{l.objects.delete(leftK);l.objects.delete(rightK);l.objects.set(opK,result);state.busy=false;renderAll();spawnEffect(op.x,op.y,emojiOf(result),'timeFlash',340);say(`${emojiOf(a)} ${m==='plus'?'+':'−'} ${emojiOf(b)} → ${emojiOf(result)}`,900)},260)}
 function slotKeyFor(machine,role){for(const[k,v]of state.level.slots){if(v.machine===machine&&v.role===role)return k}return null}
 function findSpecial(type){for(const[k,v]of state.level.specials){if(v===type){const[x,y]=k.split(',').map(Number);return{x,y}}}return null}
 
@@ -591,8 +739,8 @@ function closeOverlay(){const root=$('#overlayRoot');if(root)root.innerHTML=''}
 function bindBackdropClose(){const modal=document.querySelector('#overlayRoot .modal');if(!modal)return;const openedAt=Date.now();modal.addEventListener('click',e=>{if(e.target===modal&&Date.now()-openedAt>=420)closeOverlay()})}
 function useGlassesOnClue(){const l=state.level;if(!hasInv('glasses'))return;l.libraryGlassesOn=true;state.face='🤓';state.selectedItem=null;renderAll();spawnEffect(l.player.x,l.player.y,'🤓','timeFlash',260);setTimeout(showBookClue,120)}
 function readLibraryClue(){if(!state.level.libraryGlassesOn){showUnreadableBook();return}showBookClue()}
-function showUnreadableBook(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig blurredBook">📖</div><div class="blurredClue">On a blue Monday,<br>I read two orange books.</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
-function showBookClue(){const l=state.level;l.libraryReadCount=(l.libraryReadCount||0)+1;const hint=l.libraryReadCount>=3?'TAP SOME BOOKS':'';$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">📚</div><div class="modalText" style="font-size:18px;color:#fff">On a blue Monday,<br>I read two orange books.</div><div class="pinHint">${hint}</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
+function showUnreadableBook(){$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig blurredBook">📖</div><div class="blurredClue">Nigel felt blue.<br>He read a book and ate two oranges.<br>It worked.</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
+function showBookClue(){const l=state.level;l.libraryReadCount=(l.libraryReadCount||0)+1;const hint=l.libraryReadCount>=3?'TAP SOME BOOKS':'';$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">📚</div><div class="modalText" style="font-size:18px;color:#fff">Nigel felt blue.<br>He read a book and ate two oranges.<br>It worked.</div><div class="pinHint">${hint}</div></div></div>`;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
 function tapLibraryBook(k){const l=state.level,xy=k.split(',').map(Number),cell=getCell(xy[0],xy[1]);cell?.classList.add('bookShake');setTimeout(()=>cell?.classList.remove('bookShake'),260);const color=l.def.coloredBooks[k],target=['blue','red','orange','orange'],i=l.bookSeq.length;if(color===target[i])l.bookSeq.push(color);else l.bookSeq=color===target[0]?[color]:[];if(l.bookSeq.length===target.length){l.bookSeq=[];state.busy=true;for(const bk of l.def.secretBooks){const[a,b]=bk.split(',').map(Number);const c=getCell(a,b);c?.classList.add('shelfSlide')}setTimeout(()=>{for(const bk of l.def.secretBooks){l.walls.delete(bk);l.floors.add(bk)}l.shelfOpened=true;state.busy=false;renderAll();const mid=l.def.secretBooks[1].split(',').map(Number);spawnEffect(mid[0],mid[1],'✨','timeFlash',420);setTimeout(()=>animateDoorOpen(''),250)},380)}}
 function updateContextStates(){const l=state.level;if(isLevel('party')){let fx=null;for(const[k,id]of l.objects)if(id==='flashlight'){const[x,y]=k.split(',').map(Number);fx={x,y};break}l.torchOn=!!(fx&&l.player.x===fx.x+1&&l.player.y===fx.y-1);if(l.torchOn)checkDiscoBeam()}}
 
@@ -710,8 +858,8 @@ function pushBallWithBreath(x,y,dx,dy){
 }
 function animateTravel(x1,y1,x2,y2,emoji,duration){const cell=getCell(x1,y1);if(!cell)return;const e=document.createElement('span');e.className='fx travel';e.textContent=emoji;e.style.setProperty('--tx',`${(x2-x1)*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell'))+2)}px`);e.style.setProperty('--ty',`${(y2-y1)*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell'))+2)}px`);e.style.setProperty('--dur',`${duration}ms`);cell.appendChild(e);setTimeout(()=>e.remove(),duration+30)}
 
-function runTimeMachine(x,y,id){const l=state.level,h=findSpecial('hourglass');if(!h||y!==h.y||Math.abs(x-h.x)!==1)return;const dir=x<h.x?'future':'past',outX=x<h.x?h.x+1:h.x-1,outK=key(outX,h.y),inK=key(x,y),result=timeResult(id,dir);if(!result){say('⏳  NOTHING HAPPENS',750);return}if(l.objects.has(outK)||(l.player.x===outX&&l.player.y===h.y)){say('OTHER SIDE BLOCKED',900);return}state.busy=true;setTimeout(()=>{l.objects.delete(inK);spawnEffect(h.x,h.y,'⏳','timeFlash',340);setTimeout(()=>{l.objects.set(outK,result);if(result!=='chicken')state.busy=false;renderAll();spawnEffect(outX,h.y,emojiOf(result),'timeFlash',380);say(`${emojiOf(id)} → ${emojiOf(result)}`,650);if(result==='chicken')setTimeout(()=>startChicken(outX,h.y),300)},210)},100)}
-function timeResult(id,dir){const future={egg:'chick',chick:'chicken'},past={chicken:'chick',chick:'egg',keyNew:'keyOld'};return dir==='future'?future[id]:past[id]}
+function runTimeMachine(x,y,id){const l=state.level,h=findSpecial('hourglass');if(!h||y!==h.y||Math.abs(x-h.x)!==1)return;const dir=x<h.x?'future':'past',outX=x<h.x?h.x+1:h.x-1,outK=key(outX,h.y),inK=key(x,y),result=timeResult(id,dir);if(!result){say('⏳  NOTHING HAPPENS',750);return}if(l.objects.has(outK)||(l.player.x===outX&&l.player.y===h.y)){say('OTHER SIDE BLOCKED',900);return}state.busy=true;setTimeout(()=>{l.objects.delete(inK);spawnEffect(h.x,h.y,'⏳','timeFlash',340);setTimeout(()=>{l.objects.set(outK,result);if(result!=='chicken')state.busy=false;renderAll();spawnEffect(outX,h.y,emojiOf(result),'timeFlash',380);say(`${emojiOf(id)} → ${emojiOf(result)}`,650);if(result==='chicken'&&!isLevel('finale'))setTimeout(()=>startChicken(outX,h.y),300)},210)},100)}
+function timeResult(id,dir){const future={egg:'chick',chick:'chicken',caterpillar:'butterfly'},past={chicken:'chick',chick:'egg',keyNew:'keyOld',butterfly:'caterpillar'};return dir==='future'?future[id]:past[id]}
 function startChicken(x,y){
   const l=state.level,w=findSpecial('worm');if(!w)return;state.busy=true;let cur={x,y};
   const waypoints=(l.def.chickenDetour||[]).map(k=>{const[a,b]=k.split(',').map(Number);return{x:a,y:b}}).concat([w]);let path=[];
@@ -729,6 +877,78 @@ function explodeTnt(x,y){
   const l=state.level,k=key(x,y);l.objects.delete(k);l.tntInput=null;spawnEffect(x,y,'💥','boomCenter',360);const hit=[];
   for(const[dx,dy]of dirs){const nx=x+dx,ny=y+dy,nk=key(nx,ny);setTimeout(()=>spawnEffect(nx,ny,'💥','boomOuter',500),150);if(l.breakables.has(nk))hit.push(nk)}
   setTimeout(()=>{for(const bk of hit){l.breakables.delete(bk);l.walls.delete(bk);l.floors.add(bk)}l.caveOpened=l.caveOpened||hit.length>0;state.busy=false;renderAll();say(hit.length?'🪨  OPEN':'💥',650);if(hit.length&&isLevel('time')){for(const[ck,id]of l.objects)if(id==='chicken'){const[cx,cy]=ck.split(',').map(Number);setTimeout(()=>startChicken(cx,cy),420);break}}},620)
+}
+
+
+
+/* ---------- THE POND / FINALE ---------- */
+function ensureFinaleKit(){
+  // End-game safety: if an earlier experimental placement stranded a key item,
+  // restore exactly one here so the delivered game can always be completed.
+  for(const id of ['milk','cookie','clock','caterpillar','lipstick','spark'])if(!hasInv(id))addInv(id);
+}
+function finaleLake(x,y){return y>=1&&y<=5&&x>=1&&x<=11}
+function finaleLilyAt(x,y){return (state.level.def.lilies||[]).some(([a,b])=>a===x&&b===y)}
+function renderFinaleBoard(){
+  const l=state.level,board=$('#board');board.className='';board.innerHTML='';
+  for(let y=0;y<l.height;y++)for(let x=0;x<l.width;x++){
+    const k=key(x,y),cell=document.createElement('div');cell.className='cell';cell.dataset.x=x;cell.dataset.y=y;
+    if(l.walls.has(k)){cell.classList.add('wall');cell.innerHTML='<span class="emoji">🌿</span>'}
+    else if(finaleLake(x,y)){cell.classList.add(finaleLilyAt(x,y)?'lily':'pondWater');cell.innerHTML=finaleLilyAt(x,y)?'<span class="emoji">🪷</span>':'<span class="emoji" style="opacity:.72">🌊</span>'}
+    else{cell.classList.add('floor','pondGrass')}
+    const sp=l.specials.get(k),sl=slotAt(k);
+    if(!finaleLake(x,y)&&sl&&isSlotActive(k,sl))cell.classList.add('slotActive');
+    if(sp==='plus'){cell.classList.add('machine','coolPlusMachine');cell.innerHTML='<span class="operatorGlyph">+</span>'}
+    else if(sp==='hourglass'){cell.classList.add('machine');cell.innerHTML='<span class="emoji">⏳</span>'}
+    else if(sp==='timePedestal'){cell.classList.add('finalPedestal');cell.innerHTML='<span style="font-size:calc(var(--cell)*.28);opacity:.35">◇</span>'}
+    else if(sp==='finalMirror'){cell.classList.add('finalMirror');cell.innerHTML='<span class="emoji">🪞</span>'}
+    else if(sp==='finalRelease'){cell.classList.add('finalRelease');cell.innerHTML='<span class="emoji">🌼</span>'}
+    const obj=l.objects.get(k);if(obj)cell.innerHTML=`<span class="emoji">${emojiOf(obj)}</span>`;
+    if(l.finalFrog&&l.finalFrog.x===x&&l.finalFrog.y===y)cell.innerHTML='<span class="emoji">🐸</span>';
+    if(l.player.x===x&&l.player.y===y)cell.innerHTML=`<span class="emoji player">${state.face}</span>`;
+    cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell)
+  }
+}
+function finaleMove(dx,dy){
+  const l=state.level;if(state.busy)return false;const nx=l.player.x+dx,ny=l.player.y+dy,nk=key(nx,ny),sp=l.specials.get(nk);
+  if(l.finalFrog&&l.finalFrog.x===nx&&l.finalFrog.y===ny){
+    if(state.face==='😘'){finishFinale();return true}
+    say('🐸',500);return false;
+  }
+  if(finaleLake(nx,ny)||l.walls.has(nk))return false;
+  const obj=l.objects.get(nk);
+  if(obj&&isCollectibleObject(obj)){l.objects.delete(nk);l.player={x:nx,y:ny};addInv(obj);renderAll();say(`${emojiOf(obj)}  ADDED`,550);return true}
+  if(sp==='plus'||sp==='hourglass'||sp==='timePedestal'||sp==='finalMirror')return false;
+  if(sp==='finalRelease'&&state.selectedItem==='butterfly'){placeSelected(nx,ny);return false}
+  if(!isFloor(nx,ny))return false;l.player={x:nx,y:ny};renderAll();return true
+}
+function finaleDemo(){
+  const l=state.level;if(!isLevel('finale')||l.finalDemoDone)return;l.finalDemoDone=true;state.busy=true;
+  setTimeout(()=>{if(!isLevel('finale'))return;spawnEffect(7,3,'🦋','butterflyFloat',650);setTimeout(()=>{
+    if(!isLevel('finale'))return;l.finalFrog={x:5,y:3};renderAll();getCell(5,3)?.querySelector('.emoji')?.classList.add('frogHop');setTimeout(()=>{
+      if(!isLevel('finale'))return;l.finalFrog={x:3,y:3};state.busy=false;renderAll();queueSave()
+    },420)
+  },520)},420)
+}
+function finaleLureFrog(){
+  const l=state.level;if(l.finalFrogLured||state.busy)return;l.finalFrogLured=true;state.busy=true;
+  const path=l.def.frogPath||[],serial=state.roomSerial;let i=0;
+  const step=()=>{
+    if(serial!==state.roomSerial||!isLevel('finale'))return;
+    if(i>=path.length){state.busy=false;renderAll();say('🐸',650);queueSave();return}
+    const [x,y]=path[i++];spawnEffect(x,y,'🦋','butterflyFloat',430);
+    setTimeout(()=>{if(serial!==state.roomSerial||!isLevel('finale'))return;l.finalFrog={x,y};renderAll();getCell(x,y)?.querySelector('.emoji')?.classList.add('frogHop');setTimeout(step,300)},190)
+  };
+  step()
+}
+function finishFinale(){
+  const l=state.level;if(state.busy)return;state.busy=true;markLevelComplete(state.levelIndex);
+  spawnEffect(l.player.x,l.player.y,'💋','timeFlash',360);
+  const f=l.finalFrog?{...l.finalFrog}:{x:l.player.x+1,y:l.player.y};
+  setTimeout(()=>{l.finalFrog=null;state.face='👸';renderAll();spawnEffect(f.x,f.y,'🤴','timeFlash',520);setTimeout(()=>{
+    $('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig finalHeart">👸 ❤️ 🤴</div><div class="modalTitle">HOME AT LAST</div><div class="modalText">Prince Andrew</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;
+    setTimeout(()=>{$('#again').onclick=()=>{clearProgress();state.inventory={};state.invOrder=[];state.completed=new Set();state.highestReached=0;state.savedLevels={};$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},500)
+  },620)},400)
 }
 
 
@@ -844,7 +1064,7 @@ function marketFinishAttempt(kind){
   marketResultModal(marketVisibleTotal(total),m.cart.join(' '),`✓  $${r.threshold}+` ,round===MARKET_ROUNDS.length?'CONTINUE':'NEXT',()=>{
     closeOverlay();
     if(round<MARKET_ROUNDS.length){m.roundIndex++;marketPrepareAttempt(true);renderAll();marketUpdateStatus()}
-    else{m.complete=true;m.running=false;clearTimeout(state.statusTimer);$('#status').textContent='ROUND 3 ✓';$('#status').style.opacity='1';queueSave();setTimeout(()=>animateDoorOpen(''),120)}
+    else{m.complete=true;m.running=false;if(!hasInv('milk'))addInv('milk');if(!hasInv('cookie'))addInv('cookie');clearTimeout(state.statusTimer);$('#status').textContent='🥛  🍪  PACKED';$('#status').style.opacity='1';queueSave();setTimeout(()=>animateDoorOpen(''),180)}
   },'pass')
 }
 
@@ -856,7 +1076,7 @@ function renderHorseBoard(){
   const l=state.level,board=$('#board');board.classList.remove('partyDisco');board.innerHTML='';
   for(let y=0;y<l.height;y++)for(let x=0;x<l.width;x++){
     const k=key(x,y),cell=document.createElement('div');cell.className='cell';cell.dataset.x=x;cell.dataset.y=y;
-    if(l.voids.has(k)){cell.classList.add('void');board.appendChild(cell);continue}
+    if(l.voids.has(k)){if(isLevel('cool')){cell.classList.add('coolBrick');coolBrickStyle(cell,x,y)}else cell.classList.add('void');board.appendChild(cell);continue}
     if(l.walls.has(k)){cell.classList.add('wall','horseWall');cell.innerHTML='<span class="emoji">🪵</span>'}
     else if(l.doors.has(k)&&!l.openDoor){cell.classList.add('door');cell.innerHTML='<span class="emoji">🚪</span>'}
     else{cell.classList.add('floor',horsePenHas(x,y)?'horseTarget':'horseGrass');
@@ -964,13 +1184,11 @@ function mirrorMove(dx,dy){
 function spawnEffect(x,y,emoji,cls,duration){const cell=getCell(x,y);if(!cell)return;const s=document.createElement('span');s.className=`fx ${cls||''}`;s.textContent=emoji;cell.appendChild(s);setTimeout(()=>s.remove(),duration||400)}
 function getCell(x,y){return document.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`)}
 function nextLevel(){if(state.levelIndex<LEVELS.length-1){state.highestReached=Math.max(state.highestReached,state.levelIndex+1);loadLevel(state.levelIndex+1,true)}else finishGame()}
-function finishGame(){markLevelComplete(state.levelIndex);state.busy=true;const inv=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))].filter(id=>state.inventory[id]>0).map(id=>[id,state.inventory[id]]).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">NINE ROOMS ESCAPED</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{clearProgress();state.inventory={};state.invOrder=[];state.completed=new Set();state.highestReached=0;state.savedLevels={};$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
+function finishGame(){markLevelComplete(state.levelIndex);state.busy=true;const inv=[...state.invOrder,...Object.keys(state.inventory).filter(id=>!state.invOrder.includes(id))].filter(id=>state.inventory[id]>0).map(id=>[id,state.inventory[id]]).map(([id,n])=>`${emojiOf(id)}${n>1?'×'+n:''}`).join(' ');$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><div class="modalBig">🚪✨</div><div class="modalTitle">JOURNEY COMPLETE</div><div class="modalText">${inv?`You finished with ${inv}`:'You made it out.'}</div><button class="primary" id="again">PLAY AGAIN</button></div></div>`;setTimeout(()=>{$('#again').onclick=()=>{clearProgress();state.inventory={};state.invOrder=[];state.completed=new Set();state.highestReached=0;state.savedLevels={};$('#overlayRoot').innerHTML='';state.busy=false;loadLevel(0,false)}},650)}
 function showHelp(){const market=isLevel('market'),text=market?'Place 4 items in your trolley including the two required items and return to the counter. Be quick.':isLevel('horse')?'MOVE':isLevel('mirror')?'MOVE':`Move with the arrows.<br>Walk over items to collect them.<br>Tap inventory items to use them.`;$('#overlayRoot').innerHTML=`<div class="modal"><div class="modalCard"><button class="modalClose" id="modalX">×</button><div class="modalBig">${market?'🛒':state.face}</div><div class="modalTitle">${market?'MARKET RUN':'ESCAPE'}</div><div class="helpText">${text}</div><button class="primary" id="helpClose">PLAY</button></div></div>`;$('#helpClose').onclick=closeOverlay;$('#modalX').onclick=closeOverlay;bindBackdropClose()}
 function jumpLevel(delta){
   const ni=state.levelIndex+delta;if(ni<0||ni>=LEVELS.length)return;
   if(delta>0&&!TEST_UNLOCK_ALL&&ni>state.highestReached){say('ROOM NOT REACHED YET',850);return}
-  // Prototype-only forward navigation supplies prerequisites when skipping unsolved rooms.
-  if(TEST_UNLOCK_ALL&&delta>0){const target=LEVELS[ni].id;if(target==='time'){if(!hasInv('tnt'))addInv('tnt');if(!hasInv('spark'))addInv('spark')}if(target==='library'&&!hasInv('glasses'))addInv('glasses');if(target==='party'&&!hasInv('pin'))addInv('pin')}
   loadLevel(ni,true);if(!isLevel('market'))say(state.completed.has(ni)?'ROOM COMPLETE':`ROOM ${ni+1}`,500)
 }
 
