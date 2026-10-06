@@ -168,11 +168,11 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 <script>
 (() => {
 'use strict';
-const SAVE_VERSION='homecoming2',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=false;
+const SAVE_VERSION='homecoming3',SAVE_KEY=`emoji_escape_save_${SAVE_VERSION}`,SAVE_PREFIX='emoji_escape_save_',TEST_UNLOCK_ALL=false;
 // Every prototype build uses a new SAVE_VERSION. Older builds are intentionally ignored/removed.
 try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(SAVE_PREFIX)&&k!==SAVE_KEY)localStorage.removeItem(k)}}catch(_){ }
 const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, dirs=[[1,0],[-1,0],[0,1],[0,-1]], clone=o=>JSON.parse(JSON.stringify(o));
-const ITEMS={cloudSun:'🌥️',cloud:'☁️',water:'💧',sun:'☀️',rain:'🌧️',rainbow:'🌈',tnt:'🧨',spark:'✨',puff:'💨',egg:'🥚',chick:'🐣',chicken:'🐔',keyNew:'🔑',keyOld:'🗝️',glasses:'👓',pin:'📌',flashlight:'🔦',balloon:'🎈',present:'🎁',milk:'🥛',clock:'🕐',cookie:'🍪',caterpillar:'🐛',butterfly:'🦋',lipstick:'💄',sandglass:'⏳'};
+const ITEMS={cloudSun:'🌥️',cloud:'☁️',water:'💧',sun:'☀️',rain:'🌧️',rainbow:'🌈',tnt:'🧨',spark:'✨',puff:'💨',egg:'🥚',chick:'🐣',chicken:'🐔',keyNew:'🔑',keyOld:'🗝️',glasses:'👓',pin:'📌',flashlight:'🔦',balloon:'🎈',present:'🎁',cookie:'🍪',caterpillar:'🐛',butterfly:'🦋',lipstick:'💄'};
 const emojiOf=id=>ITEMS[id]||id;
 
 const LEVELS=[
@@ -217,7 +217,7 @@ const LEVELS=[
 {
   id:'fire',name:'Fire Yard',wallEmoji:'🌵',
   map:['   #####D###','  ##......##',' ##........#','#..........#','#..........#','#..........#','##.........#','#..........#',' ##........#','  ##########'],
-  player:[3,8],objects:{'9,7':'ball','9,5':'spark'},
+  player:[3,8],objects:{'9,7':'ball','9,5':'spark','3,6':'caterpillar'},
   specials:{'2,6':'woodHearth','5,0':'goal','0,3':'goal','11,7':'goal'},
   goals:[[11,7],[5,0],[0,3]],keeperPath:[],
   slots:{'2,5':{machine:'hearth',role:'spark'}},extraWalls:['9,4'],messages:{intro:'🥅  🥅  🥅'}
@@ -225,7 +225,7 @@ const LEVELS=[
 {
   id:'time',name:'Old Future',wallEmoji:'🌲',
   map:['   #######  ',' ###.....D# ','##.........#','#....#.....#','#..........#','#..#.......#','#......#####','##.....#...#',' #.....#...#',' ###########'],
-  player:[2,8],objects:{'2,3':'egg','3,6':'clock','4,7':'caterpillar','9,7':'glasses'},specials:{'5,5':'hourglass','8,3':'worm'},slots:{'4,5':{machine:'time',role:'left'},'6,5':{machine:'time',role:'right'}},breakables:['7,8'],tntPad:'6,8',caveReward:[9,7,'glasses'],chickenDetour:['6,4','7,4','7,3'],messages:{intro:'🚪 REQUIRES 🗝️'}
+  player:[2,8],objects:{'9,7':'glasses'},specials:{'5,5':'hourglass','8,3':'worm'},slots:{'4,5':{machine:'time',role:'left'},'6,5':{machine:'time',role:'right'}},breakables:['7,8'],tntPad:'6,8',caveReward:[9,7,'glasses'],chickenDetour:['6,4','7,4','7,3'],messages:{intro:'🚪 REQUIRES 🗝️'}
 },
 {
   id:'horse',type:'horse',name:'Paddock',wallEmoji:'🪵',
@@ -249,7 +249,7 @@ const LEVELS=[
   map:['  #########  ',' ##.......## ','#...........#','#...........#','#..#######..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..#.....#..#','#..###.###..#','#...........#','#...........D',' ##.........#','  ###########'],
   player:[6,1],objects:{'4,2':'flashlight','6,8':'balloon','11,13':'lipstick'},specials:{'6,11':'partyGate','6,4':'disco'},
   blastWalls:['9,8'],
-  presentLayout:['9,8','10,7','11,6','10,5','10,9','1,6','2,6','10,12','11,12','10,13'],torchRecoveryPresents:[],
+  presentLayout:['4,9','5,7','5,6','8,5','7,8'],presentNoPush:['9,8'],postPopWalls:['5,5','5,8','7,10','8,10','7,9','6,7','8,9'],torchRecoveryPresents:[],
   messages:{intro:'PARTY GOERS ONLY  •  🚪 LOCKED'}
 },
 {
@@ -271,11 +271,8 @@ const LEVELS=[
   ],
   player:[6,10],
   objects:{},
-  specials:{'3,9':'plus','8,9':'timePedestal','10,8':'finalMirror','9,8':'finalMirrorFront','6,6':'finalRelease'},
-  slots:{
-    '2,9':{machine:'plus',role:'left'},'4,9':{machine:'plus',role:'right'},
-    '7,9':{machine:'time',role:'left'},'9,9':{machine:'time',role:'right'}
-  },
+  specials:{'10,8':'finalMirror','9,8':'finalMirrorFront','6,6':'finalRelease'},
+  slots:{},
   lilies:[[3,3],[5,3],[7,3],[9,3],[6,5]],
   frog:[3,3],
   frogPath:[[5,3],[7,3],[9,3],[9,5],[6,5],[6,6]],
@@ -404,7 +401,7 @@ function loadLevel(index,preserveInventory=true,opts={}){
   }
   if(LEVELS[index].id==='fire'&&state.level.hearthLit)startSmokeEmitter();
   if(LEVELS[index].id==='fire'&&state.level.fireGoalActive&&!state.level.fireGoalScored)startFireKeeper();
-  if(LEVELS[index].id==='finale'&&!state.level.finalDemoDone)finaleDemo();
+  if(LEVELS[index].id==='finale'&&!state.level.finalFrogLured)finaleDemo();
 }
 function resetRoom(){
   stopMarketTimer();stopFireKeeper();stopDpad();
@@ -558,7 +555,6 @@ function canPlaceSelectedAt(x,y){
   if(!state.selectedItem||!isFloor(x,y)||occupied(x,y)||state.level.doors.has(key(x,y)))return false;
   const k=key(x,y),sl=slotAt(k),sp=state.level.specials.get(k);
   if(isLevel('cool')&&sl&&['plus','minus'].includes(sl.machine)&&!coolOperatorUnlocked(sl.machine))return false;
-  if(isLevel('finale')&&state.selectedItem==='sandglass'&&sp==='timePedestal')return isAdjacent(state.level.player.x,state.level.player.y,x,y);
   if(isLevel('finale')&&state.selectedItem==='butterfly'&&sp==='finalRelease')return isAdjacent(state.level.player.x,state.level.player.y,x,y)&&!state.level.finalFrogLured;
   if(isLevel('finale')&&state.selectedItem==='lipstick'&&(sp==='finalMirror'||sp==='finalMirrorFront'))return isAdjacent(state.level.player.x,state.level.player.y,x,y);
   if(isLevel('library')&&state.selectedItem==='glasses')return sl?.machine==='glasses'&&playerNearMachineZone('glasses')&&!state.level.libraryGlassesOn;
@@ -568,7 +564,7 @@ function canPlaceSelectedAt(x,y){
     if(isLevel('time')&&k===getTntInputKey()&&isTntInputActive())return true;
     return false;
   }
-  if(sl&&sl.role==='output')return false;if(['snow','chili','iceWater','waterSource','worm','button','pinDesk','clueBook','partyGate','disco','chair','timePedestal','finalRelease','finalMirror'].includes(sp))return false;return true
+  if(sl&&sl.role==='output')return false;if(['snow','chili','iceWater','waterSource','worm','button','pinDesk','clueBook','partyGate','disco','chair','finalRelease','finalMirror'].includes(sp))return false;return true
 }
 function isCollectibleObject(id){return !['iceBlock','ball','chicken','balloon','present'].includes(id)}
 function isSolidSpecial(sp){return ['pinDesk','clueBook','disco','chair','goal'].includes(sp)}
@@ -602,12 +598,19 @@ function onCellTap(x,y){
   if(Date.now()<state.suppressClickUntil||state.busy)return;
   const p=state.level.player,k=key(x,y),sl=slotAt(k);
   if(isLevel('library')&&state.level.walls.has(k)&&state.level.def.coloredBooks?.[k]){tapLibraryBook(k);return}
+  if(isLevel('horse')&&state.selectedItem==='cookie'&&state.level.horse&&state.level.horse.x===x&&state.level.horse.y===y&&isAdjacent(p.x,p.y,x,y)){
+    const c=getCell(x,y)?.querySelector('.emoji');c?.classList.remove('horseJiggle');void c?.offsetWidth;c?.classList.add('horseJiggle');
+    spawnEffect(x,y,'🍪','timeFlash',300);say('🐴  …  NOPE',650);return
+  }
   if(state.selectedItem==='pin'&&state.level.objects.get(k)==='balloon'&&isAdjacent(p.x,p.y,x,y)){popPartyBalloon(x,y);return;}
+  if(isLevel('finale')&&state.selectedItem==='caterpillar'&&state.level.specials.get(k)==='finalRelease'&&isAdjacent(p.x,p.y,x,y)){
+    const c=getCell(x,y);c?.classList.remove('jiggle');void c?.offsetWidth;c?.classList.add('jiggle');say('🐛',500);return
+  }
   if(isLevel('finale')&&state.selectedItem==='lipstick'&&x===p.x&&y===p.y){
     const m=findSpecial('finalMirror');
     if(m&&isAdjacent(p.x,p.y,m.x,m.y)){applyFinalLipstick(p.x,p.y);return}
   }
-  if(isLevel('finale')&&state.selectedItem&&['sandglass','butterfly','lipstick'].includes(state.selectedItem)&&canPlaceSelectedAt(x,y)){placeSelected(x,y);return;}
+  if(isLevel('finale')&&state.selectedItem&&['butterfly','lipstick'].includes(state.selectedItem)&&canPlaceSelectedAt(x,y)){placeSelected(x,y);return;}
   if(!state.selectedItem||!canPlaceSelectedAt(x,y))return;
   // Machine inputs can be filled from anywhere around the local machine cluster.
   if(sl&&['plus','minus','time','hearth','glasses'].includes(sl.machine)&&playerNearMachineZone(sl.machine)){placeSelected(x,y);return}
@@ -720,9 +723,6 @@ function applyFinalLipstick(fx=null,fy=null){
 
 function placeSelected(x,y){
   const id=state.selectedItem;if(!id)return;const l=state.level,k=key(x,y),sp=l.specials.get(k);
-  if(isLevel('finale')&&id==='sandglass'&&sp==='timePedestal'){
-    if(!takeInv(id))return;state.selectedItem=null;l.finalTimeActive=true;l.specials.set(k,'hourglass');renderAll();spawnEffect(x,y,'⏳','timeFlash',380);say('⏳',520);return;
-  }
   if(isLevel('finale')&&id==='butterfly'&&sp==='finalRelease'){
     if(!takeInv(id))return;state.selectedItem=null;finaleLureFrog();return;
   }
@@ -743,7 +743,7 @@ function placeSelected(x,y){
   if((isLevel('time')||isLevel('finale'))&&slotAt(k)?.machine==='time'){runTimeMachine(x,y,id);return}if(isLevel('time')&&id==='tnt'){assignTntInput(x,y);renderAll();return}
   if(isLevel('party')&&id==='flashlight'){updateContextStates();renderAll();checkDiscoBeam()}
 }
-function checkAlchemyAround(x,y){const l=state.level,slot=slotAt(key(x,y));if(!slot||!['plus','minus'].includes(slot.machine))return;const m=slot.machine,op=findSpecial(m);if(!op)return;const opK=key(op.x,op.y),leftK=slotKeyFor(m,'left'),rightK=slotKeyFor(m,'right');if(!leftK||!rightK||l.objects.has(opK))return;const a=l.objects.get(leftK),b=l.objects.get(rightK);if(!a||!b)return;let result=null;if(m==='minus'&&a==='cloudSun'&&b==='cloud')result='sun';if(m==='plus'){const pair=[a,b].sort().join('+');result=({'cloud+water':'rain','rain+sun':'rainbow','clock+milk':'sandglass','bear+thread':'teddy'})[pair]||null}const cell=getCell(op.x,op.y);cell?.classList.add('machineReact');if(!result){returnAlchemyInputs(leftK,rightK,a,b,cell);return}state.busy=true;setTimeout(()=>{l.objects.delete(leftK);l.objects.delete(rightK);l.objects.set(opK,result);state.busy=false;renderAll();spawnEffect(op.x,op.y,emojiOf(result),'timeFlash',340);say(`${emojiOf(a)} ${m==='plus'?'+':'−'} ${emojiOf(b)} → ${emojiOf(result)}`,900)},260)}
+function checkAlchemyAround(x,y){const l=state.level,slot=slotAt(key(x,y));if(!slot||!['plus','minus'].includes(slot.machine))return;const m=slot.machine,op=findSpecial(m);if(!op)return;const opK=key(op.x,op.y),leftK=slotKeyFor(m,'left'),rightK=slotKeyFor(m,'right');if(!leftK||!rightK||l.objects.has(opK))return;const a=l.objects.get(leftK),b=l.objects.get(rightK);if(!a||!b)return;let result=null;if(m==='minus'&&a==='cloudSun'&&b==='cloud')result='sun';if(m==='plus'){const pair=[a,b].sort().join('+');result=({'cloud+water':'rain','rain+sun':'rainbow','bear+thread':'teddy'})[pair]||null}const cell=getCell(op.x,op.y);cell?.classList.add('machineReact');if(!result){returnAlchemyInputs(leftK,rightK,a,b,cell);return}state.busy=true;setTimeout(()=>{l.objects.delete(leftK);l.objects.delete(rightK);l.objects.set(opK,result);state.busy=false;renderAll();spawnEffect(op.x,op.y,emojiOf(result),'timeFlash',340);say(`${emojiOf(a)} ${m==='plus'?'+':'−'} ${emojiOf(b)} → ${emojiOf(result)}`,900)},260)}
 function slotKeyFor(machine,role){for(const[k,v]of state.level.slots){if(v.machine===machine&&v.role===role)return k}return null}
 function findSpecial(type){for(const[k,v]of state.level.specials){if(v===type){const[x,y]=k.split(',').map(Number);return{x,y}}}return null}
 
@@ -782,17 +782,18 @@ function checkDiscoBeam(){if(!isLevel('party'))return;const l=state.level,beam=g
 
 function pushPresent(x,y,dx,dy){
   const l=state.level,nx=x+dx,ny=y+dy,nk=key(nx,ny);
-  if(l.doors.has(nk)){say('BLOCKED',420);return}
+  if(l.doors.has(nk)||(l.def.presentNoPush||[]).includes(nk)){say('BLOCKED',420);return}
   if(!isFloor(nx,ny)||l.objects.has(nk)||isMachineCell(nx,ny)||isSolidSpecial(l.specials.get(nk))||l.specials.get(nk)==='partyGate'){say('BLOCKED',420);return}
   l.objects.delete(key(x,y));l.objects.set(nk,'present');l.player={x,y};renderAll()
 }
 function popPartyBalloon(x,y){
   const l=state.level;if(!isLevel('party')||l.partyPopped||state.busy)return;if(!hasInv('pin')){say('PIN NEEDED — ROOM 7',1700);return}takeInv('pin');state.selectedItem=null;state.busy=true;getCell(x,y)?.querySelector('.emoji')?.classList.add('balloonPop');
   setTimeout(()=>{
-    l.objects.delete(key(x,y));l.partyPopped=true;
+    l.objects.delete(key(x,y));l.partyPopped=true;l.player={x:6,y:8};
     const disco=findSpecial('disco');if(disco){l.specials.delete(key(disco.x,disco.y));spawnEffect(disco.x,disco.y,'✨','timeFlash',360)}l.torchOn=false;state.face='🙂';
     for(const k of l.def.blastWalls||[]){l.walls.delete(k);l.floors.add(k);l.specials.delete(k)}
     const gate=findSpecial('partyGate');if(gate){const gk=key(gate.x,gate.y);l.specials.delete(gk);l.floors.delete(gk);l.walls.add(gk)}
+    for(const k of l.def.postPopWalls||[]){l.floors.delete(k);l.walls.add(k)}
     for(const k of l.def.presentLayout||[]){if(l.floors.has(k)&&!l.objects.has(k)&&k!==key(l.player.x,l.player.y))l.objects.set(k,'present')}
     for(const k of l.def.torchRecoveryPresents||[]){if(l.floors.has(k)&&!l.objects.has(k)&&k!==key(l.player.x,l.player.y))l.objects.set(k,'present')}
     l.openDoor=false;l.postPopSnapshot={objects:[...l.objects],walls:[...l.walls],floors:[...l.floors],specials:[...l.specials],player:{...l.player},inventory:clone(state.inventory),invOrder:[...state.invOrder]};state.busy=false;renderAll();
@@ -861,12 +862,16 @@ function scoreFireGoal(x,y,bx,by){
   const done=fireGoalsDone(),total=(l.def.goals||[]).length;
   say(`GOAL!  ${done}/${total}`,650);
   setTimeout(()=>{
+    if(done>=total){
+      state.busy=false;
+      if(!l.openDoor)animateDoorOpen('');
+      else renderAll();
+      return
+    }
     const r=fireRestartSpot();
     l.objects.set(key(r.x,r.y),'ball');
     spawnEffect(r.x,r.y,'⚽','timeFlash',300);
-    state.busy=false;
-    if(done>=total&&!l.openDoor)animateDoorOpen('');
-    else renderAll();
+    state.busy=false;renderAll();
   },420)
 }
 function pushBallWithBreath(x,y,dx,dy){
@@ -924,13 +929,15 @@ function renderFinaleBoard(){
     const sp=l.specials.get(k),sl=slotAt(k);
     if(!finaleLake(x,y)&&sl&&isSlotActive(k,sl))cell.classList.add('slotActive');
     if(sp==='plus'){cell.classList.add('machine','coolPlusMachine');cell.innerHTML='<span class="operatorGlyph">+</span>'}
-    else if(sp==='hourglass'){cell.classList.add('machine');cell.innerHTML='<span class="emoji">⏳</span>'}
-    else if(sp==='timePedestal'){cell.classList.add('finalPedestal');cell.innerHTML='<span style="font-size:calc(var(--cell)*.28);opacity:.35">◇</span>'}
     else if(sp==='finalMirror'){cell.classList.add('finalMirror');cell.innerHTML='<span class="emoji">🪞</span>'}
     else if(sp==='finalMirrorFront'){if(state.selectedItem==='lipstick')cell.classList.add('slotActive')}
     else if(sp==='finalRelease'){cell.classList.add('finalRelease');cell.innerHTML='<span class="emoji">🌼</span>'}
     const obj=l.objects.get(k);if(obj)cell.innerHTML=`<span class="emoji">${emojiOf(obj)}</span>`;
-    if(l.finalButterfly&&l.finalButterfly.x===x&&l.finalButterfly.y===y)cell.innerHTML='<span class="emoji butterflyFloat">🦋</span>';
+    if(l.finalButterfly&&l.finalButterfly.x===x&&l.finalButterfly.y===y){
+      cell.innerHTML=sp==='finalRelease'
+        ? '<span class="emoji" style="font-size:calc(var(--cell)*.44);transform:translate(-7px,6px)">🌼</span><span class="emoji butterflyFloat" style="position:absolute;transform:translate(7px,-6px)">🦋</span>'
+        : '<span class="emoji butterflyFloat">🦋</span>';
+    }
     if(l.finalFrog&&l.finalFrog.x===x&&l.finalFrog.y===y)cell.innerHTML='<span class="emoji">🐸</span>';
     if(l.player.x===x&&l.player.y===y)cell.innerHTML=`<span class="emoji player">${state.face}</span>`;
     cell.addEventListener('click',()=>onCellTap(x,y));board.appendChild(cell)
@@ -948,49 +955,64 @@ function finaleMove(dx,dy){
     l.objects.delete(nk);l.player={x:nx,y:ny};addInv('lipstick');applyFinalLipstick(nx,ny);return true
   }
   if(obj&&isCollectibleObject(obj)){l.objects.delete(nk);l.player={x:nx,y:ny};addInv(obj);renderAll();say(`${emojiOf(obj)}  ADDED`,550);return true}
-  if(sp==='plus'||sp==='hourglass'||sp==='timePedestal'||sp==='finalMirror')return false;
+  if(sp==='finalMirror')return false;
   if(sp==='finalRelease'&&state.selectedItem==='butterfly'){placeSelected(nx,ny);return false}
   if(!isFloor(nx,ny))return false;l.player={x:nx,y:ny};renderAll();return true
 }
 function finaleDemo(){
-  const l=state.level;if(!isLevel('finale')||l.finalDemoDone)return;l.finalDemoDone=true;state.busy=true;
-  const serial=state.roomSerial;
-  const hop=(x,y,cb)=>{
-    if(serial!==state.roomSerial||!isLevel('finale'))return;
-    l.finalFrog={x,y};renderAll();getCell(x,y)?.querySelector('.emoji')?.classList.add('frogHop');setTimeout(cb,430)
-  };
-  setTimeout(()=>{
-    if(serial!==state.roomSerial||!isLevel('finale'))return;
-    l.finalButterfly={x:7,y:3};renderAll();say('🦋',650);
-    setTimeout(()=>hop(5,3,()=>hop(7,3,()=>{
-      l.finalButterfly=null;renderAll();spawnEffect(7,3,'✨','timeFlash',260);say('🐸 → 🦋',850);
+  const l=state.level;if(!isLevel('finale')||l.finalFrogLured)return;
+  const serial=state.roomSerial,pads=(l.def.lilies||[]).filter(([x,y])=>!(x===6&&y===5));
+  let last=-1,first=true;
+  const cycle=()=>{
+    if(serial!==state.roomSerial||!isLevel('finale')||l.finalFrogLured)return;
+    const choices=pads.map((p,i)=>({p,i})).filter(({p,i})=>i!==last&&!(l.finalFrog&&l.finalFrog.x===p[0]&&l.finalFrog.y===p[1]));
+    const pick=choices[Math.floor(Math.random()*choices.length)]||{p:pads[0],i:0};
+    last=pick.i;
+    const [tx,ty]=pick.p;
+    l.finalButterfly={x:tx,y:ty};renderAll();
+    const wait=first?1200:1500;first=false;
+    setTimeout(()=>{
+      if(serial!==state.roomSerial||!isLevel('finale')||l.finalFrogLured)return;
+      const old=l.finalFrog?{...l.finalFrog}:{x:3,y:3};
+      l.finalFrog=null;renderAll();
+      animateTravel(old.x,old.y,tx,ty,'🐸',520);
       setTimeout(()=>{
-        l.finalButterfly={x:3,y:3};renderAll();
-        setTimeout(()=>hop(5,3,()=>hop(3,3,()=>{
-          l.finalButterfly=null;state.busy=false;renderAll();queueSave()
-        })),700)
-      },650)
-    })),850)
-  },500)
+        if(serial!==state.roomSerial||!isLevel('finale')||l.finalFrogLured)return;
+        l.finalFrog={x:tx,y:ty};l.finalButterfly=null;renderAll();
+        spawnEffect(tx,ty,'✨','timeFlash',250);
+        setTimeout(cycle,5000)
+      },540)
+    },wait)
+  };
+  setTimeout(cycle,700)
 }
 function finaleLureFrog(){
-  const l=state.level;if(l.finalFrogLured||state.busy)return;l.finalFrogLured=true;state.busy=true;
-  const path=l.def.frogPath||[],serial=state.roomSerial;let i=0;
-  const step=()=>{
+  const l=state.level;if(l.finalFrogLured||state.busy)return;
+  l.finalFrogLured=true;state.busy=true;
+  const serial=state.roomSerial,flower={x:6,y:6},stepping={x:6,y:5};
+  l.finalButterfly={...flower};renderAll();say('🦋',500);
+
+  const hopTo=(target,duration,cb)=>{
     if(serial!==state.roomSerial||!isLevel('finale'))return;
-    if(i>=path.length){
-      l.finalButterfly=null;state.busy=false;renderAll();spawnEffect(l.finalFrog.x,l.finalFrog.y,'✨','timeFlash',260);say('🐸',650);queueSave();return
-    }
-    const [x,y]=path[i++];
-    l.finalButterfly={x,y};renderAll();
+    const old=l.finalFrog?{...l.finalFrog}:stepping;
+    l.finalFrog=null;renderAll();
+    animateTravel(old.x,old.y,target.x,target.y,'🐸',duration);
     setTimeout(()=>{
       if(serial!==state.roomSerial||!isLevel('finale'))return;
-      l.finalFrog={x,y};l.finalButterfly=null;renderAll();
-      getCell(x,y)?.querySelector('.emoji')?.classList.add('frogHop');
-      setTimeout(step,360)
-    },520)
+      l.finalFrog={...target};renderAll();cb&&cb()
+    },duration+20)
   };
-  step()
+
+  setTimeout(()=>{
+    hopTo(stepping,520,()=>{
+      setTimeout(()=>{
+        hopTo(flower,360,()=>{
+          l.finalButterfly=null;state.busy=false;renderAll();
+          spawnEffect(flower.x,flower.y,'✨','timeFlash',260);say('🐸',600);queueSave()
+        })
+      },220)
+    })
+  },1350)
 }
 function finishFinale(){
   const l=state.level;if(state.busy)return;state.busy=true;markLevelComplete(state.levelIndex);
@@ -1069,7 +1091,7 @@ function renderMarketBoard(){
       if(!m.taken[k]&&m.stock[k])cell.innerHTML=`<span class="emoji">${m.stock[k]}</span>`
     }else cell.classList.add('floor','marketFloor');
     const reward=l.objects.get(k);
-    if(reward&&(reward==='milk'||reward==='cookie'))cell.innerHTML=`<span class="emoji">${emojiOf(reward)}</span>`;
+    if(reward&&(reward==='egg'||reward==='cookie'))cell.innerHTML=`<span class="emoji">${emojiOf(reward)}</span>`;
     if(l.player.x===x&&l.player.y===y)cell.innerHTML='<span class="emoji player">🛒</span>';
     board.appendChild(cell)
   }
@@ -1093,12 +1115,12 @@ function marketMove(dx,dy){
   if(!marketIsFloor(nx,ny))return false;
   marketStartTimer();l.player={x:nx,y:ny};if(nx!==1||ny!==12)m.hasLeftCheckout=true;
   const reward=l.objects.get(nk);
-  if(m.complete&&(reward==='milk'||reward==='cookie')){
+  if(m.complete&&(reward==='egg'||reward==='cookie')){
     l.objects.delete(nk);addInv(reward);renderAll();say(`${emojiOf(reward)}  ADDED`,520);
-    if(![...l.objects.values()].some(v=>v==='milk'||v==='cookie')){
+    if(![...l.objects.values()].some(v=>v==='egg'||v==='cookie')){
       setTimeout(()=>{if(isLevel('market')&&!l.openDoor)animateDoorOpen('SHOPPING DONE')},260)
     }else{
-      $('#status').textContent='COLLECT  🥛  🍪';$('#status').style.opacity='1';
+      $('#status').textContent='COLLECT  🥚  🍪';$('#status').style.opacity='1';
     }
     queueSave();return true
   }
@@ -1130,9 +1152,9 @@ function marketFinishAttempt(kind){
     if(round<MARKET_ROUNDS.length){m.roundIndex++;marketPrepareAttempt(true);renderAll();marketUpdateStatus()}
     else{
       m.complete=true;m.running=false;m.rewardReady=true;
-      if(!hasInv('milk'))l.objects.set('2,12','milk');
+      if(!hasInv('egg'))l.objects.set('2,12','egg');
       if(!hasInv('cookie'))l.objects.set('3,12','cookie');
-      clearTimeout(state.statusTimer);$('#status').textContent='COLLECT  🥛  🍪';$('#status').style.opacity='1';
+      clearTimeout(state.statusTimer);$('#status').textContent='COLLECT  🥚  🍪';$('#status').style.opacity='1';
       renderAll();queueSave()
     }
   },'pass')
@@ -1217,7 +1239,7 @@ function renderMirrorBoard(){
     const k=key(x,y),cell=document.createElement('div');cell.className='cell';cell.dataset.x=x;cell.dataset.y=y;
     if(l.walls.has(k)){cell.classList.add('wall');cell.innerHTML='<span class="emoji">⬛</span>'}
     else if(l.doors.has(k)&&!l.openDoor){cell.classList.add('door','mirrorDoorClosed');cell.innerHTML='<span class="emoji">🚪</span>'}
-    else if(l.doors.has(k)&&l.openDoor){cell.classList.add('floor','mirrorExitOpen');cell.innerHTML='<span class="emoji">➡️</span>'}
+    else if(l.doors.has(k)&&l.openDoor){cell.classList.add('floor')}
     else{cell.classList.add('floor');const b=mirrorButtons().find(v=>v.k===k);if(b){cell.classList.add('button');if(refPos.has(k))cell.classList.add('mirrorButtonOn');cell.innerHTML='<span class="emoji">🔘</span>'}}
     const pi=mirrorPanelIndexAt(x,y);if(pi>=0){cell.classList.remove('button');cell.classList.add('mirrorPanel');cell.dataset.mirrorPanel=pi;cell.innerHTML='<span class="emoji">🪞</span>'}
     board.appendChild(cell)
